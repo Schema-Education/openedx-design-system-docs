@@ -1,0 +1,14 @@
+{
+  "name": "openedx-design-system-docs",
+  "private": true,
+  "version": "0.0.0",
+  "scripts": {
+    "build": "pnpm --filter @openedx-design-system/site build",
+    "dev": "pnpm --filter @openedx-design-system/site dev",
+    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore '**/site/.next/**'"
+  },
+  "devDependencies": {
+    "markdownlint-cli": "^0.41.0"
+  },
+  "packageManager": "pnpm@9.0.0"
+}

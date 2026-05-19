@@ -1,0 +1,7 @@
+/* Tailwind CSS directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fumadocs UI base styles */
+@import 'fumadocs-ui/style.css';

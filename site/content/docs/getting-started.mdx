@@ -1,0 +1,32 @@
+---
+title: Getting Started
+description: How to contribute a component registration to the Open edX Design System registry. (Phase 2a — coming soon)
+---
+
+# Getting Started
+
+> **Status: Phase 2a — content coming soon.**
+>
+> The contribution guide will be written once the automated crawler pipeline
+> and schema validation tooling are in place. Check back after the
+> Phase 2a milestone ships.
+
+## Overview (placeholder)
+
+Contributing a component registration will involve:
+
+1. **Identifying the component** in a source MFE (e.g., `frontend-app-learning`)
+2. **Classifying it** using the [Atomic Design Taxonomy](/docs/atomic-design)
+3. **Creating an MDX file** under `content/registry/<atomicLevel>/<ComponentName>.mdx`
+   following the manifest schema defined in `registry/schema/component.schema.json`
+4. **Running the validator** (`pnpm validate:registry`) to confirm the manifest is well-formed
+5. **Opening a pull request** — the CI pipeline will lint, typecheck, and rebuild the index
+
+## Example manifest
+
+See `content/registry/atom/button.mdx` for a worked example of the frontmatter format.
+
+## Questions?
+
+Until this guide is complete, refer to the product vision document or open an issue in the
+repository.

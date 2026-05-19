@@ -1,0 +1,39 @@
+---
+title: Atomic Design Taxonomy
+description: How the Open edX Design System classifies components using atomic design principles.
+---
+
+# Atomic Design Taxonomy
+
+The Open edX Design System uses **atomic design** to classify every registered component
+into one of five levels.
+
+## Classification levels
+
+| Level | Description | Examples |
+|-------|-------------|---------|
+| **atom** | Indivisible UI primitive | Button, Icon, Badge, Input, Label |
+| **molecule** | Small group of atoms with a single purpose | SearchInput, FormGroup, AlertDismissible |
+| **organism** | Complex, self-contained UI section | Navbar, CourseCard, DataTable |
+| **template** | Page-level wireframe composed of organisms | CourseOutlineTemplate, DashboardTemplate |
+| **page** | A fully realised route, usually a template + real data | LearnerDashboardPage, CourseHomePage |
+
+## Usage in the registry
+
+Every component MDX file must include an `atomicLevel` field in its frontmatter
+matching one of the five values above (lowercase). The registry URL structure
+mirrors this: `/registry/<atomicLevel>/<name>`.
+
+## Full taxonomy reference
+
+> The detailed taxonomy document (including edge-case classification rules and
+> worked examples for every Paragon component) lives at the repository root:
+> `docs/atomic-design-taxonomy.md`.
+>
+> That file is authored separately and linked here — it is not yet published.
+> TODO: embed or link the taxonomy doc once it is written in Phase 2a.
+
+## Further reading
+
+- [Brad Frost — Atomic Design](https://bradfrost.com/blog/post/atomic-web-design/)
+- [Paragon component catalogue](https://paragon-openedx.netlify.app/)
