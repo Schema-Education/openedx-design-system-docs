@@ -1,0 +1,25 @@
+# Dependencies
+node_modules
+.pnpm-store
+
+# Next.js build output
+.next
+out
+
+# Pagefind search index (generated at build time)
+.pagefind
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Local env files
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts

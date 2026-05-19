@@ -1,0 +1,94 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://openedx-design-system.org/schemas/component.schema.json",
+  "title": "Open edX Design System Component Schema",
+  "description": "JSON Schema for component metadata in the Open edX design system registry. Used to define component properties, source location, status, and accessibility information.",
+  "type": "object",
+  "required": [
+    "name",
+    "atomicLevel",
+    "status",
+    "sourceMfe",
+    "sourceRepo",
+    "sourcePath",
+    "version",
+    "consumers",
+    "a11y",
+    "lastIngested"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[A-Z][a-zA-Z0-9]*$",
+      "description": "Component name in PascalCase. Examples: Button, CourseCard, DashboardLayout."
+    },
+    "atomicLevel": {
+      "type": "string",
+      "enum": [
+        "atom",
+        "molecule",
+        "organism",
+        "template",
+        "page"
+      ],
+      "description": "Atomic design level of the component. See atomic-design-taxonomy.md for definitions."
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "stable",
+        "experimental",
+        "deprecated"
+      ],
+      "description": "Maturity status of the component. 'stable' = production-ready; 'experimental' = may change; 'deprecated' = do not use in new code."
+    },
+    "sourceMfe": {
+      "type": "string",
+      "description": "Repository slug without org prefix. Examples: 'frontend-app-learning', 'paragon', 'frontend-base'."
+    },
+    "sourceRepo": {
+      "type": "string",
+      "description": "Full GitHub repository slug in format 'org/repo'. Examples: 'openedx/frontend-app-learning', 'openedx/paragon'."
+    },
+    "sourcePath": {
+      "type": "string",
+      "description": "Path to component source file or directory within the source repository. Examples: 'src/Button/Button.tsx', 'src/containers/CourseCard/index.jsx'."
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$",
+      "description": "Semantic version of the component (MAJOR.MINOR.PATCH). Examples: '1.0.0', '2.1.3-beta.1'."
+    },
+    "figmaCodeConnectUrl": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "uri-reference",
+      "description": "Optional Figma Code Connect URL linking design to code. Examples: 'https://figma.com/design/...?nodeId=123:456'. Null if not yet connected."
+    },
+    "consumers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of repository slugs (without org prefix) that depend on or consume this component. Examples: ['frontend-app-learning', 'frontend-app-authoring']. Empty array if no known consumers."
+    },
+    "a11y": {
+      "type": "string",
+      "enum": [
+        "A",
+        "AA",
+        "AAA",
+        "unknown"
+      ],
+      "description": "Accessibility conformance level. 'A' = minimal WCAG conformance; 'AA' = standard; 'AAA' = enhanced; 'unknown' = not yet assessed."
+    },
+    "lastIngested": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the most recent metadata ingestion. Used to track freshness of registry data. Examples: '2026-05-19T14:30:00Z'."
+    }
+  }
+}
