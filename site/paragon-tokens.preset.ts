@@ -1,62 +1,91 @@
 /**
- * Paragon Design Token Preset for Tailwind CSS
+ * Open edX brand preset for Tailwind CSS.
  *
- * These are PLACEHOLDER values aligned with Paragon's color philosophy.
- * TODO: Replace hardcoded values with style-dictionary output once the
- *       token pipeline (ADR-0002) is wired up. Each section is annotated
- *       with the Paragon token namespace it will eventually map to.
+ * Token values are aligned with openedx.org's public brand:
+ *   - Primary: #D74000 (orange-red) — CTAs, links, accents
+ *   - Ink:     #00262B (deep teal-black) — dark surfaces, body chrome
+ *   - Accent:  #5DE3BF (mint) — secondary highlights
+ *   - Font:    Inter (loaded via next/font in app/layout.tsx)
+ *
+ * Long-term these will sync from style-dictionary output produced by Paragon.
+ * See docs/adrs/0001-nextjs-app-router-fumadocs.md for the dogfooding policy
+ * (Paragon tokens drive site chrome; Paragon components render only inside
+ * <Preview> blocks).
  */
 
 import type { Config } from 'tailwindcss';
 
-/** @see https://github.com/openedx/paragon — @openedx/paragon/src/tokens */
 const paragonPreset: Partial<Config> = {
   theme: {
     extend: {
       colors: {
-        // TODO: sync from $brand-500 / --pgn-color-primary-* style-dictionary output
+        // Brand orange-red — sampled from openedx.org primary CTA color #D74000
         primary: {
-          100: '#dbeafe',
-          200: '#bfdbfe',
-          300: '#93c5fd',
-          400: '#60a5fa',
-          500: '#3b82f6',
-          600: '#2563eb',
-          700: '#1d4ed8',
-          800: '#1e40af',
-          900: '#1e3a8a',
+          50: '#fff4ef',
+          100: '#ffe1d2',
+          200: '#ffbf9a',
+          300: '#ff9c61',
+          400: '#ff7029',
+          500: '#d74000',
+          600: '#b03600',
+          700: '#8a2a00',
+          800: '#631e00',
+          900: '#3d1200',
         },
-        // TODO: sync from $gray-* / --pgn-color-gray-* style-dictionary output
+        // Ink — sampled from openedx.org dark surfaces #00262B
+        ink: {
+          50: '#e6ecec',
+          100: '#bfcccd',
+          200: '#8ea5a7',
+          300: '#5d7e81',
+          400: '#2c5a5e',
+          500: '#00262b',
+          600: '#001f23',
+          700: '#00171a',
+          800: '#001012',
+          900: '#000809',
+        },
+        // Accent mint — secondary brand color #5DE3BF
+        accent: {
+          50: '#ecfbf6',
+          100: '#c7f4e5',
+          200: '#9eecd3',
+          300: '#74e3c0',
+          400: '#5de3bf',
+          500: '#2cc59c',
+          600: '#1f9b7a',
+          700: '#157258',
+          800: '#0c4836',
+          900: '#031f17',
+        },
+        // Neutrals — sampled from openedx.org #525A5B body, #212529 headings, #CCCCCC borders
         gray: {
-          100: '#f3f4f6',
-          200: '#e5e7eb',
-          300: '#d1d5db',
-          400: '#9ca3af',
-          500: '#6b7280',
-          600: '#4b5563',
-          700: '#374151',
-          800: '#1f2937',
-          900: '#111827',
+          50: '#fafafa',
+          100: '#f4f5f5',
+          200: '#e6e7e7',
+          300: '#cccccc',
+          400: '#a5a8a8',
+          500: '#707070',
+          600: '#525a5b',
+          700: '#3d4344',
+          800: '#212529',
+          900: '#0f1112',
         },
-        // TODO: sync from $success / --pgn-color-success-* style-dictionary output
         success: {
           DEFAULT: '#198754',
           light: '#d1e7dd',
           dark: '#0f5132',
         },
-        // TODO: sync from $danger / --pgn-color-danger-* style-dictionary output
         danger: {
           DEFAULT: '#dc3545',
           light: '#f8d7da',
           dark: '#842029',
         },
-        // TODO: sync from $info / --pgn-color-info-* style-dictionary output
         info: {
           DEFAULT: '#0dcaf0',
           light: '#cff4fc',
           dark: '#055160',
         },
-        // TODO: sync from $warning / --pgn-color-warning-* style-dictionary output
         warning: {
           DEFAULT: '#ffc107',
           light: '#fff3cd',
@@ -64,11 +93,10 @@ const paragonPreset: Partial<Config> = {
         },
       },
       fontFamily: {
-        // TODO: swap 'Inter' for Paragon's actual configured typeface once known.
-        // Paragon does not mandate a single font; consult the consuming MFE's
-        // _variables.scss for the override. Inter is a reasonable system default.
+        // Inter is loaded as a CSS variable via next/font in app/layout.tsx
+        // and exposed as --font-inter. Tailwind references that variable.
         sans: [
-          'Inter',
+          'var(--font-inter)',
           'ui-sans-serif',
           'system-ui',
           '-apple-system',
@@ -88,9 +116,6 @@ const paragonPreset: Partial<Config> = {
         ],
       },
       spacing: {
-        // TODO: sync from $spacer / --pgn-spacing-* style-dictionary output
-        // Paragon uses Bootstrap's default $spacer = 1rem base; keeping that here.
-        // Values: 0.25rem steps matching Bootstrap 5 / Paragon's utility scale
         '0.5': '0.125rem',
         '1': '0.25rem',
         '2': '0.5rem',
@@ -111,7 +136,7 @@ const paragonPreset: Partial<Config> = {
         '64': '16rem',
       },
       borderRadius: {
-        // TODO: sync from $border-radius / --pgn-border-radius-* style-dictionary output
+        // openedx.org uses a sharp/minimal radius — ~4px on buttons
         none: '0',
         sm: '0.125rem',
         DEFAULT: '0.25rem',

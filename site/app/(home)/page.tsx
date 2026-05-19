@@ -20,7 +20,6 @@ const features = [
     description:
       'Each registered component links Figma node IDs to live code via Code Connect, closing the designer–developer gap without manual sync.',
     icon: '🔗',
-    // TODO: link to the Code Connect integration doc once Phase 2b ships
     href: '/docs',
   },
 ] as const;
@@ -30,11 +29,15 @@ export default function HomePage() {
     <main className="min-h-screen bg-white">
       {/* Hero */}
       <section className="mx-auto max-w-4xl px-6 py-24 text-center">
-        <h1 className="text-5xl font-bold tracking-tight text-gray-900">
-          Open edX Design System
+        <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary-500">
+          Open edX · Design System
+        </p>
+        <h1 className="text-5xl font-bold tracking-tight text-gray-800 sm:text-6xl">
+          One design system,<br />
+          <span className="text-primary-500">every MFE.</span>
         </h1>
         <p className="mt-6 text-xl text-gray-600">
-          Atoms through pages across every Open edX MFE.
+          Atoms through pages across every Open edX micro-frontend.
         </p>
         <p className="mt-3 text-lg text-gray-500">
           A unified registry linking Paragon components, Figma designs, and live
@@ -43,13 +46,13 @@ export default function HomePage() {
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link
             href="/docs"
-            className="rounded-lg bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="rounded bg-primary-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
             Browse Docs
           </Link>
           <Link
             href="/docs/getting-started"
-            className="rounded-lg border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="rounded border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-500 hover:text-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
             Get Started
           </Link>
@@ -63,10 +66,10 @@ export default function HomePage() {
             <Link
               key={feature.title}
               href={feature.href}
-              className="group rounded-xl border border-gray-200 p-6 shadow-sm transition hover:border-primary-300 hover:shadow-md"
+              className="group rounded border border-gray-200 bg-white p-6 transition hover:border-primary-500 hover:shadow-md"
             >
               <div className="mb-4 text-3xl">{feature.icon}</div>
-              <h2 className="text-lg font-semibold text-gray-900 group-hover:text-primary-700">
+              <h2 className="text-lg font-semibold text-gray-800 group-hover:text-primary-500">
                 {feature.title}
               </h2>
               <p className="mt-2 text-sm text-gray-500">{feature.description}</p>
@@ -75,19 +78,45 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Ink band — echoes openedx.org's dark CTA strip */}
+      <section className="bg-ink-500 text-white">
+        <div className="mx-auto max-w-4xl px-6 py-16 text-center">
+          <h2 className="text-3xl font-bold tracking-tight">
+            An agentic v1 vision — open to contribution.
+          </h2>
+          <p className="mt-4 text-lg text-ink-100">
+            Schema Education, Axim Collaborative, and the Open edX provider
+            community are invited to revise the reframings and architecture
+            that shape this system.
+          </p>
+          <div className="mt-8 flex flex-wrap justify-center gap-4">
+            <a
+              href="https://github.com/Schema-Education/openedx-design-system-docs/blob/main/vision/product-vision.mdx"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded bg-accent-400 px-6 py-3 text-sm font-semibold text-ink-800 transition hover:bg-accent-300"
+            >
+              Read the product vision →
+            </a>
+            <a
+              href="https://github.com/Schema-Education/openedx-design-system-docs/blob/main/proposals/0001-mfe-component-registry.md"
+              target="_blank"
+              rel="noreferrer"
+              className="rounded border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/5"
+            >
+              ODS-RFC-0001
+            </a>
+          </div>
+        </div>
+      </section>
+
       {/* Footer */}
-      <footer className="border-t border-gray-100 py-8 text-center text-sm text-gray-400">
-        <Link
-          href="/docs"
-          className="text-primary-600 hover:underline"
-        >
-          Read the product vision →
-        </Link>
-        <p className="mt-2">
+      <footer className="border-t border-gray-200 py-8 text-center text-sm text-gray-500">
+        <p>
           Built on{' '}
           <a
             href="https://fumadocs.dev"
-            className="hover:underline"
+            className="text-primary-500 hover:underline"
             target="_blank"
             rel="noreferrer"
           >
@@ -96,11 +125,20 @@ export default function HomePage() {
           ·{' '}
           <a
             href="https://github.com/openedx/paragon"
-            className="hover:underline"
+            className="text-primary-500 hover:underline"
             target="_blank"
             rel="noreferrer"
           >
             Paragon
+          </a>{' '}
+          ·{' '}
+          <a
+            href="https://openedx.org"
+            className="text-primary-500 hover:underline"
+            target="_blank"
+            rel="noreferrer"
+          >
+            openedx.org
           </a>
         </p>
       </footer>
