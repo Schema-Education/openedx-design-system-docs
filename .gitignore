@@ -9,3 +9,4 @@ site/.source/
 site/out/
 *.tsbuildinfo
 .turbo/
+registry/crawler/dist/

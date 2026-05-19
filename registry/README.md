@@ -8,7 +8,9 @@ The registry is the authoritative manifest of Open edX design system components.
 
 **Phase 1 (Complete):** Schema definition. The JSON Schema is defined and ready for adoption by MFE repositories.
 
-**Phase 2a (In Progress):** Crawler and generator. A crawler will scan open-edx-organization repositories for `paragon.registry.json` files, validate them against the schema, and generate MDX documentation files in `/site/content/registry/{atomicLevel}/{name}.mdx`.
+**Phase 2a (Complete):** Crawler MVP using local fixtures — see `crawler/` directory.
+
+**Phase 2b (In Progress):** Connect crawler to real `paragon.registry.json` files published by MFE repos.
 
 ## How It Works
 
@@ -61,6 +63,14 @@ The file is a top-level JSON array; each entry conforms to `schema/component.sch
   }
 ]
 ```
+
+## Running the Crawler
+
+- `pnpm crawler:typecheck` — type-check
+- `pnpm crawler:test` — run tests
+- `pnpm crawler:ingest` — ingest fixtures and generate MDX in `/site/content/registry/`
+
+For detailed usage and contributing to the crawler, see `./crawler/README.md`.
 
 ## Related Proposals
 
