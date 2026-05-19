@@ -1,8 +1,10 @@
 ---
 title: Open edX Design System — Product Vision
 status: draft
+documentNature: agentic-v1
 authors:
   - Schema Education
+contributors: Open — Schema, Axim Collaborative, Open edX providers, and community contributors are invited to revise
 audience: [Axim Collaborative, Open edX providers, Open edX MFE maintainers, designers, PMs]
 phase: 2
 lastUpdated: 2026-05-19
@@ -10,13 +12,15 @@ lastUpdated: 2026-05-19
 
 # Open edX Design System — Product Vision
 
+> **Agentic v1 working document.** This vision was drafted as a starting point synthesized from early conversations between Schema Education and Axim Collaborative. It is posted in draft form so Schema, Axim, Open edX providers, and the wider community can revise, challenge, or extend the reframings and architecture below. Treat any specific framing here as a proposal open to revision, not a settled position. Authorship and ratification of the ideas remain with the contributing community.
+
 ---
 
 ## 1. Executive Summary / TL;DR
 
 The Open edX ecosystem has a design system problem that Paragon alone cannot solve. Paragon covers atoms and molecules with discipline, but the components that define the learner and author experience — course cards, dashboard layouts, instructor navigation, the courseware search experience — live scattered across a dozen MFE repositories with no shared language, no discoverability, and no connection to the Figma files that designers and PMs use every day. Phase 2 of Schema Education's design system work reframes the problem entirely: the MFE codebases are already the source of truth, and the job is to build the infrastructure that makes them readable, navigable, and synchronized with design tools without imposing a heavy governance tax on maintainers.
 
-Five reframings, developed in conversation with Brian Smith at Axim Collaborative, define this phase:
+Five reframings — proposed in this v1 draft and open to revision by Schema, Axim Collaborative, and the wider Open edX community — define this phase:
 
 1. **Code over Figma** — MFE repositories, not Figma files, are the authoritative source for the component taxonomy.
 2. **Registry as backbone** — Components get registered and classified by atomic level through a lightweight manifest, not through documentation written by hand.
@@ -67,7 +71,7 @@ Open edX's provider ecosystem — OpenCraft, eduNEXT, Edly, Raccoon Gang, Appsem
 
 ---
 
-## 3. The Shift in Thinking: Brian Smith's Five Reframings
+## 3. The Shift in Thinking: Five Phase 2 Reframings
 
 ### 3.1 From Figma as Source of Truth → Code as Source of Truth
 
