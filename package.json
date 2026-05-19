@@ -5,7 +5,10 @@
   "scripts": {
     "build": "pnpm --filter @openedx-design-system/site build",
     "dev": "pnpm --filter @openedx-design-system/site dev",
-    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore '**/site/.next/**'"
+    "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore '**/site/.next/**'",
+    "crawler:test": "pnpm --filter @openedx-design-system/crawler test",
+    "crawler:typecheck": "pnpm --filter @openedx-design-system/crawler typecheck",
+    "crawler:ingest": "pnpm --filter @openedx-design-system/crawler ingest:fixtures"
   },
   "devDependencies": {
     "markdownlint-cli": "^0.41.0"

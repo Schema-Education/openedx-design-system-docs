@@ -1,4 +1,4 @@
-# TODO: add ajv schema validation for registry/ once registry pipeline lands
+# schema validation now runs via @openedx-design-system/crawler validate during typecheck and tests
 
 name: CI
 
@@ -41,3 +41,12 @@ jobs:
       - name: Lint Markdown
         run: pnpm lint:md
         continue-on-error: true
+
+      - name: Crawler typecheck
+        run: pnpm --filter @openedx-design-system/crawler typecheck
+
+      - name: Crawler tests
+        run: pnpm --filter @openedx-design-system/crawler test
+
+      - name: Crawler fixture ingestion (smoke test)
+        run: pnpm --filter @openedx-design-system/crawler ingest:fixtures

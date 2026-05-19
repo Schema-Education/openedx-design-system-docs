@@ -1,0 +1,67 @@
+[
+  {
+    "name": "CoursewareSearch",
+    "atomicLevel": "page",
+    "status": "stable",
+    "sourceMfe": "frontend-app-learning",
+    "sourceRepo": "openedx/frontend-app-learning",
+    "sourcePath": "src/course-home/courseware-search/CoursewareSearch.jsx",
+    "version": "5.0.0",
+    "figmaCodeConnectUrl": null,
+    "consumers": [],
+    "a11y": "AA",
+    "lastIngested": "2026-05-19T00:00:00Z"
+  },
+  {
+    "name": "CourseTabsNavigation",
+    "atomicLevel": "organism",
+    "status": "stable",
+    "sourceMfe": "frontend-app-learning",
+    "sourceRepo": "openedx/frontend-app-learning",
+    "sourcePath": "src/course-tabs/CourseTabsNavigation.tsx",
+    "version": "5.0.0",
+    "figmaCodeConnectUrl": null,
+    "consumers": ["frontend-app-discussions"],
+    "a11y": "AA",
+    "lastIngested": "2026-05-19T00:00:00Z"
+  },
+  {
+    "name": "CoursewareSearchForm",
+    "atomicLevel": "molecule",
+    "status": "stable",
+    "sourceMfe": "frontend-app-learning",
+    "sourceRepo": "openedx/frontend-app-learning",
+    "sourcePath": "src/course-home/courseware-search/CoursewareSearchForm.jsx",
+    "version": "5.0.0",
+    "figmaCodeConnectUrl": null,
+    "consumers": [],
+    "a11y": "A",
+    "lastIngested": "2026-05-19T00:00:00Z"
+  },
+  {
+    "name": "CoursewareSearchResults",
+    "atomicLevel": "organism",
+    "status": "stable",
+    "sourceMfe": "frontend-app-learning",
+    "sourceRepo": "openedx/frontend-app-learning",
+    "sourcePath": "src/course-home/courseware-search/CoursewareSearchResults.jsx",
+    "version": "5.0.0",
+    "figmaCodeConnectUrl": null,
+    "consumers": [],
+    "a11y": "AA",
+    "lastIngested": "2026-05-19T00:00:00Z"
+  },
+  {
+    "name": "CourseTabLink",
+    "atomicLevel": "molecule",
+    "status": "stable",
+    "sourceMfe": "frontend-app-learning",
+    "sourceRepo": "openedx/frontend-app-learning",
+    "sourcePath": "src/course-tabs/CourseTabLink.tsx",
+    "version": "5.0.0",
+    "figmaCodeConnectUrl": null,
+    "consumers": [],
+    "a11y": "AA",
+    "lastIngested": "2026-05-19T00:00:00Z"
+  }
+]

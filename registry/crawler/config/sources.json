@@ -1,0 +1,10 @@
+{
+  "sources": [
+    {
+      "name": "frontend-app-learning",
+      "ref": "fixture",
+      "manifestUrl": "file://./fixtures/frontend-app-learning.registry.json",
+      "description": "Pilot MFE for Phase 2a — uses local fixture until upstream adopts paragon.registry.json"
+    }
+  ]
+}
