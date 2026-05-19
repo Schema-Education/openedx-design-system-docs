@@ -13,6 +13,17 @@ const config = {
     unoptimized: true,
   },
   reactStrictMode: true,
+  productionBrowserSourceMaps: false,
+  experimental: {
+    optimizePackageImports: [
+      'fumadocs-ui',
+      'fumadocs-core',
+      'lucide-react',
+    ],
+  },
+  turbopack: {
+    root: path.join(__dirname, '..'),
+  },
 };
 
 export default withMDX(config);
