@@ -13,6 +13,14 @@ const config: Config = {
   theme: {
     extend: {},
   },
+  // Atomic-level colors are referenced via the ATOMIC_LEVEL_META map in lib/gallery.ts,
+  // so Tailwind's static scanner can't see them. Safelist the full palette.
+  safelist: [
+    {
+      pattern:
+        /(bg|text|ring|from|to)-(sky|emerald|violet|amber|rose)-(100|200|300|400|600|700|800)/,
+    },
+  ],
   plugins: [],
 };
 

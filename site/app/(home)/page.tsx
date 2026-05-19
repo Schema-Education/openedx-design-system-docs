@@ -13,7 +13,7 @@ const features = [
     description:
       'Registry spans frontend-app-learning, frontend-app-authoring, frontend-app-course-authoring, and 10+ other Open edX MFEs — one source of truth.',
     icon: '🗂',
-    href: '/docs/getting-started',
+    href: '/registry',
   },
   {
     title: 'Figma Code Connect',
@@ -45,16 +45,16 @@ export default function HomePage() {
         </p>
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link
-            href="/docs"
+            href="/registry"
             className="rounded bg-primary-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
-            Browse Docs
+            Browse the gallery →
           </Link>
           <Link
-            href="/docs/getting-started"
+            href="/docs"
             className="rounded border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-500 hover:text-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
-            Get Started
+            Docs &amp; Vision
           </Link>
         </div>
       </section>
