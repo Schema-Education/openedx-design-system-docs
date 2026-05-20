@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
   type GalleryComponent,
 } from '@/lib/gallery';
 import { UsageTab } from './component-usage';
+import { PARAGON_PREVIEWS } from './paragon-previews';
 
 export type DetailTab = 'overview' | 'usage' | 'metadata' | 'issues';
 
@@ -148,7 +149,11 @@ function DetailBody({
         }`}
       >
         {tab === 'overview' && (
-          <OverviewTab c={component} onSelectConsumer={onSelectConsumer} />
+          <OverviewTab
+            c={component}
+            onSelectConsumer={onSelectConsumer}
+            onShowVariants={() => setTab('usage')}
+          />
         )}
         {tab === 'usage' && <UsageTab c={component} />}
         {tab === 'metadata' && <MetadataTab c={component} />}
@@ -161,9 +166,11 @@ function DetailBody({
 function OverviewTab({
   c,
   onSelectConsumer,
+  onShowVariants,
 }: {
   c: GalleryComponent;
   onSelectConsumer?: (mfe: string) => void;
+  onShowVariants: () => void;
 }) {
   const fileUrl = `https://github.com/${c.sourceRepo}/blob/main/${c.sourcePath}`;
   const hasFigma = c.figmaCodeConnectUrl || c.figmaLibraryUrl;
@@ -172,7 +179,7 @@ function OverviewTab({
   return (
     <div className="space-y-3">
       {/* Preview frame */}
-      <ComponentPreview c={c} />
+      <ComponentPreview c={c} onShowVariants={onShowVariants} />
 
       {/* Deprecation banner */}
       {c.status === 'deprecated' && (
@@ -220,18 +227,58 @@ function OverviewTab({
 }
 
 /**
- * Inset preview frame. For now this renders a placeholder card; Phase 2
- * (ADR-0001) will wire in Sandpack for actual component rendering. Components
- * we know how to render inline can be added to the renderInlinePreview
- * switch over time.
+ * Inset preview frame. Renders the same default preview the card shows (from
+ * PARAGON_PREVIEWS) when one is registered for this component, otherwise falls
+ * back to the placeholder. A "Show variants" icon in the top-right jumps to
+ * the Usage tab where the full state matrix lives.
  */
-function ComponentPreview({ c }: { c: GalleryComponent }) {
+function ComponentPreview({
+  c,
+  onShowVariants,
+}: {
+  c: GalleryComponent;
+  onShowVariants: () => void;
+}) {
   const atomic = ATOMIC_LEVEL_META[c.atomicLevel];
+  const previewRender =
+    c.sourceMfe === 'paragon' ? PARAGON_PREVIEWS[c.name] : undefined;
+  let previewNode: ReactNode = null;
+  if (previewRender) {
+    try {
+      previewNode = previewRender();
+    } catch {
+      previewNode = null;
+    }
+  }
   return (
     <div className="relative overflow-hidden rounded-md border border-gray-200 bg-gray-50">
-      <div className="flex h-32 items-center justify-center">
-        <PreviewPlaceholder c={c} atomicGradient={atomic.gradient} />
+      <div className="flex h-32 items-center justify-center px-4">
+        {previewNode ?? (
+          <PreviewPlaceholder c={c} atomicGradient={atomic.gradient} />
+        )}
       </div>
+      <button
+        type="button"
+        onClick={onShowVariants}
+        title="Show variants"
+        aria-label="Show variants"
+        className="absolute right-2 top-2 z-10 inline-flex items-center gap-1 rounded-full border border-gray-200 bg-white/90 px-2 py-1 text-[10px] font-medium text-gray-700 shadow-sm transition hover:bg-white hover:text-gray-900 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+      >
+        <svg
+          className="h-3 w-3"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden
+        >
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </svg>
+        Show variants
+      </button>
     </div>
   );
 }
