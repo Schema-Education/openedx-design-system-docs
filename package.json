@@ -13,5 +13,10 @@
   "devDependencies": {
     "markdownlint-cli": "^0.41.0"
   },
-  "packageManager": "pnpm@9.0.0"
+  "packageManager": "pnpm@9.0.0",
+  "pnpm": {
+    "patchedDependencies": {
+      "react-transition-group@4.4.5": "patches/react-transition-group@4.4.5.patch"
+    }
+  }
 }
