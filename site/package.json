@@ -16,14 +16,14 @@
     "deploy": "pnpm build && wrangler deploy --config ../wrangler.toml"
   },
   "dependencies": {
-    "@base-ui/react": "^1.5.0",
+    "@base-ui/react": "^1.4.1",
     "@headlessui/react": "^2.2.10",
     "@openedx/paragon": "^23.22.0",
     "@sdaitzman/prototype-devbar": "^1.2.0",
     "fumadocs-core": "^14.5.0",
     "fumadocs-mdx": "^11.5.0",
     "fumadocs-ui": "^14.5.0",
-    "lucide-react": "^1.16.0",
+    "lucide-react": "^1.14.0",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
