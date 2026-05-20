@@ -172,7 +172,7 @@ function OverviewTab({
   onSelectConsumer?: (mfe: string) => void;
   onShowVariants: () => void;
 }) {
-  const fileUrl = `https://github.com/${c.sourceRepo}/blob/main/${c.sourcePath}`;
+  const fileUrl = `https://github.com/${c.sourceRepo}/blob/HEAD/${c.sourcePath}`;
   const hasFigma = c.figmaCodeConnectUrl || c.figmaLibraryUrl;
   const importPkg = c.sourceMfe === 'paragon' ? 'paragon' : c.sourceMfe;
 
