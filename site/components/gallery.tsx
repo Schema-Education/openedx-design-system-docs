@@ -1,7 +1,6 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Button } from '@openedx/paragon';
 import { ComponentCard } from './component-card';
 import { ComponentDetail } from './component-detail';
 import { MultiSelectCombobox } from './ui/multi-select-combobox';
@@ -174,42 +173,6 @@ export function Gallery({ components }: GalleryProps) {
 
   return (
     <>
-      {/* Top app header — full-width white bar with logo, page title, actions */}
-      <header className="sticky top-0 z-30 border-b border-gray-200 bg-white">
-        <div className="mx-auto flex h-14 max-w-[1650px] items-center justify-between gap-4 px-6">
-          <div className="flex items-center gap-3">
-            <a href="/" className="flex items-center gap-3" aria-label="Open edX Design System home">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/openedx-logo.svg"
-                alt="Open edX"
-                width={132}
-                height={39}
-                className="h-7 w-auto"
-              />
-              <span className="hidden border-l border-gray-300 pl-3 text-sm font-medium text-gray-700 sm:inline">
-                Design System <span className="ml-1 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800">POC</span>
-              </span>
-            </a>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button as="a" href="/docs" variant="outline-primary" size="sm">
-              Docs &amp; Vision
-            </Button>
-            <Button
-              as="a"
-              href="https://github.com/openedx/paragon"
-              target="_blank"
-              rel="noreferrer"
-              variant="outline-primary"
-              size="sm"
-            >
-              Paragon repo ↗
-            </Button>
-          </div>
-        </div>
-      </header>
-
       {/* Page title row — inside content frame */}
       <div className="mx-auto max-w-[1650px] px-6 pt-6">
         <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
@@ -224,7 +187,7 @@ export function Gallery({ components }: GalleryProps) {
       </div>
 
       {/* Subnav — full-width divider, tabs constrained to content frame, sticky below app header */}
-      <div className="sticky top-14 z-20 border-b border-gray-200 bg-gray-50/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/80">
+      <div className="sticky top-16 z-20 border-b border-gray-200 bg-gray-50/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/80">
         <div className="mx-auto max-w-[1650px] px-6">
           <div role="tablist" aria-label="Atomic level" className="flex flex-wrap gap-1">
             {tabs.map((tab) => {
