@@ -12,6 +12,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--port", "3002"],
       "port": 3002
+    },
+    {
+      "name": "site-dev-devbar",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--port", "3003"],
+      "port": 3003
     }
   ]
 }

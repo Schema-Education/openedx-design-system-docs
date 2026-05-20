@@ -9,6 +9,9 @@ const config: Config = {
     './content/**/*.{md,mdx}',
     // Include fumadocs-ui components so their classes aren't purged
     './node_modules/fumadocs-ui/dist/**/*.js',
+    // Prototype devbar ships compiled JS with Tailwind utility class names;
+    // its peer is Tailwind v4 but the utilities themselves work in v3.
+    './node_modules/@sdaitzman/prototype-devbar/dist/**/*.js',
   ],
   theme: {
     extend: {},
