@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
@@ -24,7 +25,24 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
     component.sourceMfe === 'paragon'
       ? PARAGON_PREVIEWS[component.name]
       : undefined;
-  const previewNode = previewRender ? previewRender() : null;
+  let previewNode: ReactNode = null;
+  if (previewRender) {
+    try {
+      previewNode = previewRender();
+    } catch (err) {
+      if (typeof window === 'undefined') {
+        // eslint-disable-next-line no-console
+        console.warn(`[preview] ${component.name} threw during SSR:`, err);
+      }
+      previewNode = null;
+    }
+  }
+
+  const isMfe = component.sourceMfe !== 'paragon';
+  const sourceUrl =
+    isMfe && component.sourceRepo
+      ? `https://github.com/${component.sourceRepo}/tree/main/${component.sourcePath}`
+      : null;
 
   return (
     <div
@@ -48,6 +66,17 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
         >
           {atomic.label}
         </span>
+        {sourceUrl ? (
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-2 right-2 z-20 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-gray-700 shadow-sm hover:bg-white hover:text-gray-900"
+          >
+            View source ↗
+          </a>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col p-4">
