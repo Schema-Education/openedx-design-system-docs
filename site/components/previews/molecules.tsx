@@ -16,7 +16,6 @@ import {
   IconButtonToggle,
   SearchField,
   SelectableBox,
-  Toast,
   ValidationMessage,
 } from '@openedx/paragon';
 import { Settings } from '@openedx/paragon/icons';
@@ -48,9 +47,15 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
     </PreviewSlot>
   ),
   Toast: () => (
-    <Toast onClose={() => undefined} show>
-      Saved
-    </Toast>
+    <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-md bg-gray-800 px-3 py-1.5 text-xs text-white shadow-md">
+      <span>Saved</span>
+      <span
+        aria-hidden
+        className="flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none text-white/80"
+      >
+        ×
+      </span>
+    </div>
   ),
   Card: () => (
     <PreviewSlot width={200}>
