@@ -268,8 +268,8 @@ export function Gallery({ components }: GalleryProps) {
                 placeholder="Search sources…"
               />
               <div className="ml-auto flex items-center gap-2">
-                <ViewModeToggle value={viewMode} onChange={setViewMode} />
                 <GroupByListbox value={groupBy} onChange={setGroupBy} />
+                <ViewModeToggle value={viewMode} onChange={setViewMode} />
               </div>
 
             </div>
@@ -363,7 +363,7 @@ function ViewModeToggle({
   onChange: (v: ViewMode) => void;
 }) {
   const baseBtn =
-    'flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium transition focus:outline-none focus-visible:z-10 focus-visible:ring-1 focus-visible:ring-gray-500';
+    'flex h-7 w-7 items-center justify-center transition focus:outline-none focus-visible:z-10 focus-visible:ring-1 focus-visible:ring-gray-500';
   return (
     <div
       role="group"
@@ -374,6 +374,8 @@ function ViewModeToggle({
         type="button"
         onClick={() => onChange('card')}
         aria-pressed={value === 'card'}
+        aria-label="Card view"
+        title="Card view"
         className={`${baseBtn} ${
           value === 'card'
             ? 'bg-gray-100 text-gray-900'
@@ -386,12 +388,13 @@ function ViewModeToggle({
           <rect x="3" y="14" width="7" height="7" rx="1" />
           <rect x="14" y="14" width="7" height="7" rx="1" />
         </svg>
-        <span>Cards</span>
       </button>
       <button
         type="button"
         onClick={() => onChange('list')}
         aria-pressed={value === 'list'}
+        aria-label="List view"
+        title="List view"
         className={`${baseBtn} border-l border-gray-300 ${
           value === 'list'
             ? 'bg-gray-100 text-gray-900'
@@ -403,7 +406,6 @@ function ViewModeToggle({
           <path d="M4 12h16" />
           <path d="M4 18h16" />
         </svg>
-        <span>List</span>
       </button>
     </div>
   );
