@@ -11,14 +11,18 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.10",
+    "@openedx/paragon": "^23.22.0",
     "fumadocs-core": "^14.5.0",
     "fumadocs-mdx": "^11.5.0",
     "fumadocs-ui": "^14.5.0",
     "next": "^15.3.0",
     "react": "^19.1.0",
-    "react-dom": "^19.1.0"
+    "react-dom": "^19.1.0",
+    "react-intl": "^10.1.8"
   },
   "devDependencies": {
+    "@edx/browserslist-config": "^1.5.1",
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",

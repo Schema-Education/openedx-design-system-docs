@@ -1,8 +1,11 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import { Button } from '@openedx/paragon';
 import { ComponentCard } from './component-card';
 import { ComponentDetail } from './component-detail';
+import { MultiSelectCombobox } from './ui/multi-select-combobox';
+import { AtomicLevelSegmented } from './ui/atomic-level-segmented';
 import {
   ATOMIC_LEVELS,
   ATOMIC_LEVEL_META,
@@ -50,6 +53,63 @@ export function Gallery({ components }: GalleryProps) {
     });
   }, [components, search, selectedLevels, selectedStatuses, selectedCategories, selectedMfes]);
 
+  // Per-option counts and disabled-level set for the new filter controls.
+  // countWithout(dimension, value) returns the number of components that
+  // would match if all OTHER active filters apply but this dimension is
+  // treated as "matches value".
+  const { levelCounts, disabledLevels, statusOptions, categoryOptions, mfeOptions } = useMemo(() => {
+    function countWithout<T>(
+      dimension: 'level' | 'status' | 'category' | 'mfe',
+      value: T,
+    ): number {
+      const q = search.trim().toLowerCase();
+      return components.filter((c) => {
+        if (dimension !== 'level' && selectedLevels.size > 0 && !selectedLevels.has(c.atomicLevel)) return false;
+        if (dimension !== 'status' && selectedStatuses.size > 0 && !selectedStatuses.has(c.status)) return false;
+        if (dimension !== 'category' && selectedCategories.size > 0 && !selectedCategories.has(c.functionalCategory)) return false;
+        if (dimension !== 'mfe' && selectedMfes.size > 0 && !selectedMfes.has(c.sourceMfe)) return false;
+        if (q) {
+          const hay = `${c.name} ${c.description} ${c.sourceMfe} ${c.functionalCategory}`.toLowerCase();
+          if (!hay.includes(q)) return false;
+        }
+        if (dimension === 'level') return c.atomicLevel === value;
+        if (dimension === 'status') return c.status === value;
+        if (dimension === 'category') return c.functionalCategory === value;
+        if (dimension === 'mfe') return c.sourceMfe === value;
+        return true;
+      }).length;
+    }
+
+    const levelCounts = Object.fromEntries(
+      ATOMIC_LEVELS.map((lvl) => [lvl, countWithout('level', lvl)]),
+    ) as Record<AtomicLevel, number>;
+
+    const disabledLevels = new Set(
+      ATOMIC_LEVELS.filter((lvl) => levelCounts[lvl] === 0),
+    );
+
+    const statusOptions = STATUSES.map((s) => ({
+      value: s,
+      label: STATUS_META[s].label,
+      count: countWithout('status', s),
+      color: STATUS_META[s].color,
+    }));
+
+    const categoryOptions = FUNCTIONAL_CATEGORIES.map((cat) => ({
+      value: cat,
+      label: cat,
+      count: countWithout('category', cat),
+    }));
+
+    const mfeOptions = allMfes.map((mfe) => ({
+      value: mfe,
+      label: mfe,
+      count: countWithout('mfe', mfe),
+    }));
+
+    return { levelCounts, disabledLevels, statusOptions, categoryOptions, mfeOptions };
+  }, [components, search, selectedLevels, selectedStatuses, selectedCategories, selectedMfes, allMfes]);
+
   // Group filtered results
   const grouped = useMemo(() => {
     if (groupBy === 'flat') {
@@ -85,13 +145,6 @@ export function Gallery({ components }: GalleryProps) {
     return entries;
   }, [filtered, groupBy]);
 
-  function toggle<T>(set: Set<T>, item: T, setFn: (s: Set<T>) => void) {
-    const next = new Set(set);
-    if (next.has(item)) next.delete(item);
-    else next.add(item);
-    setFn(next);
-  }
-
   function clearAll() {
     setSelectedLevels(new Set());
     setSelectedStatuses(new Set(['stable', 'experimental']));
@@ -117,12 +170,12 @@ export function Gallery({ components }: GalleryProps) {
           </p>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-500">
-          <a href="/docs" className="rounded-md border border-gray-200 px-3 py-1.5 font-medium hover:bg-gray-50">
+          <Button as="a" href="/docs" variant="outline-primary" size="sm">
             Docs &amp; Vision
-          </a>
-          <a href="https://github.com/openedx/paragon" target="_blank" rel="noreferrer" className="rounded-md border border-gray-200 px-3 py-1.5 font-medium hover:bg-gray-50">
+          </Button>
+          <Button as="a" href="https://github.com/openedx/paragon" target="_blank" rel="noreferrer" variant="outline-primary" size="sm">
             Paragon repo ↗
-          </a>
+          </Button>
         </div>
       </div>
 
@@ -165,63 +218,40 @@ export function Gallery({ components }: GalleryProps) {
         )}
       </div>
 
-      {/* Filter chips */}
-      <div className="mb-6 space-y-2">
-        <FilterRow label="Atomic level">
-          {ATOMIC_LEVELS.map((lvl) => (
-            <Chip
-              key={lvl}
-              active={selectedLevels.has(lvl)}
-              onClick={() => toggle(selectedLevels, lvl, setSelectedLevels)}
-              color={ATOMIC_LEVEL_META[lvl].color}
-            >
-              {ATOMIC_LEVEL_META[lvl].label}
-            </Chip>
-          ))}
-        </FilterRow>
-        <FilterRow label="Status">
-          {STATUSES.map((s) => (
-            <Chip
-              key={s}
-              active={selectedStatuses.has(s)}
-              onClick={() => toggle(selectedStatuses, s, setSelectedStatuses)}
-              color={STATUS_META[s].color}
-            >
-              {STATUS_META[s].label}
-            </Chip>
-          ))}
-        </FilterRow>
-        <FilterRow label="Source MFE">
-          {allMfes.map((mfe) => (
-            <Chip
-              key={mfe}
-              active={selectedMfes.has(mfe)}
-              onClick={() => toggle(selectedMfes, mfe, setSelectedMfes)}
-              color="bg-gray-100 text-gray-700"
-            >
-              {mfe}
-            </Chip>
-          ))}
-        </FilterRow>
-        <details className="text-xs">
-          <summary className="cursor-pointer text-gray-500 hover:text-gray-800">
-            More filters: functional category
-          </summary>
-          <div className="mt-2">
-            <FilterRow label="Category">
-              {FUNCTIONAL_CATEGORIES.map((cat) => (
-                <Chip
-                  key={cat}
-                  active={selectedCategories.has(cat)}
-                  onClick={() => toggle(selectedCategories, cat, setSelectedCategories)}
-                  color="bg-gray-100 text-gray-700"
-                >
-                  {cat}
-                </Chip>
-              ))}
-            </FilterRow>
-          </div>
-        </details>
+      {/* Atomic level segmented */}
+      <div className="mb-3">
+        <AtomicLevelSegmented
+          levels={ATOMIC_LEVELS}
+          selected={selectedLevels}
+          onChange={setSelectedLevels}
+          disabledLevels={disabledLevels}
+          counts={levelCounts}
+        />
+      </div>
+
+      {/* Status / Category / Source MFE multi-selects */}
+      <div className="mb-6 flex flex-wrap items-center gap-2">
+        <MultiSelectCombobox
+          label="Status"
+          options={statusOptions}
+          selected={selectedStatuses}
+          onChange={setSelectedStatuses}
+          placeholder="Search statuses…"
+        />
+        <MultiSelectCombobox
+          label="Category"
+          options={categoryOptions}
+          selected={selectedCategories}
+          onChange={setSelectedCategories}
+          placeholder="Search categories…"
+        />
+        <MultiSelectCombobox
+          label="Source MFE"
+          options={mfeOptions}
+          selected={selectedMfes}
+          onChange={setSelectedMfes}
+          placeholder="Search MFEs…"
+        />
       </div>
 
       {/* Result count */}
@@ -261,48 +291,5 @@ export function Gallery({ components }: GalleryProps) {
         }}
       />
     </div>
-  );
-}
-
-function FilterRow({
-  label,
-  children,
-}: {
-  label: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="flex flex-wrap items-center gap-1.5">
-      <span className="mr-2 w-24 shrink-0 text-[11px] font-semibold uppercase tracking-wide text-gray-500">
-        {label}
-      </span>
-      {children}
-    </div>
-  );
-}
-
-function Chip({
-  active,
-  onClick,
-  color,
-  children,
-}: {
-  active: boolean;
-  onClick: () => void;
-  color: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`rounded-full px-2.5 py-0.5 text-xs font-medium transition ${
-        active
-          ? `${color} ring-2 ring-offset-1 ring-gray-400`
-          : `${color} opacity-60 hover:opacity-100`
-      }`}
-    >
-      {children}
-    </button>
   );
 }

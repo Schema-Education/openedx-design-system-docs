@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import { RootProvider } from 'fumadocs-ui/provider';
+import '@openedx/paragon/dist/core.min.css';
+import '@openedx/paragon/dist/light.min.css';
 import './globals.css';
+import ParagonIntlProvider from './intl-provider';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -26,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
       <body className="font-sans antialiased text-gray-600 bg-white">
-        <RootProvider>{children}</RootProvider>
+        <RootProvider>
+            <ParagonIntlProvider>{children}</ParagonIntlProvider>
+          </RootProvider>
       </body>
     </html>
   );
