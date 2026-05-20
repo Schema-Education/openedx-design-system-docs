@@ -149,7 +149,15 @@ export const ATOM_PREVIEWS: Record<string, () => ReactNode> = {
     </PreviewSlot>
   ),
   AvatarButton: () => (
-    <AvatarButton src="" onClick={() => undefined}>
+    // Paragon's Avatar falls back to a bundled SVG when src is empty; that
+    // bundled import is a StaticImageData object under Next.js (rather than
+    // a URL string as Paragon expects), and React stringifies it to
+    // "[object Object]" — producing a 404 on every page load. Pass an
+    // explicit data-URI so the fallback path isn't taken.
+    <AvatarButton
+      src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' fill='%236366f1'/%3E%3Ctext x='16' y='21' font-family='sans-serif' font-size='14' fill='white' text-anchor='middle'%3EU%3C/text%3E%3C/svg%3E"
+      onClick={() => undefined}
+    >
       User
     </AvatarButton>
   ),
