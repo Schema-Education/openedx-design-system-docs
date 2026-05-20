@@ -299,10 +299,10 @@ export function Gallery({ components }: GalleryProps) {
                   <span className="font-mono text-xs font-normal text-gray-600">{group.items.length}</span>
                 </h2>
                 <div
-                  className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${
+                  className={`grid grid-cols-1 gap-5 sm:grid-cols-2 ${
                     selected
-                      ? 'lg:grid-cols-2 xl:grid-cols-3'
-                      : 'lg:grid-cols-3 xl:grid-cols-4'
+                      ? 'lg:grid-cols-1 xl:grid-cols-2'
+                      : 'lg:grid-cols-2 xl:grid-cols-3'
                   }`}
                 >
                   {group.items.map((c) => (
