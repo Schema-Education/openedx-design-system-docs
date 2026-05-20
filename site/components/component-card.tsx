@@ -26,6 +26,12 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
       : undefined;
   const previewNode = previewRender ? previewRender() : null;
 
+  const isMfe = component.sourceMfe !== 'paragon';
+  const sourceUrl =
+    isMfe && component.sourceRepo
+      ? `https://github.com/${component.sourceRepo}/tree/main/${component.sourcePath}`
+      : null;
+
   return (
     <div
       className={`group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:border-gray-300 hover:shadow-md focus-within:ring-2 focus-within:ring-offset-2 ${atomic.ring}`}
@@ -48,6 +54,17 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
         >
           {atomic.label}
         </span>
+        {sourceUrl ? (
+          <a
+            href={sourceUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(e) => e.stopPropagation()}
+            className="absolute bottom-2 right-2 z-20 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-gray-700 shadow-sm hover:bg-white hover:text-gray-900"
+          >
+            View source ↗
+          </a>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col p-4">
