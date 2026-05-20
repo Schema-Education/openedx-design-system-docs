@@ -1,3 +1,5 @@
 packages:
   - 'site'
   - 'registry/crawler'
+
+minimumReleaseAge: 10080
