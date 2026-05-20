@@ -7,6 +7,7 @@ import {
   type GalleryComponent,
 } from '@/lib/gallery';
 import { PARAGON_PREVIEWS } from './paragon-previews';
+import { useInViewport } from '@/lib/use-in-viewport';
 
 interface ComponentCardProps {
   component: GalleryComponent;
@@ -29,8 +30,16 @@ export const ComponentCard = memo(function ComponentCard({
     .replace(/^DataTable\./, '')
     .charAt(0);
 
+  // Lazy-render the live Paragon preview only after the card scrolls into
+  // (or near) the viewport. Until then the gradient/initial placeholder
+  // stands in for the live render. This:
+  //   - cuts the initial render cost on /registry by 100+ live Paragon
+  //     subtrees (cards mostly stay off-screen at first paint), and
+  //   - skips SSR of Paragon Form components entirely, which avoids the
+  //     module-counter-based hydration mismatch tracked in #71.
+  const [cardRef, isVisible] = useInViewport<HTMLDivElement>();
   const previewRender =
-    component.sourceMfe === 'paragon'
+    isVisible && component.sourceMfe === 'paragon'
       ? PARAGON_PREVIEWS[component.name]
       : undefined;
   let previewNode: ReactNode = null;
@@ -54,6 +63,7 @@ export const ComponentCard = memo(function ComponentCard({
 
   return (
     <div
+      ref={cardRef}
       aria-current={isSelected ? 'true' : undefined}
       className={`group relative flex h-full w-full flex-col overflow-hidden rounded-xl bg-white text-left transition focus-within:ring-2 focus-within:ring-offset-2 ${
         isSelected ? '' : atomic.ring
