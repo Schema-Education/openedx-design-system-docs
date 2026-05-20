@@ -2,21 +2,33 @@
 
 import type { ReactNode } from 'react';
 import {
+  ActionRow,
   Alert,
   Avatar,
   Badge,
   Breadcrumb,
   Button,
+  ButtonGroup,
   Card as PCard,
   Chip,
+  CloseButton,
+  Collapsible,
+  Dropdown,
   Form,
   Hyperlink,
   Icon,
   IconButton,
+  Pagination,
   ProgressBar,
   SearchField,
+  Skeleton,
   Spinner,
+  StatefulButton,
+  Stepper,
+  Tab,
+  Tabs,
   Toast,
+  ToggleButton,
 } from '@openedx/paragon';
 import { Check, Settings } from '@openedx/paragon/icons';
 
@@ -85,5 +97,109 @@ export const PARAGON_PREVIEWS: Record<string, () => ReactNode> = {
         Enabled
       </Form.Switch>
     </Form>
+  ),
+  'Form.Switch': () => (
+    <Form style={{ width: 180 }}>
+      <Form.Switch checked onChange={() => undefined}>
+        Enabled
+      </Form.Switch>
+    </Form>
+  ),
+  CloseButton: () => <CloseButton onClick={() => undefined} />,
+  ButtonGroup: () => (
+    <ButtonGroup size="sm">
+      <Button variant="outline-primary">Day</Button>
+      <Button variant="outline-primary">Week</Button>
+      <Button variant="outline-primary">Month</Button>
+    </ButtonGroup>
+  ),
+  ActionRow: () => (
+    <ActionRow>
+      <Button variant="tertiary" size="sm">
+        Cancel
+      </Button>
+      <Button variant="primary" size="sm">
+        Confirm
+      </Button>
+    </ActionRow>
+  ),
+  Skeleton: () => (
+    <div style={{ width: 200 }}>
+      <Skeleton height={12} count={3} />
+    </div>
+  ),
+  Stepper: () => (
+    <div style={{ width: 260 }}>
+      <Stepper activeKey="review">
+        <Stepper.Step eventKey="setup" title="Setup" />
+        <Stepper.Step eventKey="review" title="Review" />
+        <Stepper.Step eventKey="done" title="Done" />
+        <Stepper.Header />
+      </Stepper>
+    </div>
+  ),
+  Pagination: () => (
+    <Pagination
+      paginationLabel="preview"
+      pageCount={5}
+      currentPage={2}
+      onPageSelect={() => undefined}
+      variant="reduced"
+      size="small"
+      icons={{
+        leftIcon: undefined,
+        rightIcon: undefined,
+      }}
+      buttonLabels={{
+        previous: 'Previous',
+        next: 'Next',
+        page: 'Page',
+        currentPage: 'Current page',
+        pageOfCount: 'of',
+      }}
+    />
+  ),
+  Dropdown: () => (
+    <Dropdown>
+      <Dropdown.Toggle id="preview-dropdown" variant="outline-primary" size="sm">
+        Options
+      </Dropdown.Toggle>
+    </Dropdown>
+  ),
+  Collapsible: () => (
+    <div style={{ width: 220 }}>
+      <Collapsible styling="basic" title="Show details" defaultOpen={false}>
+        <p className="mb-0 text-xs text-gray-600">Hidden content</p>
+      </Collapsible>
+    </div>
+  ),
+  StatefulButton: () => (
+    <StatefulButton
+      variant="primary"
+      size="sm"
+      state="default"
+      disabledStates={['pending']}
+      labels={{ default: 'Save', pending: 'Saving…', complete: 'Saved' }}
+      icons={{}}
+    />
+  ),
+  Tabs: () => (
+    <Tabs defaultActiveKey="design" id="preview-tabs">
+      <Tab eventKey="design" title="Design" />
+      <Tab eventKey="code" title="Code" />
+      <Tab eventKey="usage" title="Usage" />
+    </Tabs>
+  ),
+  ToggleButton: () => (
+    <ToggleButton
+      id="preview-toggle"
+      type="checkbox"
+      value="1"
+      variant="outline-primary"
+      size="sm"
+      defaultChecked
+    >
+      Pinned
+    </ToggleButton>
   ),
 };
