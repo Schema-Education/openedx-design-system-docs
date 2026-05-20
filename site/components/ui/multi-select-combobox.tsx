@@ -1,43 +1,22 @@
 'use client';
 
 /**
- * MultiSelectCombobox — a searchable, multi-select dropdown primitive built on
- * Headless UI v2 `Combobox` with `multiple`.
+ * MultiSelectCombobox — a searchable, multi-select dropdown primitive.
  *
- * @example
- * ```tsx
- * import { useState } from 'react';
- * import { MultiSelectCombobox } from '@/components/ui/multi-select-combobox';
- *
- * const STATUS_OPTIONS = [
- *   { value: 'stable',       label: 'Stable',       count: 42, color: 'bg-success' },
- *   { value: 'experimental', label: 'Experimental', count: 17, color: 'bg-warning' },
- *   { value: 'deprecated',   label: 'Deprecated',   count:  6, color: 'bg-danger'  },
- * ] as const;
- *
- * function StatusFilter() {
- *   const [selected, setSelected] = useState(new Set<string>());
- *   return (
- *     <MultiSelectCombobox
- *       label="Status"
- *       options={STATUS_OPTIONS}
- *       selected={selected}
- *       onChange={setSelected}
- *       placeholder="Search statuses…"
- *       emptyHint="No matching statuses."
- *     />
- *   );
- * }
- * ```
+ * Implementation note: built on Headless UI v2 `Popover` (for the trigger +
+ * panel positioning) wrapping a custom controlled selection list with a
+ * search input. We previously used `Combobox` with `multiple`, but Headless
+ * UI v2's `Combobox` does not support arbitrary non-option children inside
+ * `ComboboxOptions`; placing a `ComboboxInput` and a "Select all / Clear"
+ * row inside the listbox caused hit-testing on option rows to fall through
+ * to the listbox parent, making the options effectively unclickable.
  */
 
 import { useState } from 'react';
 import {
-  Combobox,
-  ComboboxButton,
-  ComboboxInput,
-  ComboboxOption,
-  ComboboxOptions,
+  Popover,
+  PopoverButton,
+  PopoverPanel,
   Transition,
 } from '@headlessui/react';
 
@@ -77,7 +56,6 @@ export interface MultiSelectComboboxProps<T extends string> {
 // Helpers
 // ---------------------------------------------------------------------------
 
-/** Inline SVG chevron pointing down. */
 function ChevronIcon() {
   return (
     <svg
@@ -96,7 +74,6 @@ function ChevronIcon() {
   );
 }
 
-/** Inline SVG magnifier for the search input. */
 function MagnifierIcon() {
   return (
     <svg
@@ -115,7 +92,6 @@ function MagnifierIcon() {
   );
 }
 
-/** Inline SVG checkmark used inside the checkbox indicator. */
 function CheckIcon() {
   return (
     <svg
@@ -138,11 +114,6 @@ function CheckIcon() {
 // Component
 // ---------------------------------------------------------------------------
 
-/**
- * A searchable, multi-select dropdown built on Headless UI v2 `Combobox`.
- *
- * @typeParam T - String union of allowed option values, inferred from `options`.
- */
 export function MultiSelectCombobox<T extends string>({
   label,
   options,
@@ -152,10 +123,8 @@ export function MultiSelectCombobox<T extends string>({
   emptyHint = 'No matches.',
   className,
 }: MultiSelectComboboxProps<T>) {
-  // Local search query — not lifted to the caller.
   const [query, setQuery] = useState('');
 
-  // Filtered options based on current search query.
   const filtered =
     query === ''
       ? options
@@ -163,7 +132,6 @@ export function MultiSelectCombobox<T extends string>({
           opt.label.toLowerCase().includes(query.toLowerCase()),
         );
 
-  // Derive trigger button label text.
   function triggerLabel(): string {
     if (selected.size === 0) return label;
     if (selected.size === 1) {
@@ -173,19 +141,19 @@ export function MultiSelectCombobox<T extends string>({
     return `${label} · ${selected.size} selected`;
   }
 
-  // Handle array emitted by Headless UI → sync to Set → lift up.
-  function handleChange(vals: T[]) {
-    onChange(new Set(vals));
+  function toggle(value: T) {
+    const next = new Set(selected);
+    if (next.has(value)) next.delete(value);
+    else next.add(value);
+    onChange(next);
   }
 
-  // "Select all visible" — adds every filtered option to the selection.
   function selectAllVisible() {
     const next = new Set(selected);
     filtered.forEach((o) => next.add(o.value));
     onChange(next);
   }
 
-  // "Clear" — empties selection entirely.
   function clearAll() {
     onChange(new Set<T>());
   }
@@ -195,165 +163,177 @@ export function MultiSelectCombobox<T extends string>({
 
   return (
     <div className={`relative inline-block text-left${className ? ` ${className}` : ''}`}>
-      <Combobox
-        multiple
-        value={Array.from(selected)}
-        onChange={handleChange}
-        onClose={() => setQuery('')}
-      >
-        {/* ── Trigger button ── */}
-        <ComboboxButton
-          className="
-            inline-flex items-center gap-1.5
-            rounded-md border border-gray-500 bg-white
-            px-3 py-2 text-sm text-ink-900
-            shadow-sm
-            hover:bg-gray-50
-            focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1
-            transition-colors duration-100
-          "
-        >
-          <span className="max-w-[160px] truncate">{triggerLabel()}</span>
-
-          {/* Badge showing count when items are selected */}
-          {selected.size > 0 && (
-            <span
-              aria-label={`${selected.size} selected`}
+      <Popover>
+        {({ close }) => (
+          <>
+            <PopoverButton
               className="
-                ml-0.5 flex h-4 min-w-[1rem] items-center justify-center
-                rounded-full bg-primary-600 px-1
-                text-[10px] font-semibold leading-none text-white
+                inline-flex items-center gap-1.5
+                rounded-md border border-gray-500 bg-white
+                px-3 py-2 text-sm text-ink-900
+                shadow-sm
+                hover:bg-gray-50
+                focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1
+                transition-colors duration-100
               "
             >
-              {selected.size}
-            </span>
-          )}
+              <span className="max-w-[160px] truncate">{triggerLabel()}</span>
+              {selected.size > 0 && (
+                <span
+                  aria-label={`${selected.size} selected`}
+                  className="
+                    ml-0.5 flex h-4 min-w-[1rem] items-center justify-center
+                    rounded-full bg-primary-600 px-1
+                    text-[10px] font-semibold leading-none text-white
+                  "
+                >
+                  {selected.size}
+                </span>
+              )}
+              <ChevronIcon />
+            </PopoverButton>
 
-          <ChevronIcon />
-        </ComboboxButton>
-
-        {/* ── Popover panel ── */}
-        <Transition
-          enter="transition ease-out duration-100"
-          enterFrom="opacity-0 scale-95"
-          enterTo="opacity-100 scale-100"
-          leave="transition ease-in duration-75"
-          leaveFrom="opacity-100 scale-100"
-          leaveTo="opacity-0 scale-95"
-        >
-          <ComboboxOptions
-            static={false}
-            className="
-              absolute left-0 z-50 mt-1
-              min-w-full w-max max-w-xs
-              rounded-md border border-gray-200 bg-white
-              shadow-lg ring-1 ring-gray-900/5
-              focus:outline-none
-            "
-          >
-            {/* Search input row */}
-            <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-2">
-              <MagnifierIcon />
-              <ComboboxInput
-                aria-label={`Search ${label}`}
-                placeholder={placeholder}
-                displayValue={() => query}
-                onChange={(e) => setQuery(e.target.value)}
+            <Transition
+              afterLeave={() => setQuery('')}
+              enter="transition ease-out duration-100"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="transition ease-in duration-75"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
+            >
+              <PopoverPanel
                 className="
-                  w-full bg-transparent text-sm text-ink-900
-                  placeholder:text-gray-600
+                  absolute left-0 z-50 mt-1
+                  min-w-full w-max max-w-xs
+                  origin-top
+                  rounded-md border border-gray-200 bg-white
+                  shadow-lg ring-1 ring-gray-900/5
                   focus:outline-none
                 "
-              />
-            </div>
-
-            {/* "Select all" / "Clear" action row */}
-            <div className="flex items-center justify-between border-b border-gray-100 px-3 py-1.5">
-              <button
-                type="button"
-                disabled={allVisibleSelected || filtered.length === 0}
-                onClick={selectAllVisible}
-                className="
-                  text-xs font-medium text-primary-600
-                  hover:text-primary-700
-                  disabled:cursor-not-allowed disabled:opacity-40
-                  transition-colors duration-100
-                "
               >
-                Select all {query ? '(visible)' : ''}
-              </button>
-              <button
-                type="button"
-                disabled={selected.size === 0}
-                onClick={clearAll}
-                className="
-                  text-xs font-medium text-gray-500
-                  hover:text-gray-700
-                  disabled:cursor-not-allowed disabled:opacity-40
-                  transition-colors duration-100
-                "
-              >
-                Clear
-              </button>
-            </div>
-
-            {/* Options list */}
-            <div className="max-h-[260px] overflow-y-auto py-1">
-              {filtered.length === 0 ? (
-                <p className="py-4 text-center text-sm text-gray-600">{emptyHint}</p>
-              ) : (
-                filtered.map((opt) => (
-                  <ComboboxOption
-                    key={opt.value}
-                    value={opt.value}
+                {/* Search input row */}
+                <div className="flex items-center gap-2 border-b border-gray-100 px-3 py-2">
+                  <MagnifierIcon />
+                  <input
+                    type="text"
+                    aria-label={`Search ${label}`}
+                    placeholder={placeholder}
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Escape') close();
+                    }}
+                    autoFocus
                     className="
-                      flex cursor-pointer select-none items-center gap-2
-                      px-3 py-2 text-sm text-ink-900
-                      data-[focus]:bg-gray-50
+                      w-full bg-transparent text-sm text-ink-900
+                      placeholder:text-gray-600
+                      focus:outline-none
+                    "
+                  />
+                </div>
+
+                {/* "Select all" / "Clear" action row */}
+                <div className="flex items-center justify-between border-b border-gray-100 px-3 py-1.5">
+                  <button
+                    type="button"
+                    disabled={allVisibleSelected || filtered.length === 0}
+                    onClick={selectAllVisible}
+                    className="
+                      text-xs font-medium text-primary-600
+                      hover:text-primary-700
+                      disabled:cursor-not-allowed disabled:opacity-40
+                      transition-colors duration-100
                     "
                   >
-                    {({ selected: isSelected }) => (
-                      <>
-                        {/* Checkbox indicator */}
-                        <span
-                          aria-hidden="true"
-                          className={`
-                            flex h-[14px] w-[14px] shrink-0 items-center justify-center
-                            rounded-[3px] border
-                            ${isSelected
-                              ? 'border-primary-600 bg-primary-600'
-                              : 'border-gray-500 bg-white'}
-                          `}
-                        >
-                          {isSelected && <CheckIcon />}
-                        </span>
+                    Select all {query ? '(visible)' : ''}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={selected.size === 0}
+                    onClick={clearAll}
+                    className="
+                      text-xs font-medium text-gray-500
+                      hover:text-gray-700
+                      disabled:cursor-not-allowed disabled:opacity-40
+                      transition-colors duration-100
+                    "
+                  >
+                    Clear
+                  </button>
+                </div>
 
-                        {/* Optional color swatch */}
-                        {opt.color && (
+                {/* Options list */}
+                <ul
+                  role="listbox"
+                  aria-multiselectable="true"
+                  aria-label={label}
+                  className="max-h-[260px] overflow-y-auto py-1"
+                >
+                  {filtered.length === 0 ? (
+                    <li className="py-4 text-center text-sm text-gray-600">
+                      {emptyHint}
+                    </li>
+                  ) : (
+                    filtered.map((opt) => {
+                      const isSelected = selected.has(opt.value);
+                      return (
+                        <li
+                          key={opt.value}
+                          role="option"
+                          aria-selected={isSelected}
+                          tabIndex={0}
+                          onClick={() => toggle(opt.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === ' ' || e.key === 'Enter') {
+                              e.preventDefault();
+                              toggle(opt.value);
+                            }
+                          }}
+                          className="
+                            flex cursor-pointer select-none items-center gap-2
+                            px-3 py-2 text-sm text-ink-900
+                            hover:bg-gray-50
+                            focus:bg-gray-50 focus:outline-none
+                          "
+                        >
                           <span
                             aria-hidden="true"
-                            className={`h-[6px] w-[6px] shrink-0 rounded-full ${opt.color}`}
-                          />
-                        )}
-
-                        {/* Label */}
-                        <span className="flex-1 truncate">{opt.label}</span>
-
-                        {/* Count */}
-                        {opt.count !== undefined && (
-                          <span className="ml-auto shrink-0 text-xs text-gray-600">
-                            ({opt.count})
+                            className={`
+                              flex h-[14px] w-[14px] shrink-0 items-center justify-center
+                              rounded-[3px] border
+                              ${isSelected
+                                ? 'border-primary-600 bg-primary-600'
+                                : 'border-gray-500 bg-white'}
+                            `}
+                          >
+                            {isSelected && <CheckIcon />}
                           </span>
-                        )}
-                      </>
-                    )}
-                  </ComboboxOption>
-                ))
-              )}
-            </div>
-          </ComboboxOptions>
-        </Transition>
-      </Combobox>
+
+                          {opt.color && (
+                            <span
+                              aria-hidden="true"
+                              className={`h-[6px] w-[6px] shrink-0 rounded-full ${opt.color}`}
+                            />
+                          )}
+
+                          <span className="flex-1 truncate">{opt.label}</span>
+
+                          {opt.count !== undefined && (
+                            <span className="ml-auto shrink-0 text-xs text-gray-600">
+                              ({opt.count})
+                            </span>
+                          )}
+                        </li>
+                      );
+                    })
+                  )}
+                </ul>
+              </PopoverPanel>
+            </Transition>
+          </>
+        )}
+      </Popover>
     </div>
   );
 }
