@@ -14,6 +14,8 @@ import { ComponentCard } from './component-card';
 import { ComponentRow } from './component-row';
 import { ComponentDetail, type DetailTab } from './component-detail';
 import { MultiSelectCombobox } from './ui/multi-select-combobox';
+import { CommandPalette, usePaletteHotkey } from './command-palette';
+import { Kbd } from './ui/kbd';
 import {
   ATOMIC_LEVELS,
   ATOMIC_LEVEL_META,
@@ -44,6 +46,10 @@ export function Gallery({ components }: GalleryProps) {
   const [groupBy, setGroupBy] = useState<GroupBy>('functionalCategory');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [selected, setSelected] = useState<GalleryComponent | null>(null);
+  // Global ⌘K command palette state. The palette is a sibling of the gallery's
+  // result grid and writes back through `selectComponent` — see PR 1 plan.
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  usePaletteHotkey(() => setPaletteOpen((o) => !o));
   // Tab state lives here (rather than inside the details pane) because the
   // active tab drives the pane width — Usage expands the pane to 75vw so the
   // long-form documentation surface has room to breathe.
@@ -353,12 +359,25 @@ export function Gallery({ components }: GalleryProps) {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search components"
-                  className="w-full rounded-md border border-gray-500 bg-white py-2 pl-9 pr-3 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  className="w-full rounded-md border border-gray-500 bg-white py-2 pl-9 pr-12 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
                 />
                 <svg className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <circle cx="11" cy="11" r="7" />
                   <path d="m21 21-4.3-4.3" strokeLinecap="round" />
                 </svg>
+                {/* ⌘K hint — opens the global command palette. Lives inside
+                    the inline search so the affordance is discoverable without
+                    adding a new toolbar slot. */}
+                <button
+                  type="button"
+                  onClick={() => setPaletteOpen(true)}
+                  className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5 rounded px-1 py-0.5 transition hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+                  aria-label="Open command palette"
+                  title="Search all components (⌘K)"
+                >
+                  <Kbd>⌘</Kbd>
+                  <Kbd>K</Kbd>
+                </button>
               </div>
               {/* Status filter hidden for now — re-enable when status lifecycle is finalized. */}
               {/* <MultiSelectCombobox
@@ -500,6 +519,15 @@ export function Gallery({ components }: GalleryProps) {
           )}
         </div>
       </div>
+
+      {/* Global ⌘K command palette. Fixed-positioned dialog; mounted as a
+          sibling of the main grid so it overlays everything when open. */}
+      <CommandPalette
+        components={components}
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onSelectComponent={selectComponent}
+      />
     </>
   );
 }
