@@ -1,0 +1,186 @@
+diff --git a/cjs/ReplaceTransition.js b/cjs/ReplaceTransition.js
+index cb3224c97150a41bb46a5c0cee4352218035b472..1aec385b120fca291b527f759fc6e38d107c3cc8 100644
+--- a/cjs/ReplaceTransition.js
++++ b/cjs/ReplaceTransition.js
+@@ -103,7 +103,7 @@ var ReplaceTransition = /*#__PURE__*/function (_React$Component) {
+     if (child.props[handler]) (_child$props = child.props)[handler].apply(_child$props, originalArgs);
+ 
+     if (this.props[handler]) {
+-      var maybeNode = child.props.nodeRef ? undefined : _reactDom.default.findDOMNode(this);
++      var maybeNode = child.props.nodeRef ? undefined : null; // findDOMNode removed for React 19 compatibility
+       this.props[handler](maybeNode);
+     }
+   };
+diff --git a/cjs/Transition.js b/cjs/Transition.js
+index b44cb76052fba3d1cd1d8d034e5c79b6d7493a19..62704d6115ab62e4d64ec91f87681c2bf14ff7fa 100644
+--- a/cjs/Transition.js
++++ b/cjs/Transition.js
+@@ -158,6 +158,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+       status: initialStatus
+     };
+     _this.nextCallback = null;
++    _this._internalRef = _react.default.createRef();
+     return _this;
+   }
+ 
+@@ -249,7 +250,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+ 
+       if (nextStatus === ENTERING) {
+         if (this.props.unmountOnExit || this.props.mountOnEnter) {
+-          var node = this.props.nodeRef ? this.props.nodeRef.current : _reactDom.default.findDOMNode(this); // https://github.com/reactjs/react-transition-group/pull/749
++          var node = this.props.nodeRef ? this.props.nodeRef.current : this._internalRef.current; // findDOMNode replaced by internal ref for React 19 compatibility
+           // With unmountOnExit or mountOnEnter, the enter animation should happen at the transition between `exited` and `entering`.
+           // To make the animation happen,  we have to separate each rendering and avoid being processed as batched.
+ 
+@@ -273,7 +274,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+     var enter = this.props.enter;
+     var appearing = this.context ? this.context.isMounting : mounting;
+ 
+-    var _ref2 = this.props.nodeRef ? [appearing] : [_reactDom.default.findDOMNode(this), appearing],
++    var _ref2 = this.props.nodeRef ? [appearing] : [this._internalRef.current, appearing],
+         maybeNode = _ref2[0],
+         maybeAppearing = _ref2[1];
+ 
+@@ -311,7 +312,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+ 
+     var exit = this.props.exit;
+     var timeouts = this.getTimeouts();
+-    var maybeNode = this.props.nodeRef ? undefined : _reactDom.default.findDOMNode(this); // no exit animation skip right to EXITED
++    var maybeNode = this.props.nodeRef ? undefined : this._internalRef.current; // no exit animation skip right to EXITED
+ 
+     if (!exit || _config.default.disabled) {
+       this.safeSetState({
+@@ -375,7 +376,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+ 
+   _proto.onTransitionEnd = function onTransitionEnd(timeout, handler) {
+     this.setNextCallback(handler);
+-    var node = this.props.nodeRef ? this.props.nodeRef.current : _reactDom.default.findDOMNode(this);
++    var node = this.props.nodeRef ? this.props.nodeRef.current : this._internalRef.current;
+     var doesNotHaveTimeoutOrListener = timeout == null && !this.props.addEndListener;
+ 
+     if (!node || doesNotHaveTimeoutOrListener) {
+@@ -422,12 +423,30 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+         _nodeRef = _this$props.nodeRef,
+         childProps = _objectWithoutPropertiesLoose(_this$props, ["children", "in", "mountOnEnter", "unmountOnExit", "appear", "enter", "exit", "timeout", "addEndListener", "onEnter", "onEntering", "onEntered", "onExit", "onExiting", "onExited", "nodeRef"]);
+ 
++    var self = this;
++    var renderedChild;
++    if (typeof children === 'function') {
++      renderedChild = children(status, childProps);
++    } else {
++      var child = _react.default.Children.only(children);
++      if (this.props.nodeRef) {
++        renderedChild = _react.default.cloneElement(child, childProps);
++      } else {
++        var existingRef = (child.props && 'ref' in child.props) ? child.props.ref : child.ref;
++        var setRef = function setRef(node) {
++          self._internalRef.current = node;
++          if (typeof existingRef === 'function') existingRef(node);
++          else if (existingRef && typeof existingRef === 'object') existingRef.current = node;
++        };
++        renderedChild = _react.default.cloneElement(child, Object.assign({}, childProps, { ref: setRef }));
++      }
++    }
+     return (
+       /*#__PURE__*/
+       // allows for nested Transitions
+       _react.default.createElement(_TransitionGroupContext.default.Provider, {
+         value: null
+-      }, typeof children === 'function' ? children(status, childProps) : _react.default.cloneElement(_react.default.Children.only(children), childProps))
++      }, renderedChild)
+     );
+   };
+ 
+diff --git a/esm/ReplaceTransition.js b/esm/ReplaceTransition.js
+index a7678c6e10539daf50697cb16969434cbc63c7eb..1543e3f45d0256bd25295851278bf029485bb0bd 100644
+--- a/esm/ReplaceTransition.js
++++ b/esm/ReplaceTransition.js
+@@ -89,7 +89,7 @@ var ReplaceTransition = /*#__PURE__*/function (_React$Component) {
+     if (child.props[handler]) (_child$props = child.props)[handler].apply(_child$props, originalArgs);
+ 
+     if (this.props[handler]) {
+-      var maybeNode = child.props.nodeRef ? undefined : ReactDOM.findDOMNode(this);
++      var maybeNode = child.props.nodeRef ? undefined : null; // findDOMNode removed for React 19 compatibility
+       this.props[handler](maybeNode);
+     }
+   };
+diff --git a/esm/Transition.js b/esm/Transition.js
+index 986d29f43ade851a1b4701a6eb857339c8cb33eb..5bfdf503e0fb9a2644d9d3f58c64459286f08495 100644
+--- a/esm/Transition.js
++++ b/esm/Transition.js
+@@ -136,6 +136,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+       status: initialStatus
+     };
+     _this.nextCallback = null;
++    _this._internalRef = React.createRef();
+     return _this;
+   }
+ 
+@@ -227,7 +228,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+ 
+       if (nextStatus === ENTERING) {
+         if (this.props.unmountOnExit || this.props.mountOnEnter) {
+-          var node = this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this); // https://github.com/reactjs/react-transition-group/pull/749
++          var node = this.props.nodeRef ? this.props.nodeRef.current : this._internalRef.current; // findDOMNode replaced by internal ref for React 19 compatibility
+           // With unmountOnExit or mountOnEnter, the enter animation should happen at the transition between `exited` and `entering`.
+           // To make the animation happen,  we have to separate each rendering and avoid being processed as batched.
+ 
+@@ -251,7 +252,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+     var enter = this.props.enter;
+     var appearing = this.context ? this.context.isMounting : mounting;
+ 
+-    var _ref2 = this.props.nodeRef ? [appearing] : [ReactDOM.findDOMNode(this), appearing],
++    var _ref2 = this.props.nodeRef ? [appearing] : [this._internalRef.current, appearing],
+         maybeNode = _ref2[0],
+         maybeAppearing = _ref2[1];
+ 
+@@ -289,7 +290,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+ 
+     var exit = this.props.exit;
+     var timeouts = this.getTimeouts();
+-    var maybeNode = this.props.nodeRef ? undefined : ReactDOM.findDOMNode(this); // no exit animation skip right to EXITED
++    var maybeNode = this.props.nodeRef ? undefined : this._internalRef.current; // no exit animation skip right to EXITED
+ 
+     if (!exit || config.disabled) {
+       this.safeSetState({
+@@ -353,7 +354,7 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+ 
+   _proto.onTransitionEnd = function onTransitionEnd(timeout, handler) {
+     this.setNextCallback(handler);
+-    var node = this.props.nodeRef ? this.props.nodeRef.current : ReactDOM.findDOMNode(this);
++    var node = this.props.nodeRef ? this.props.nodeRef.current : this._internalRef.current;
+     var doesNotHaveTimeoutOrListener = timeout == null && !this.props.addEndListener;
+ 
+     if (!node || doesNotHaveTimeoutOrListener) {
+@@ -400,12 +401,30 @@ var Transition = /*#__PURE__*/function (_React$Component) {
+         _nodeRef = _this$props.nodeRef,
+         childProps = _objectWithoutPropertiesLoose(_this$props, ["children", "in", "mountOnEnter", "unmountOnExit", "appear", "enter", "exit", "timeout", "addEndListener", "onEnter", "onEntering", "onEntered", "onExit", "onExiting", "onExited", "nodeRef"]);
+ 
++    var self = this;
++    var renderedChild;
++    if (typeof children === 'function') {
++      renderedChild = children(status, childProps);
++    } else {
++      var child = React.Children.only(children);
++      if (this.props.nodeRef) {
++        renderedChild = React.cloneElement(child, childProps);
++      } else {
++        var existingRef = (child.props && 'ref' in child.props) ? child.props.ref : child.ref;
++        var setRef = function setRef(node) {
++          self._internalRef.current = node;
++          if (typeof existingRef === 'function') existingRef(node);
++          else if (existingRef && typeof existingRef === 'object') existingRef.current = node;
++        };
++        renderedChild = React.cloneElement(child, Object.assign({}, childProps, { ref: setRef }));
++      }
++    }
+     return (
+       /*#__PURE__*/
+       // allows for nested Transitions
+       React.createElement(TransitionGroupContext.Provider, {
+         value: null
+-      }, typeof children === 'function' ? children(status, childProps) : React.cloneElement(React.Children.only(children), childProps))
++      }, renderedChild)
+     );
+   };
+ 
