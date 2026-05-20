@@ -12,7 +12,7 @@ import { IconButton, IconButtonToggle, Icon } from '@openedx/paragon';
 import { GridView, ViewList } from '@openedx/paragon/icons';
 import { ComponentCard } from './component-card';
 import { ComponentRow } from './component-row';
-import { ComponentDetail } from './component-detail';
+import { ComponentDetail, type DetailTab } from './component-detail';
 import { MultiSelectCombobox } from './ui/multi-select-combobox';
 import {
   ATOMIC_LEVELS,
@@ -41,6 +41,23 @@ export function Gallery({ components }: GalleryProps) {
   const [groupBy, setGroupBy] = useState<GroupBy>('atomicLevel');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [selected, setSelected] = useState<GalleryComponent | null>(null);
+  // Tab state lives here (rather than inside the details pane) because the
+  // active tab drives the pane width — Usage expands the pane to 75vw so the
+  // long-form documentation surface has room to breathe.
+  const [detailTab, setDetailTab] = useState<DetailTab>('overview');
+  const isUsageTab = detailTab === 'usage';
+
+  function clearSelection() {
+    setSelected(null);
+    setDetailTab('overview');
+  }
+
+  // Switching components resets to the Overview tab so the user lands on a
+  // consistent first surface regardless of the previous selection's state.
+  function selectComponent(c: GalleryComponent) {
+    setSelected(c);
+    setDetailTab('overview');
+  }
 
   // Details pane resize state.
   // Default width matches the prior `max-w-md` (28rem = 448px).
@@ -53,6 +70,16 @@ export function Gallery({ components }: GalleryProps) {
   const [paneWidth, setPaneWidth] = useState<number>(DEFAULT_PANE_WIDTH);
   const bodyRef = useRef<HTMLDivElement>(null);
   const isResizingRef = useRef(false);
+  // Mirrors isResizingRef in state form so we can swap the inline width
+  // transition off during an active drag (a transition during pointer-move
+  // would make the pane lag behind the cursor).
+  const [isResizing, setIsResizing] = useState(false);
+  // Standard easing for the pane expand/collapse animation. ~280ms with a
+  // gentle ease-out curve feels deliberate without dragging. Disabled during
+  // an active resize drag — otherwise the pane would lag the cursor.
+  const PANE_TRANSITION =
+    'width 280ms cubic-bezier(0.22, 1, 0.36, 1), padding-left 280ms cubic-bezier(0.22, 1, 0.36, 1), padding-right 280ms cubic-bezier(0.22, 1, 0.36, 1)';
+  const paneTransition = isResizing ? 'none' : PANE_TRANSITION;
 
   useEffect(() => {
     function clampToBounds(width: number): number {
@@ -71,6 +98,7 @@ export function Gallery({ components }: GalleryProps) {
     function onUp() {
       if (!isResizingRef.current) return;
       isResizingRef.current = false;
+      setIsResizing(false);
       document.body.style.cursor = '';
       document.body.style.userSelect = '';
     }
@@ -90,6 +118,7 @@ export function Gallery({ components }: GalleryProps) {
   function startResize(e: React.PointerEvent) {
     e.preventDefault();
     isResizingRef.current = true;
+    setIsResizing(true);
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
   }
@@ -279,11 +308,40 @@ export function Gallery({ components }: GalleryProps) {
         </div>
       </div>
 
-      <div className="mx-auto max-w-[1650px]">
-        {/* Two-column body: filters + cards on the left, details pane flush to the right */}
+      <div className="w-full">
+        {/* Body — main listing on the left, summary pane on the right.
+            The flex container is full-viewport-width so the summary pane
+            sits flush against the right edge of the viewport. The main
+            column gets dynamic left padding (and right padding, when no
+            pane is open) so its content stays aligned with the title row
+            above, which is centered at max-w-[1650px]. When the Usage tab
+            is active the pane expands to 75vw and the listing shrinks to
+            the remaining 25vw. */}
         <div ref={bodyRef} className="flex items-start">
-          {/* Main column — search/filters + grouped card grid (owns the horizontal padding) */}
-          <div className="min-w-0 flex-1 px-6 pb-6 pt-4">
+          {/* Main column — search/filters + grouped card grid.
+              Uses an explicit width (rather than flex-grow) so the width can
+              transition smoothly. The summary pane sibling has flex-shrink:0
+              so it keeps its set width; the main column fills whatever space
+              remains via the `width` calc. */}
+          <div
+            className="min-w-0 pb-6 pt-4"
+            style={{
+              flexGrow: 0,
+              flexShrink: 0,
+              width: isUsageTab
+                ? '25vw'
+                : selected
+                ? `calc(100vw - ${paneWidth}px)`
+                : '100vw',
+              paddingLeft: isUsageTab
+                ? '1.5rem'
+                : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
+              paddingRight: isUsageTab || selected
+                ? '1.5rem'
+                : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
+              transition: paneTransition,
+            }}
+          >
             {/* Search + filters + group-by — group-by anchors to right edge of THIS column */}
             <div className="mb-2 flex flex-wrap items-center gap-2">
               <div className="relative w-full sm:w-1/4 sm:min-w-[220px] sm:flex-shrink-0">
@@ -361,17 +419,19 @@ export function Gallery({ components }: GalleryProps) {
                 </h2>
                 {viewMode === 'card' ? (
                   <div
-                    className={`grid grid-cols-1 gap-5 sm:grid-cols-2 ${
-                      selected
-                        ? 'lg:grid-cols-1 xl:grid-cols-2'
-                        : 'lg:grid-cols-2 xl:grid-cols-3'
+                    className={`grid gap-5 ${
+                      isUsageTab
+                        ? 'grid-cols-1'
+                        : selected
+                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2'
+                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'
                     }`}
                   >
                     {group.items.map((c) => (
                       <ComponentCard
                         key={`${c.sourceMfe}-${c.slug}`}
                         component={c}
-                        onClick={() => setSelected(c)}
+                        onClick={() => selectComponent(c)}
                       />
                     ))}
                   </div>
@@ -381,7 +441,7 @@ export function Gallery({ components }: GalleryProps) {
                       <ComponentRow
                         key={`${c.sourceMfe}-${c.slug}`}
                         component={c}
-                        onClick={() => setSelected(c)}
+                        onClick={() => selectComponent(c)}
                       />
                     ))}
                   </div>
@@ -390,29 +450,38 @@ export function Gallery({ components }: GalleryProps) {
             ))}
           </div>
 
-          {/* Details pane — flush to top dividing line and to the right edge of the layout.
-              Width is user-resizable via the left-edge drag handle. */}
+          {/* Summary pane — sits flush against the viewport right edge.
+              Width is user-resizable via the left-edge drag handle on every
+              tab except Usage; on the Usage tab the pane expands to 75vw so
+              the long-form documentation surface has room to breathe. */}
           {selected && (
             <div
               className="sticky top-[102px] flex-shrink-0 self-start h-[calc(100vh-102px)] border-l border-gray-200 bg-white relative"
-              style={{ width: paneWidth }}
+              style={{
+                width: isUsageTab ? '75vw' : paneWidth,
+                transition: paneTransition,
+              }}
             >
-              <div
-                role="separator"
-                aria-orientation="vertical"
-                aria-label="Resize details pane"
-                onPointerDown={startResize}
-                className="group absolute left-0 top-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
-              >
-                <div className="mx-auto h-full w-px bg-transparent transition-colors group-hover:bg-gray-400" />
-              </div>
+              {!isUsageTab && (
+                <div
+                  role="separator"
+                  aria-orientation="vertical"
+                  aria-label="Resize details pane"
+                  onPointerDown={startResize}
+                  className="group absolute left-0 top-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
+                >
+                  <div className="mx-auto h-full w-px bg-transparent transition-colors group-hover:bg-gray-400" />
+                </div>
+              )}
               <div className="h-full overflow-y-auto">
                 <ComponentDetail
                   component={selected}
-                  onClose={() => setSelected(null)}
+                  tab={detailTab}
+                  onTabChange={setDetailTab}
+                  onClose={clearSelection}
                   onSelectConsumer={(mfe) => {
                     setSelectedMfes(new Set([mfe]));
-                    setSelected(null);
+                    clearSelection();
                   }}
                 />
               </div>

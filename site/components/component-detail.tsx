@@ -1,38 +1,37 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { createPortal } from 'react-dom';
+import { useEffect } from 'react';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
   type GalleryComponent,
 } from '@/lib/gallery';
+import { UsageTab } from './component-usage';
+
+export type DetailTab = 'overview' | 'usage' | 'metadata' | 'issues';
 
 interface ComponentDetailProps {
   component: GalleryComponent | null;
+  tab: DetailTab;
+  onTabChange: (t: DetailTab) => void;
   onClose: () => void;
   onSelectConsumer?: (mfe: string) => void;
 }
 
-type Tab = 'overview' | 'metadata' | 'issues';
-
-const TABS: { id: Tab; label: string }[] = [
+const TABS: { id: DetailTab; label: string }[] = [
   { id: 'overview', label: 'Overview' },
+  { id: 'usage', label: 'Usage' },
   { id: 'metadata', label: 'Metadata' },
   { id: 'issues', label: 'Issues' },
 ];
 
 export function ComponentDetail({
   component,
+  tab,
+  onTabChange,
   onClose,
   onSelectConsumer,
 }: ComponentDetailProps) {
-  const [tab, setTab] = useState<Tab>('overview');
-
-  useEffect(() => {
-    setTab('overview');
-  }, [component?.slug]);
-
   useEffect(() => {
     function handleKey(e: KeyboardEvent) {
       if (e.key === 'Escape') onClose();
@@ -51,7 +50,7 @@ export function ComponentDetail({
       <DetailBody
         component={component}
         tab={tab}
-        setTab={setTab}
+        setTab={onTabChange}
         onClose={onClose}
         onSelectConsumer={onSelectConsumer}
       />
@@ -67,8 +66,8 @@ function DetailBody({
   onSelectConsumer,
 }: {
   component: GalleryComponent;
-  tab: Tab;
-  setTab: (t: Tab) => void;
+  tab: DetailTab;
+  setTab: (t: DetailTab) => void;
   onClose: () => void;
   onSelectConsumer?: (mfe: string) => void;
 }) {
@@ -141,9 +140,17 @@ function DetailBody({
         </div>
       </div>
 
-      {/* Tab content */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 text-sm">
-        {tab === 'overview' && <OverviewTab c={component} onSelectConsumer={onSelectConsumer} />}
+      {/* Tab content. Padding widens when the pane has been expanded to
+          host the long-form "Usage" content so it doesn't sit edge-to-edge. */}
+      <div
+        className={`flex-1 overflow-y-auto py-4 text-sm ${
+          tab === 'usage' ? 'px-6' : 'px-4'
+        }`}
+      >
+        {tab === 'overview' && (
+          <OverviewTab c={component} onSelectConsumer={onSelectConsumer} />
+        )}
+        {tab === 'usage' && <UsageTab c={component} />}
         {tab === 'metadata' && <MetadataTab c={component} />}
         {tab === 'issues' && <IssuesTab c={component} />}
       </div>
@@ -158,15 +165,14 @@ function OverviewTab({
   c: GalleryComponent;
   onSelectConsumer?: (mfe: string) => void;
 }) {
-  const [fullscreen, setFullscreen] = useState(false);
   const fileUrl = `https://github.com/${c.sourceRepo}/blob/main/${c.sourcePath}`;
   const hasFigma = c.figmaCodeConnectUrl || c.figmaLibraryUrl;
   const importPkg = c.sourceMfe === 'paragon' ? 'paragon' : c.sourceMfe;
 
   return (
     <div className="space-y-3">
-      {/* Preview frame + expand */}
-      <ComponentPreview c={c} onExpand={() => setFullscreen(true)} />
+      {/* Preview frame */}
+      <ComponentPreview c={c} />
 
       {/* Deprecation banner */}
       {c.status === 'deprecated' && (
@@ -209,10 +215,6 @@ function OverviewTab({
 
       {/* Consumers — at the bottom of Overview */}
       <ConsumersSection c={c} onSelect={onSelectConsumer} />
-
-      {fullscreen && (
-        <FullScreenPreview c={c} onClose={() => setFullscreen(false)} />
-      )}
     </div>
   );
 }
@@ -223,30 +225,13 @@ function OverviewTab({
  * we know how to render inline can be added to the renderInlinePreview
  * switch over time.
  */
-function ComponentPreview({
-  c,
-  onExpand,
-}: {
-  c: GalleryComponent;
-  onExpand: () => void;
-}) {
+function ComponentPreview({ c }: { c: GalleryComponent }) {
   const atomic = ATOMIC_LEVEL_META[c.atomicLevel];
   return (
     <div className="relative overflow-hidden rounded-md border border-gray-200 bg-gray-50">
       <div className="flex h-32 items-center justify-center">
         <PreviewPlaceholder c={c} atomicGradient={atomic.gradient} />
       </div>
-      <button
-        type="button"
-        onClick={onExpand}
-        className="absolute right-1.5 top-1.5 inline-flex items-center gap-1 rounded-md bg-white/90 px-2 py-1 text-[10px] font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-white"
-        aria-label="Expand preview"
-      >
-        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-          <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h6m-6 0v6m16 0V4h-6m6 16h-6m6 0v-6M4 14v6h6" />
-        </svg>
-        Expand
-      </button>
     </div>
   );
 }
@@ -268,64 +253,6 @@ function PreviewPlaceholder({
       <div className="font-mono text-xs font-medium text-gray-700">{c.name}</div>
       <div className="text-[10px] text-gray-400">Live preview lands in Phase 2 (ADR-0001)</div>
     </div>
-  );
-}
-
-function FullScreenPreview({
-  c,
-  onClose,
-}: {
-  c: GalleryComponent;
-  onClose: () => void;
-}) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-    function handleKey(e: KeyboardEvent) {
-      if (e.key === 'Escape') onClose();
-    }
-    document.addEventListener('keydown', handleKey);
-    return () => document.removeEventListener('keydown', handleKey);
-  }, [onClose]);
-
-  if (!mounted) return null;
-
-  const atomic = ATOMIC_LEVEL_META[c.atomicLevel];
-  return createPortal(
-    <div
-      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-6"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label={`${c.name} expanded preview`}
-    >
-      <div
-        className="flex h-full max-h-[800px] w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-2.5">
-          <div className="flex items-center gap-2">
-            <span className="font-mono text-sm font-semibold text-gray-900">{c.name}</span>
-            <span className="text-xs text-gray-500">— {atomic.label}</span>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100"
-            aria-label="Close expanded preview"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-        <div className="flex flex-1 items-center justify-center bg-gray-50">
-          <PreviewPlaceholder c={c} atomicGradient={atomic.gradient} />
-        </div>
-      </div>
-    </div>,
-    document.body,
   );
 }
 
