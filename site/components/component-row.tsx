@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
@@ -8,18 +9,24 @@ import {
 
 interface ComponentRowProps {
   component: GalleryComponent;
-  onClick: () => void;
+  // Receives the full component so the parent can pass a single stable callback
+  // for the whole list. Avoids invalidating React.memo per parent render.
+  onSelect: (component: GalleryComponent) => void;
   isSelected?: boolean;
 }
 
-export function ComponentRow({ component, onClick, isSelected = false }: ComponentRowProps) {
+export const ComponentRow = memo(function ComponentRow({
+  component,
+  onSelect,
+  isSelected = false,
+}: ComponentRowProps) {
   const atomic = ATOMIC_LEVEL_META[component.atomicLevel];
   const status = STATUS_META[component.status];
 
   return (
     <button
       type="button"
-      onClick={onClick}
+      onClick={() => onSelect(component)}
       aria-current={isSelected ? 'true' : undefined}
       className={`group relative grid w-full grid-cols-[minmax(0,1.25fr)_minmax(0,2fr)_auto_auto_auto_auto] items-center gap-4 border-b px-4 py-3 text-left transition focus:z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
         isSelected
@@ -67,4 +74,4 @@ export function ComponentRow({ component, onClick, isSelected = false }: Compone
       </span>
     </button>
   );
-}
+});

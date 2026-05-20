@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Listbox,
   ListboxButton,
@@ -37,6 +37,11 @@ interface GalleryProps {
 
 export function Gallery({ components }: GalleryProps) {
   const [search, setSearch] = useState('');
+  // Defer the search value used by the heavy filtering / counting / grouping
+  // pipeline so typing in the search box stays responsive — React renders the
+  // input update at high priority and recomputes the filtered list as a
+  // low-priority follow-up.
+  const deferredSearch = useDeferredValue(search);
   const [activeLevel, setActiveLevel] = useState<ActiveLevel>('all');
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(new Set(['stable', 'experimental']));
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
@@ -64,10 +69,12 @@ export function Gallery({ components }: GalleryProps) {
 
   // Switching components resets to the Overview tab so the user lands on a
   // consistent first surface regardless of the previous selection's state.
-  function selectComponent(c: GalleryComponent) {
+  // Wrapped in useCallback so memoized card children don't see a new prop
+  // reference on every parent render.
+  const selectComponent = useCallback((c: GalleryComponent) => {
     setSelected(c);
     setDetailTab('overview');
-  }
+  }, []);
 
   // Details pane resize state.
   // Default width matches the prior `max-w-md` (28rem = 448px).
@@ -140,9 +147,10 @@ export function Gallery({ components }: GalleryProps) {
     return Array.from(set).sort();
   }, [components]);
 
-  // Filter + search
+  // Filter + search. Uses the deferred search value so a burst of keystrokes
+  // doesn't run this filter on every character.
   const filtered = useMemo(() => {
-    const q = search.trim().toLowerCase();
+    const q = deferredSearch.trim().toLowerCase();
     return components.filter((c) => {
       if (activeLevel !== 'all' && c.atomicLevel !== activeLevel) return false;
       if (selectedStatuses.size > 0 && !selectedStatuses.has(c.status)) return false;
@@ -154,65 +162,74 @@ export function Gallery({ components }: GalleryProps) {
       }
       return true;
     });
-  }, [components, search, activeLevel, selectedStatuses, selectedCategories, selectedMfes]);
+  }, [components, deferredSearch, activeLevel, selectedStatuses, selectedCategories, selectedMfes]);
 
   // Per-option counts (status / category / mfe respect ALL other active filters
   // including the current atomic-level tab). Tab counts respect everything
   // EXCEPT the level dimension, so each tab shows what would be matched if
   // selected.
+  //
+  // Single-pass implementation: for each component, precompute the five per-
+  // dimension boolean predicates once, then increment the bucket for whichever
+  // dimensions are *omitted* (i.e., would-pass-if-this-dimension-were-not-
+  // selected). Replaces the previous implementation which ran ~28 separate
+  // .filter() scans of the full component list on every filter change.
   const { levelTabCounts, statusOptions, categoryOptions, mfeOptions } = useMemo(() => {
-    function countWithout(
-      dimension: 'level' | 'status' | 'category' | 'mfe',
-      value: string,
-    ): number {
-      const q = search.trim().toLowerCase();
-      return components.filter((c) => {
-        if (dimension !== 'level' && activeLevel !== 'all' && c.atomicLevel !== activeLevel) return false;
-        if (dimension !== 'status' && selectedStatuses.size > 0 && !selectedStatuses.has(c.status)) return false;
-        if (dimension !== 'category' && selectedCategories.size > 0 && !selectedCategories.has(c.functionalCategory)) return false;
-        if (dimension !== 'mfe' && selectedMfes.size > 0 && !selectedMfes.has(c.sourceMfe)) return false;
-        if (q) {
-          const hay = `${c.name} ${c.description} ${c.sourceMfe} ${c.functionalCategory}`.toLowerCase();
-          if (!hay.includes(q)) return false;
-        }
-        if (dimension === 'level') return value === 'all' ? true : c.atomicLevel === value;
-        if (dimension === 'status') return c.status === value;
-        if (dimension === 'category') return c.functionalCategory === value;
-        if (dimension === 'mfe') return c.sourceMfe === value;
-        return true;
-      }).length;
+    const q = deferredSearch.trim().toLowerCase();
+    const levelCounts: Record<string, number> = {
+      all: 0, atom: 0, molecule: 0, organism: 0, template: 0, page: 0,
+    };
+    const statusCounts: Record<string, number> = {};
+    const categoryCounts: Record<string, number> = {};
+    const mfeCounts: Record<string, number> = {};
+
+    for (const c of components) {
+      const lvlOk = activeLevel === 'all' || c.atomicLevel === activeLevel;
+      const statusOk = selectedStatuses.size === 0 || selectedStatuses.has(c.status);
+      const catOk = selectedCategories.size === 0 || selectedCategories.has(c.functionalCategory);
+      const mfeOk = selectedMfes.size === 0 || selectedMfes.has(c.sourceMfe);
+      const searchOk =
+        !q ||
+        `${c.name} ${c.description} ${c.sourceMfe} ${c.functionalCategory}`
+          .toLowerCase()
+          .includes(q);
+
+      // Level dimension is the "free" one: everything else must pass.
+      if (statusOk && catOk && mfeOk && searchOk) {
+        levelCounts.all += 1;
+        levelCounts[c.atomicLevel] = (levelCounts[c.atomicLevel] ?? 0) + 1;
+      }
+      if (lvlOk && catOk && mfeOk && searchOk) {
+        statusCounts[c.status] = (statusCounts[c.status] ?? 0) + 1;
+      }
+      if (lvlOk && statusOk && mfeOk && searchOk) {
+        categoryCounts[c.functionalCategory] = (categoryCounts[c.functionalCategory] ?? 0) + 1;
+      }
+      if (lvlOk && statusOk && catOk && searchOk) {
+        mfeCounts[c.sourceMfe] = (mfeCounts[c.sourceMfe] ?? 0) + 1;
+      }
     }
 
-    const levelTabCounts: Record<ActiveLevel, number> = {
-      all: countWithout('level', 'all'),
-      atom: countWithout('level', 'atom'),
-      molecule: countWithout('level', 'molecule'),
-      organism: countWithout('level', 'organism'),
-      template: countWithout('level', 'template'),
-      page: countWithout('level', 'page'),
+    return {
+      levelTabCounts: levelCounts as Record<ActiveLevel, number>,
+      statusOptions: STATUSES.map((s) => ({
+        value: s,
+        label: STATUS_META[s].label,
+        count: statusCounts[s] ?? 0,
+        color: STATUS_META[s].color,
+      })),
+      categoryOptions: FUNCTIONAL_CATEGORIES.map((cat) => ({
+        value: cat,
+        label: cat,
+        count: categoryCounts[cat] ?? 0,
+      })),
+      mfeOptions: allMfes.map((mfe) => ({
+        value: mfe,
+        label: mfe,
+        count: mfeCounts[mfe] ?? 0,
+      })),
     };
-
-    const statusOptions = STATUSES.map((s) => ({
-      value: s,
-      label: STATUS_META[s].label,
-      count: countWithout('status', s),
-      color: STATUS_META[s].color,
-    }));
-
-    const categoryOptions = FUNCTIONAL_CATEGORIES.map((cat) => ({
-      value: cat,
-      label: cat,
-      count: countWithout('category', cat),
-    }));
-
-    const mfeOptions = allMfes.map((mfe) => ({
-      value: mfe,
-      label: mfe,
-      count: countWithout('mfe', mfe),
-    }));
-
-    return { levelTabCounts, statusOptions, categoryOptions, mfeOptions };
-  }, [components, search, activeLevel, selectedStatuses, selectedCategories, selectedMfes, allMfes]);
+  }, [components, deferredSearch, activeLevel, selectedStatuses, selectedCategories, selectedMfes, allMfes]);
 
   // Group filtered results
   const grouped = useMemo(() => {
@@ -454,7 +471,7 @@ export function Gallery({ components }: GalleryProps) {
                       <ComponentCard
                         key={`${c.sourceMfe}-${c.slug}`}
                         component={c}
-                        onClick={() => selectComponent(c)}
+                        onSelect={selectComponent}
                         isSelected={
                           selected?.sourceMfe === c.sourceMfe &&
                           selected?.slug === c.slug
@@ -468,7 +485,7 @@ export function Gallery({ components }: GalleryProps) {
                       <ComponentRow
                         key={`${c.sourceMfe}-${c.slug}`}
                         component={c}
-                        onClick={() => selectComponent(c)}
+                        onSelect={selectComponent}
                         isSelected={
                           selected?.sourceMfe === c.sourceMfe &&
                           selected?.slug === c.slug

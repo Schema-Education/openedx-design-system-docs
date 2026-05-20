@@ -1,6 +1,6 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { memo, type ReactNode } from 'react';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
@@ -10,11 +10,18 @@ import { PARAGON_PREVIEWS } from './paragon-previews';
 
 interface ComponentCardProps {
   component: GalleryComponent;
-  onClick: () => void;
+  // Receives the full component so the parent can pass a single stable callback
+  // for the whole grid. Avoids an `onClick={() => onClick(c)}` closure per card
+  // per parent render, which would invalidate React.memo's shallow prop check.
+  onSelect: (component: GalleryComponent) => void;
   isSelected?: boolean;
 }
 
-export function ComponentCard({ component, onClick, isSelected = false }: ComponentCardProps) {
+export const ComponentCard = memo(function ComponentCard({
+  component,
+  onSelect,
+  isSelected = false,
+}: ComponentCardProps) {
   const atomic = ATOMIC_LEVEL_META[component.atomicLevel];
   const status = STATUS_META[component.status];
   const initial = component.name
@@ -92,7 +99,7 @@ export function ComponentCard({ component, onClick, isSelected = false }: Compon
           <h3 className="font-mono text-sm font-semibold text-gray-900">
             <button
               type="button"
-              onClick={onClick}
+              onClick={() => onSelect(component)}
               className="text-left after:absolute after:inset-0 after:content-[''] focus:outline-none"
             >
               {component.name}
@@ -127,4 +134,4 @@ export function ComponentCard({ component, onClick, isSelected = false }: Compon
       </div>
     </div>
   );
-}
+});
