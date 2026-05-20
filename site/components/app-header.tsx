@@ -14,7 +14,11 @@ export function AppHeader() {
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 bg-white">
       <div className="mx-auto flex h-16 max-w-[1650px] items-center gap-6 px-6">
-        <Link href="/" className="flex items-center gap-3 shrink-0" aria-label="Open edX Design System home">
+        <Link
+          href="/"
+          className="flex items-center gap-3 shrink-0 rounded-md px-2 py-1 -mx-2 transition-colors hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
+          aria-label="Open edX Design System home"
+        >
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/openedx-logo.svg"
@@ -40,31 +44,24 @@ export function AppHeader() {
                 href={tab.href}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'relative inline-flex h-16 items-center px-3 text-sm font-medium transition-colors',
+                  'relative inline-flex h-10 items-center rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]',
                   active
-                    ? 'text-[#0a3055]'
-                    : 'text-gray-600 hover:text-gray-900',
+                    ? 'bg-[#0a3055]/10 text-[#0a3055]'
+                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
                 ].join(' ')}
               >
                 {tab.label}
-                <span
-                  aria-hidden
-                  className={[
-                    'absolute inset-x-3 bottom-0 h-0.5 rounded-t',
-                    active ? 'bg-[#0a3055]' : 'bg-transparent',
-                  ].join(' ')}
-                />
               </Link>
             );
           })}
         </nav>
 
-        <div className="ml-auto flex items-center gap-3 text-xs">
+        <div className="ml-auto flex items-center gap-1 text-xs">
           <a
             href="https://github.com/openedx/paragon"
             target="_blank"
             rel="noreferrer"
-            className="text-gray-500 hover:text-gray-900"
+            className="inline-flex h-8 items-center rounded-md px-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
           >
             Paragon repo ↗
           </a>
@@ -72,7 +69,7 @@ export function AppHeader() {
             href="https://github.com/Schema-Education/openedx-design-system-docs"
             target="_blank"
             rel="noreferrer"
-            className="text-gray-500 hover:text-gray-900"
+            className="inline-flex h-8 items-center rounded-md px-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
           >
             GitHub ↗
           </a>
