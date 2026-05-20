@@ -1,6 +1,13 @@
 'use client';
 
 import { useMemo, useState } from 'react';
+import {
+  Listbox,
+  ListboxButton,
+  ListboxOption,
+  ListboxOptions,
+  Transition,
+} from '@headlessui/react';
 import { ComponentCard } from './component-card';
 import { ComponentDetail } from './component-detail';
 import { MultiSelectCombobox } from './ui/multi-select-combobox';
@@ -221,7 +228,7 @@ export function Gallery({ components }: GalleryProps) {
           {/* Main column — search/filters + grouped card grid (owns the horizontal padding) */}
           <div className="min-w-0 flex-1 px-6 pb-6 pt-4">
             {/* Search + filters + group-by — group-by anchors to right edge of THIS column */}
-            <div className="mb-6 flex flex-wrap items-center gap-2">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
               <div className="relative w-full sm:w-1/4 sm:min-w-[220px] sm:flex-shrink-0">
                 <input
                   type="search"
@@ -256,19 +263,8 @@ export function Gallery({ components }: GalleryProps) {
                 onChange={setSelectedMfes}
                 placeholder="Search MFEs…"
               />
-              <label className="ml-auto flex items-center gap-2 text-xs text-gray-600">
-                <span className="font-medium">Group by</span>
-                <select
-                  value={groupBy}
-                  onChange={(e) => setGroupBy(e.target.value as GroupBy)}
-                  className="rounded-md border border-gray-500 bg-white px-2 py-1.5 text-xs focus:border-gray-700 focus:outline-none"
-                >
-                  <option value="atomicLevel">Atomic level</option>
-                  <option value="functionalCategory">Functional category</option>
-                  <option value="sourceMfe">Source MFE</option>
-                  <option value="flat">Flat (A-Z)</option>
-                </select>
-              </label>
+              <GroupByListbox value={groupBy} onChange={setGroupBy} />
+
             </div>
 
             {/* Result count + Clear All (only when non-tab filters are active) */}
@@ -337,5 +333,58 @@ export function Gallery({ components }: GalleryProps) {
         </div>
       </div>
     </>
+  );
+}
+
+const GROUP_BY_OPTIONS: { value: GroupBy; label: string }[] = [
+  { value: 'atomicLevel', label: 'Atomic level' },
+  { value: 'functionalCategory', label: 'Category' },
+  { value: 'sourceMfe', label: 'Source MFE' },
+  { value: 'flat', label: 'Flat (A-Z)' },
+];
+
+function GroupByListbox({
+  value,
+  onChange,
+}: {
+  value: GroupBy;
+  onChange: (v: GroupBy) => void;
+}) {
+  const current = GROUP_BY_OPTIONS.find((o) => o.value === value) ?? GROUP_BY_OPTIONS[0];
+  return (
+    <div className="ml-auto">
+      <Listbox value={value} onChange={onChange}>
+        <div className="relative">
+          <ListboxButton className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-700 hover:border-gray-400 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500">
+            <span className="font-medium text-gray-600">Group by</span>
+            <span>{current.label}</span>
+            <svg className="h-3 w-3 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m6 9 6 6 6-6" />
+            </svg>
+          </ListboxButton>
+          <Transition
+            leave="transition ease-in duration-100"
+            leaveFrom="opacity-100"
+            leaveTo="opacity-0"
+          >
+            <ListboxOptions className="absolute right-0 z-20 mt-1 min-w-[10rem] origin-top-right rounded-md border border-gray-200 bg-white py-1 text-xs shadow-lg focus:outline-none">
+              {GROUP_BY_OPTIONS.map((opt) => (
+                <ListboxOption
+                  key={opt.value}
+                  value={opt.value}
+                  className={({ active, selected }) =>
+                    `cursor-pointer px-3 py-1.5 ${
+                      active ? 'bg-gray-100' : ''
+                    } ${selected ? 'font-semibold text-gray-900' : 'text-gray-700'}`
+                  }
+                >
+                  {opt.label}
+                </ListboxOption>
+              ))}
+            </ListboxOptions>
+          </Transition>
+        </div>
+      </Listbox>
+    </div>
   );
 }

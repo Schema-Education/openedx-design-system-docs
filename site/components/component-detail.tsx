@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
@@ -13,14 +14,11 @@ interface ComponentDetailProps {
   onSelectConsumer?: (mfe: string) => void;
 }
 
-type Tab = 'overview' | 'metadata' | 'source' | 'figma' | 'consumers' | 'issues';
+type Tab = 'overview' | 'metadata' | 'issues';
 
 const TABS: { id: Tab; label: string }[] = [
   { id: 'overview', label: 'Overview' },
   { id: 'metadata', label: 'Metadata' },
-  { id: 'source', label: 'Source' },
-  { id: 'figma', label: 'Figma' },
-  { id: 'consumers', label: 'Consumers' },
   { id: 'issues', label: 'Issues' },
 ];
 
@@ -79,95 +77,291 @@ function DetailBody({
 
   return (
     <>
-      {/* Header */}
-      <div className={`bg-gradient-to-br ${atomic.gradient} px-6 py-5`}>
-        <div className="flex items-start justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2">
-              <span
-                className={`rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${atomic.color}`}
-              >
-                {atomic.label}
-              </span>
-              <span
-                className={`rounded-full px-2 py-0.5 text-[10px] font-medium ${status.color}`}
-              >
-                {status.label}
-              </span>
-              {component.a11y && (
-                <span className="rounded-full bg-white/80 px-2 py-0.5 text-[10px] font-medium text-blue-800">
-                  WCAG {component.a11y}
+      {/* Header — gradient with title + tabs inside */}
+      <div className={`bg-gradient-to-br ${atomic.gradient}`}>
+        <div className="px-4 pb-3 pt-3.5">
+          <div className="flex items-start justify-between gap-2">
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-1">
+                <span
+                  className={`rounded-full bg-white/90 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide ${atomic.color}`}
+                >
+                  {atomic.label}
                 </span>
-              )}
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-medium ${status.color}`}
+                >
+                  {status.label}
+                </span>
+                {component.a11y && (
+                  <span className="rounded-full bg-white/80 px-1.5 py-0.5 text-[10px] font-medium text-blue-800">
+                    WCAG {component.a11y}
+                  </span>
+                )}
+              </div>
+              <h2 className="mt-1.5 font-mono text-xl font-bold text-gray-900">
+                {component.name}
+              </h2>
+              <p className="mt-1 text-xs text-gray-900/80">{component.description}</p>
             </div>
-            <h2 className="mt-2 font-mono text-2xl font-bold text-gray-900">
-              {component.name}
-            </h2>
-            <p className="mt-1 text-sm text-gray-900/80">{component.description}</p>
+            <button
+              type="button"
+              onClick={onClose}
+              className="shrink-0 rounded-full bg-white/80 p-1 text-gray-900 hover:bg-white"
+              aria-label="Close"
+            >
+              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="rounded-full bg-white/80 p-1.5 text-gray-900 hover:bg-white"
-            aria-label="Close"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+        </div>
+
+        {/* Tabs — spread evenly within the gradient header; dark text meets AA (≥4.5:1) against every atomic gradient */}
+        <div role="tablist" className="flex">
+          {TABS.map((t) => {
+            const isActive = tab === t.id;
+            return (
+              <button
+                key={t.id}
+                role="tab"
+                aria-selected={isActive}
+                type="button"
+                onClick={() => setTab(t.id)}
+                className={`flex-1 border-b-2 px-2 py-2 text-center text-xs font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-white ${
+                  isActive
+                    ? 'border-gray-900 text-gray-900'
+                    : 'border-transparent text-gray-800/70 hover:text-gray-900'
+                }`}
+              >
+                {t.label}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex shrink-0 overflow-x-auto border-b border-gray-200 bg-gray-50">
-        {TABS.map((t) => (
-          <button
-            key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
-            className={`shrink-0 border-b-2 px-4 py-2.5 text-xs font-medium transition ${
-              tab === t.id
-                ? 'border-gray-900 text-gray-900'
-                : 'border-transparent text-gray-500 hover:text-gray-800'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
-
       {/* Tab content */}
-      <div className="flex-1 overflow-y-auto px-6 py-5 text-sm">
-        {tab === 'overview' && <OverviewTab c={component} />}
+      <div className="flex-1 overflow-y-auto px-4 py-4 text-sm">
+        {tab === 'overview' && <OverviewTab c={component} onSelectConsumer={onSelectConsumer} />}
         {tab === 'metadata' && <MetadataTab c={component} />}
-        {tab === 'source' && <SourceTab c={component} />}
-        {tab === 'figma' && <FigmaTab c={component} />}
-        {tab === 'consumers' && <ConsumersTab c={component} onSelect={onSelectConsumer} />}
         {tab === 'issues' && <IssuesTab c={component} />}
       </div>
     </>
   );
 }
 
-function OverviewTab({ c }: { c: GalleryComponent }) {
+function OverviewTab({
+  c,
+  onSelectConsumer,
+}: {
+  c: GalleryComponent;
+  onSelectConsumer?: (mfe: string) => void;
+}) {
+  const [fullscreen, setFullscreen] = useState(false);
+  const fileUrl = `https://github.com/${c.sourceRepo}/blob/main/${c.sourcePath}`;
+  const hasFigma = c.figmaCodeConnectUrl || c.figmaLibraryUrl;
+  const importPkg = c.sourceMfe === 'paragon' ? 'paragon' : c.sourceMfe;
+
   return (
-    <div className="space-y-5">
-      <KV label="Category" value={c.functionalCategory} />
-      <KV label="Source" value={`${c.sourceMfe} (${c.version})`} />
-      <KV label="Last ingested" value={new Date(c.lastIngested).toLocaleDateString()} />
+    <div className="space-y-3">
+      {/* Preview frame + expand */}
+      <ComponentPreview c={c} onExpand={() => setFullscreen(true)} />
+
+      {/* Deprecation banner */}
+      {c.status === 'deprecated' && (
+        <div className="rounded-md border border-gray-200 bg-gray-50 p-2 text-[11px] text-gray-700">
+          This component is <strong>deprecated</strong>. See the description above for the recommended replacement.
+        </div>
+      )}
+
+      {/* Metadata — Category, Source MFE+version, Repository, Path, Last ingested */}
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        <KV label="Category" value={c.functionalCategory} />
+        <KV label="Source" value={`${c.sourceMfe} (${c.version})`} />
+        <KV label="Repository" value={c.sourceRepo} />
+        <KV label="Last ingested" value={new Date(c.lastIngested).toLocaleDateString()} />
+      </div>
+      <KV label="Path" value={c.sourcePath} mono />
+
+      {/* Usage snippet */}
+      <div className="rounded-md bg-gray-50 p-2 font-mono text-[10px] text-gray-700">
+        <div className="text-gray-400">// Phase 2 — usage snippet from crawler</div>
+        <div className="mt-1 break-all">import &#123; {c.name} &#125; from &apos;@openedx/{importPkg}&apos;;</div>
+      </div>
+
+      {/* Quick links — merged repo/file/issues/figma */}
       <div>
-        <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Quick links</div>
-        <div className="flex flex-wrap gap-2">
-          <ExternalChip href={`https://github.com/${c.sourceRepo}`} label="GitHub repo" />
+        <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">Quick links</div>
+        <div className="flex flex-wrap gap-1.5">
+          <ExternalChip href={fileUrl} label="Source file" />
+          <ExternalChip href={`https://github.com/${c.sourceRepo}`} label="Repo" />
           <ExternalChip href={c.githubIssuesUrl} label="Issues" />
           {c.figmaCodeConnectUrl && <ExternalChip href={c.figmaCodeConnectUrl} label="Figma Code Connect" />}
           {c.figmaLibraryUrl && <ExternalChip href={c.figmaLibraryUrl} label="Figma Library" />}
         </div>
+        {!hasFigma && (
+          <p className="mt-1 text-[10px] text-gray-500">
+            No Figma link yet — populated in Phase 2b (ADR-0002).
+          </p>
+        )}
       </div>
-      {c.status === 'deprecated' && (
-        <div className="rounded-md border border-gray-200 bg-gray-50 p-3 text-xs text-gray-700">
-          This component is <strong>deprecated</strong>. See the description above for the recommended replacement.
+
+      {/* Consumers — at the bottom of Overview */}
+      <ConsumersSection c={c} onSelect={onSelectConsumer} />
+
+      {fullscreen && (
+        <FullScreenPreview c={c} onClose={() => setFullscreen(false)} />
+      )}
+    </div>
+  );
+}
+
+/**
+ * Inset preview frame. For now this renders a placeholder card; Phase 2
+ * (ADR-0001) will wire in Sandpack for actual component rendering. Components
+ * we know how to render inline can be added to the renderInlinePreview
+ * switch over time.
+ */
+function ComponentPreview({
+  c,
+  onExpand,
+}: {
+  c: GalleryComponent;
+  onExpand: () => void;
+}) {
+  const atomic = ATOMIC_LEVEL_META[c.atomicLevel];
+  return (
+    <div className="relative overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+      <div className="flex h-32 items-center justify-center">
+        <PreviewPlaceholder c={c} atomicGradient={atomic.gradient} />
+      </div>
+      <button
+        type="button"
+        onClick={onExpand}
+        className="absolute right-1.5 top-1.5 inline-flex items-center gap-1 rounded-md bg-white/90 px-2 py-1 text-[10px] font-medium text-gray-700 shadow-sm ring-1 ring-gray-200 hover:bg-white"
+        aria-label="Expand preview"
+      >
+        <svg className="h-3 w-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4 4h6m-6 0v6m16 0V4h-6m6 16h-6m6 0v-6M4 14v6h6" />
+        </svg>
+        Expand
+      </button>
+    </div>
+  );
+}
+
+function PreviewPlaceholder({
+  c,
+  atomicGradient,
+}: {
+  c: GalleryComponent;
+  atomicGradient: string;
+}) {
+  return (
+    <div className="flex flex-col items-center gap-2 px-4 text-center">
+      <div
+        className={`flex h-10 w-10 items-center justify-center rounded-md bg-gradient-to-br ${atomicGradient} font-mono text-sm font-bold text-white shadow-sm`}
+      >
+        {c.name.charAt(0)}
+      </div>
+      <div className="font-mono text-xs font-medium text-gray-700">{c.name}</div>
+      <div className="text-[10px] text-gray-400">Live preview lands in Phase 2 (ADR-0001)</div>
+    </div>
+  );
+}
+
+function FullScreenPreview({
+  c,
+  onClose,
+}: {
+  c: GalleryComponent;
+  onClose: () => void;
+}) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+    function handleKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') onClose();
+    }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [onClose]);
+
+  if (!mounted) return null;
+
+  const atomic = ATOMIC_LEVEL_META[c.atomicLevel];
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 p-6"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${c.name} expanded preview`}
+    >
+      <div
+        className="flex h-full max-h-[800px] w-full max-w-5xl flex-col overflow-hidden rounded-lg bg-white shadow-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-2.5">
+          <div className="flex items-center gap-2">
+            <span className="font-mono text-sm font-semibold text-gray-900">{c.name}</span>
+            <span className="text-xs text-gray-500">— {atomic.label}</span>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-full p-1.5 text-gray-500 hover:bg-gray-100"
+            aria-label="Close expanded preview"
+          >
+            <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
+        <div className="flex flex-1 items-center justify-center bg-gray-50">
+          <PreviewPlaceholder c={c} atomicGradient={atomic.gradient} />
+        </div>
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
+function ConsumersSection({
+  c,
+  onSelect,
+}: {
+  c: GalleryComponent;
+  onSelect?: (mfe: string) => void;
+}) {
+  return (
+    <div>
+      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+        Consumers {c.consumers.length > 0 && <span className="text-gray-400">· {c.consumers.length}</span>}
+      </div>
+      {c.consumers.length === 0 ? (
+        <p className="text-[11px] text-gray-500">
+          {c.sourceMfe === 'paragon'
+            ? 'Dependency graph populated in Phase 2a.'
+            : 'MFE-level component — consumed only by its own routes.'}
+        </p>
+      ) : (
+        <ul className="space-y-1">
+          {c.consumers.map((mfe) => (
+            <li key={mfe}>
+              <button
+                type="button"
+                onClick={() => onSelect?.(mfe)}
+                className="flex w-full items-center justify-between rounded border border-gray-200 px-2 py-1 text-left font-mono text-[11px] text-gray-800 hover:border-gray-400 hover:bg-gray-50"
+              >
+                <span className="truncate">{mfe}</span>
+                <span className="ml-1 text-gray-400">filter →</span>
+              </button>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   );
@@ -204,92 +398,6 @@ function MetadataTab({ c }: { c: GalleryComponent }) {
   );
 }
 
-function SourceTab({ c }: { c: GalleryComponent }) {
-  const fileUrl = `https://github.com/${c.sourceRepo}/blob/main/${c.sourcePath}`;
-  return (
-    <div className="space-y-4">
-      <KV label="Repository" value={c.sourceRepo} />
-      <KV label="Path" value={c.sourcePath} mono />
-      <KV label="Version" value={c.version} />
-      <div className="flex flex-wrap gap-2">
-        <ExternalChip href={fileUrl} label="Open file on GitHub" />
-        <ExternalChip href={`https://github.com/${c.sourceRepo}`} label="Repository" />
-      </div>
-      <div className="rounded-md bg-gray-50 p-3 font-mono text-[11px] text-gray-700">
-        {/* Placeholder code snippet */}
-        <div className="text-gray-600">// Usage placeholder — populated by Phase 2a crawler</div>
-        <div className="mt-1">import &#123; {c.name} &#125; from &apos;@openedx/{c.sourceMfe === 'paragon' ? 'paragon' : c.sourceMfe}&apos;;</div>
-      </div>
-    </div>
-  );
-}
-
-function FigmaTab({ c }: { c: GalleryComponent }) {
-  const hasFigma = c.figmaCodeConnectUrl || c.figmaLibraryUrl;
-  return (
-    <div className="space-y-4">
-      {hasFigma ? (
-        <>
-          {c.figmaCodeConnectUrl && <KV label="Code Connect" value={c.figmaCodeConnectUrl} mono />}
-          {c.figmaLibraryUrl && <KV label="Library file" value={c.figmaLibraryUrl} mono />}
-          <div className="flex flex-wrap gap-2">
-            {c.figmaCodeConnectUrl && <ExternalChip href={c.figmaCodeConnectUrl} label="Open in Figma" />}
-          </div>
-        </>
-      ) : (
-        <div className="rounded-md border border-dashed border-gray-300 p-6 text-center text-xs text-gray-500">
-          <p className="font-medium text-gray-700">No Figma link yet</p>
-          <p className="mt-1">
-            Figma Code Connect URLs will be populated in Phase 2b. See ADR-0002 for the integration plan.
-          </p>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function ConsumersTab({
-  c,
-  onSelect,
-}: {
-  c: GalleryComponent;
-  onSelect?: (mfe: string) => void;
-}) {
-  if (c.consumers.length === 0) {
-    return (
-      <div className="rounded-md border border-dashed border-gray-300 p-6 text-center text-xs text-gray-500">
-        <p className="font-medium text-gray-700">No recorded consumers</p>
-        <p className="mt-1">
-          {c.sourceMfe === 'paragon'
-            ? 'Consumer graph will be populated by the dependency crawler (Phase 2a).'
-            : 'This is an MFE-level component — it is consumed by its own page routes.'}
-        </p>
-      </div>
-    );
-  }
-  return (
-    <div>
-      <p className="mb-3 text-xs text-gray-500">
-        {c.consumers.length} MFE{c.consumers.length === 1 ? '' : 's'} import this component:
-      </p>
-      <ul className="space-y-1.5">
-        {c.consumers.map((mfe) => (
-          <li key={mfe}>
-            <button
-              type="button"
-              onClick={() => onSelect?.(mfe)}
-              className="flex w-full items-center justify-between rounded-md border border-gray-200 px-3 py-2 text-left text-xs font-mono text-gray-800 hover:border-gray-400 hover:bg-gray-50"
-            >
-              <span>{mfe}</span>
-              <span className="text-gray-600">filter →</span>
-            </button>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
 function IssuesTab({ c }: { c: GalleryComponent }) {
   return (
     <div className="space-y-3">
@@ -316,8 +424,8 @@ function IssuesTab({ c }: { c: GalleryComponent }) {
 function KV({ label, value, mono }: { label: string; value: string; mono?: boolean }) {
   return (
     <div>
-      <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-500">{label}</div>
-      <div className={`mt-0.5 break-all text-sm text-gray-800 ${mono ? 'font-mono' : ''}`}>{value}</div>
+      <div className="text-[10px] font-semibold uppercase tracking-wide text-gray-500">{label}</div>
+      <div className={`mt-0.5 break-all text-[12px] text-gray-800 ${mono ? 'font-mono' : ''}`}>{value}</div>
     </div>
   );
 }
