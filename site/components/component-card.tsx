@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, type ReactNode } from 'react';
+import { memo, useEffect, useState, type ReactNode } from 'react';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
@@ -33,8 +33,23 @@ export const ComponentCard = memo(function ComponentCard({
     component.sourceMfe === 'paragon'
       ? PARAGON_PREVIEWS[component.name]
       : undefined;
+
+  // Paragon previews are rendered client-only. Several Paragon components
+  // (notably Form.Switch / Form.Control / Form.Checkbox) use an internal
+  // ID counter for accessibility labels; SSR and the first client render
+  // produce different IDs ("form-field1" vs "form-field6"), tripping React's
+  // hydration mismatch warning and unsettling the Next.js dev devbar with
+  // a "1 Issue" badge for every search/filter the user runs.
+  //
+  // Gating the preview on a mount flag guarantees the SSR HTML and the first
+  // client render both produce the same null placeholder; the real preview
+  // renders only after hydration completes, so the IDs Paragon generates on
+  // the client can't disagree with anything on the server.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   let previewNode: ReactNode = null;
-  if (previewRender) {
+  if (mounted && previewRender) {
     try {
       previewNode = previewRender();
     } catch (err) {
