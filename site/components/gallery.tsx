@@ -544,6 +544,8 @@ export function Gallery({ components }: GalleryProps) {
           "Clear all filters") reflect the current filter state. */}
       <CommandPalette
         components={components}
+        filteredComponents={filtered}
+        hasActiveFilters={nonTabFilterCount > 0}
         commands={buildCommands({
           activeLevel,
           groupBy,
@@ -566,6 +568,7 @@ export function Gallery({ components }: GalleryProps) {
         open={paletteOpen}
         onClose={() => setPaletteOpen(false)}
         onSelectComponent={selectComponent}
+        onFilterByMfe={(mfe) => setSelectedMfes(new Set([mfe]))}
       />
     </>
   );
