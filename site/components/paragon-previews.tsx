@@ -134,7 +134,11 @@ export const PARAGON_PREVIEWS: Record<string, () => ReactNode> = {
         <Stepper.Step eventKey="setup" title="Setup" />
         <Stepper.Step eventKey="review" title="Review" />
         <Stepper.Step eventKey="done" title="Done" />
-        <Stepper.Header />
+        <Stepper.Header
+          PageCountComponent={({ activeStepIndex, totalSteps }) => (
+            <>{`Step ${activeStepIndex + 1} of ${totalSteps}`}</>
+          )}
+        />
       </Stepper>
     </div>
   ),
