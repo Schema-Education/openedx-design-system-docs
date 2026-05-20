@@ -435,6 +435,10 @@ export function Gallery({ components }: GalleryProps) {
                         key={`${c.sourceMfe}-${c.slug}`}
                         component={c}
                         onClick={() => selectComponent(c)}
+                        isSelected={
+                          selected?.sourceMfe === c.sourceMfe &&
+                          selected?.slug === c.slug
+                        }
                       />
                     ))}
                   </div>
@@ -445,6 +449,10 @@ export function Gallery({ components }: GalleryProps) {
                         key={`${c.sourceMfe}-${c.slug}`}
                         component={c}
                         onClick={() => selectComponent(c)}
+                        isSelected={
+                          selected?.sourceMfe === c.sourceMfe &&
+                          selected?.slug === c.slug
+                        }
                       />
                     ))}
                   </div>

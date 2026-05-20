@@ -9,9 +9,10 @@ import {
 interface ComponentRowProps {
   component: GalleryComponent;
   onClick: () => void;
+  isSelected?: boolean;
 }
 
-export function ComponentRow({ component, onClick }: ComponentRowProps) {
+export function ComponentRow({ component, onClick, isSelected = false }: ComponentRowProps) {
   const atomic = ATOMIC_LEVEL_META[component.atomicLevel];
   const status = STATUS_META[component.status];
 
@@ -19,7 +20,12 @@ export function ComponentRow({ component, onClick }: ComponentRowProps) {
     <button
       type="button"
       onClick={onClick}
-      className="group relative grid w-full grid-cols-[minmax(0,1.25fr)_minmax(0,2fr)_auto_auto_auto_auto] items-center gap-4 border-b border-gray-200 bg-white px-4 py-3 text-left transition hover:bg-gray-50 focus:z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500"
+      aria-current={isSelected ? 'true' : undefined}
+      className={`group relative grid w-full grid-cols-[minmax(0,1.25fr)_minmax(0,2fr)_auto_auto_auto_auto] items-center gap-4 border-b px-4 py-3 text-left transition focus:z-10 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-1 focus-visible:ring-blue-500 ${
+        isSelected
+          ? 'z-10 border-gray-900 bg-blue-50 shadow-[inset_4px_0_0_0_rgb(17_24_39),inset_0_2px_0_0_rgb(17_24_39)]'
+          : 'border-gray-200 bg-white hover:bg-gray-50'
+      }`}
     >
       <div className="flex items-center gap-2 min-w-0">
         <span
