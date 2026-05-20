@@ -1,0 +1,82 @@
+{
+  "capturedAt": "2026-05-20T06:53:08.479Z",
+  "enabledMode": "on",
+  "branch": "claude/wizardly-antonelli-c44779",
+  "sha": "32c3df16f8e07bf65d22ea0a150dd6266d554a44",
+  "shortSha": "32c3df1",
+  "subject": "Merge pull request #30 from Schema-Education/chore/update-deploy-domain-references",
+  "commitIso": "2026-05-19T23:25:31-07:00",
+  "author": "Marco Morales",
+  "recent": [
+    {
+      "sha": "32c3df16f8e07bf65d22ea0a150dd6266d554a44",
+      "shortSha": "32c3df1",
+      "subject": "Merge pull request #30 from Schema-Education/chore/update-deploy-domain-references",
+      "isoDate": "2026-05-19T23:25:31-07:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "076fddfa61932b0540fec53275c21bec1957f79f",
+      "shortSha": "076fddf",
+      "subject": "chore: point deploy references at open-edx-design-system-poc.schema.education",
+      "isoDate": "2026-05-20T00:23:40-06:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "1e78201a2e7c1459c9bfd3915958bd80be93754a",
+      "shortSha": "1e78201",
+      "subject": "Merge pull request #28 from Schema-Education/fix/registry-loading-skeleton",
+      "isoDate": "2026-05-19T23:17:54-07:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "367fb17b5651216f23f32f19378be2f7be2a28ff",
+      "shortSha": "367fb17",
+      "subject": "Merge pull request #29 from Schema-Education/chore/cloudflare-worker-deploy",
+      "isoDate": "2026-05-19T23:15:31-07:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "d88d4ac820e9f923a9a23169df6c5187929e74e7",
+      "shortSha": "d88d4ac",
+      "subject": "fix(registry): show skeleton during dev compile / RSC stream",
+      "isoDate": "2026-05-20T00:07:47-06:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "3c858afa7a1c79bd43837ddc6191061ad2e660a0",
+      "shortSha": "3c858af",
+      "subject": "chore: add Cloudflare Workers deployment config for paragon.schema.education",
+      "isoDate": "2026-05-19T23:56:50-06:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "18143fad9a64f159cfdad1688bf97f7b84a5becc",
+      "shortSha": "18143fa",
+      "subject": "Merge pull request #27 from Schema-Education/feat/gallery-filter-redesign-paragon",
+      "isoDate": "2026-05-19T22:33:12-07:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "9303c4419556402c5c456de44db644ab509a0b85",
+      "shortSha": "9303c44",
+      "subject": "fix(ci): use pnpm lockfile for Paragon + Headless UI deps",
+      "isoDate": "2026-05-19T23:30:03-06:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "7e3b41697f27f82841eeb0bcc1fb9a331f1c6076",
+      "shortSha": "7e3b416",
+      "subject": "feat: replace gallery filter chips with multi-select dropdowns + adopt Paragon",
+      "isoDate": "2026-05-19T17:56:52-06:00",
+      "author": "Marco Morales"
+    },
+    {
+      "sha": "55e879d16df905914eb12d71583df7f281aa24e1",
+      "shortSha": "55e879d",
+      "subject": "Merge pull request #26 from Schema-Education/feat/component-gallery-prototype",
+      "isoDate": "2026-05-19T16:14:40-07:00",
+      "author": "Marco Morales"
+    }
+  ]
+}

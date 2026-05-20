@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "predev": "PROTOTYPE_DEVBAR_ENABLED=true schema-capture-git-info --out ./prototype-devbar.snapshot.json",
     "dev": "next dev --turbopack",
+    "prebuild": "PROTOTYPE_DEVBAR_ENABLED=true schema-capture-git-info --out ./prototype-devbar.snapshot.json",
     "build": "next build && pagefind --site out",
     "build:turbo": "next build --turbopack && pagefind --site out",
     "start": "next start",
@@ -13,11 +15,14 @@
     "deploy": "pnpm build && wrangler deploy"
   },
   "dependencies": {
+    "@base-ui/react": "^1.5.0",
     "@headlessui/react": "^2.2.10",
     "@openedx/paragon": "^23.22.0",
+    "@sdaitzman/prototype-devbar": "^1.2.0",
     "fumadocs-core": "^14.5.0",
     "fumadocs-mdx": "^11.5.0",
     "fumadocs-ui": "^14.5.0",
+    "lucide-react": "^1.16.0",
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",

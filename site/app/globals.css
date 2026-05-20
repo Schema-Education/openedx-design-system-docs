@@ -12,3 +12,36 @@
     @apply bg-primary-100 text-primary-900;
   }
 }
+
+/*
+ * @sdaitzman/prototype-devbar — manual port of the package's `dark-scrollbar`
+ * utility. The package ships its own `styles.css` using Tailwind v4 directives
+ * (`@source`, `@utility`) which this v3 PostCSS pipeline can't parse, so we
+ * inline the one utility the bar's popovers actually need.
+ */
+@layer utilities {
+  .dark-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  }
+  .dark-scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  .dark-scrollbar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .dark-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .dark-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(255, 255, 255, 0.3);
+    background-clip: padding-box;
+  }
+  .dark-scrollbar::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+}
