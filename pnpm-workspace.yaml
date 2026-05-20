@@ -6,3 +6,12 @@ minimumReleaseAge: 10080
 
 patchedDependencies:
   react-transition-group@4.4.5: patches/react-transition-group@4.4.5.patch
+
+onlyBuiltDependencies:
+  - '@bundled-es-modules/glob'
+  - '@parcel/watcher'
+  - core-js-pure
+  - esbuild
+  - sharp
+  - style-dictionary
+  - workerd
