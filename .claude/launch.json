@@ -18,6 +18,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--port", "3003"],
       "port": 3003
+    },
+    {
+      "name": "site-dev-reverent",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev"],
+      "autoPort": true
     }
   ]
 }

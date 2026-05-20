@@ -5,6 +5,7 @@ import {
   STATUS_META,
   type GalleryComponent,
 } from '@/lib/gallery';
+import { PARAGON_PREVIEWS } from './paragon-previews';
 
 interface ComponentCardProps {
   component: GalleryComponent;
@@ -19,21 +20,31 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
     .replace(/^DataTable\./, '')
     .charAt(0);
 
+  const previewRender =
+    component.sourceMfe === 'paragon'
+      ? PARAGON_PREVIEWS[component.name]
+      : undefined;
+  const previewNode = previewRender ? previewRender() : null;
+
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`group flex h-full w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:border-gray-300 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 ${atomic.ring}`}
+    <div
+      className={`group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:border-gray-300 hover:shadow-md focus-within:ring-2 focus-within:ring-offset-2 ${atomic.ring}`}
     >
-      {/* Thumbnail placeholder */}
-      <div
-        className={`relative flex h-28 items-center justify-center bg-gradient-to-br ${atomic.gradient}`}
-      >
-        <span className="text-4xl font-bold text-gray-900/80">
-          {initial}
-        </span>
+      {/* Preview slot — sits above the title-button overlay so interactive Paragon content stays clickable */}
+      <div className="relative z-10 flex h-32 items-center justify-center overflow-hidden bg-gray-50 px-4">
+        {previewNode ? (
+          previewNode
+        ) : (
+          <div
+            className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${atomic.gradient}`}
+          >
+            <span className="text-4xl font-bold text-gray-900/80">
+              {initial}
+            </span>
+          </div>
+        )}
         <span
-          className={`absolute right-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${atomic.color}`}
+          className={`absolute right-2 top-2 z-20 rounded-full px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide ${atomic.color}`}
         >
           {atomic.label}
         </span>
@@ -42,11 +53,17 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-mono text-sm font-semibold text-gray-900">
-            {component.name}
+            <button
+              type="button"
+              onClick={onClick}
+              className="text-left after:absolute after:inset-0 after:content-[''] focus:outline-none"
+            >
+              {component.name}
+            </button>
           </h3>
           {component.status !== 'stable' && (
             <span
-              className={`shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${status.color}`}
+              className={`relative z-10 shrink-0 rounded px-1.5 py-0.5 text-[10px] font-medium ${status.color}`}
             >
               {status.label}
             </span>
@@ -71,6 +88,6 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
           </span>
         </div>
       </div>
-    </button>
+    </div>
   );
 }
