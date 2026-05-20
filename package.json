@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.0",
   "scripts": {
+    "preinstall": "node -e \"if(!(process.env.npm_config_user_agent||'').startsWith('pnpm/'))throw new Error('Use pnpm. See README.')\"",
     "build": "pnpm --filter @openedx-design-system/site build",
     "dev": "pnpm --filter @openedx-design-system/site dev",
     "lint:md": "markdownlint '**/*.md' --ignore node_modules --ignore '**/site/.next/**'",
@@ -13,10 +14,8 @@
   "devDependencies": {
     "markdownlint-cli": "^0.41.0"
   },
-  "packageManager": "pnpm@9.0.0",
-  "pnpm": {
-    "patchedDependencies": {
-      "react-transition-group@4.4.5": "patches/react-transition-group@4.4.5.patch"
-    }
-  }
+  "engines": {
+    "pnpm": ">=10.16.0"
+  },
+  "packageManager": "pnpm@10.16.0"
 }
