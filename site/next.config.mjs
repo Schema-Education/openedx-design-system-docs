@@ -32,8 +32,6 @@ const config = {
       'react-intl',
     ],
     webpackMemoryOptimizations: true,
-    parallelServerBuildTraces: true,
-    parallelServerCompiles: true,
   },
   turbopack: {
     root: path.join(__dirname, '..'),
