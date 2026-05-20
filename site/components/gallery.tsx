@@ -245,13 +245,14 @@ export function Gallery({ components }: GalleryProps) {
                   <path d="m21 21-4.3-4.3" strokeLinecap="round" />
                 </svg>
               </div>
-              <MultiSelectCombobox
+              {/* Status filter hidden for now — re-enable when status lifecycle is finalized. */}
+              {/* <MultiSelectCombobox
                 label="Status"
                 options={statusOptions}
                 selected={selectedStatuses}
                 onChange={setSelectedStatuses}
                 placeholder="Search statuses…"
-              />
+              /> */}
               <MultiSelectCombobox
                 label="Category"
                 options={categoryOptions}
