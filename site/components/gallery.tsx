@@ -234,10 +234,10 @@ export function Gallery({ components }: GalleryProps) {
                   type="search"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search components, MFEs…"
-                  className="w-full rounded-md border border-gray-500 bg-white px-3 py-2 pl-9 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  placeholder="Search components"
+                  className="w-full rounded-md border border-gray-500 bg-white py-2 pl-9 pr-3 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
                 />
-                <svg className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <svg className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <circle cx="11" cy="11" r="7" />
                   <path d="m21 21-4.3-4.3" strokeLinecap="round" />
                 </svg>
@@ -257,11 +257,11 @@ export function Gallery({ components }: GalleryProps) {
                 placeholder="Search categories…"
               />
               <MultiSelectCombobox
-                label="Source MFE"
+                label="Source"
                 options={mfeOptions}
                 selected={selectedMfes}
                 onChange={setSelectedMfes}
-                placeholder="Search MFEs…"
+                placeholder="Search sources…"
               />
               <GroupByListbox value={groupBy} onChange={setGroupBy} />
 
