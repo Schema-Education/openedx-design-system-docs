@@ -52,7 +52,7 @@ export default function HomePage() {
           </Link>
           <Link
             href="/docs"
-            className="rounded border border-gray-300 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-500 hover:text-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="rounded border border-gray-500 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-500 hover:text-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
             Docs &amp; Vision
           </Link>

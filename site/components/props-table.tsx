@@ -30,7 +30,7 @@ interface PropsTableProps {
 export function PropsTable({ props, componentName }: PropsTableProps) {
   if (props.length === 0) {
     return (
-      <div className="rounded-lg border border-gray-200 p-6 text-center text-sm text-gray-400">
+      <div className="rounded-lg border border-gray-200 p-6 text-center text-sm text-gray-600">
         {/* TODO: Phase 2b — populate via react-docgen extraction pipeline */}
         Props documentation for {componentName ?? 'this component'} is coming
         in Phase 2b.
@@ -78,7 +78,7 @@ export function PropsTable({ props, componentName }: PropsTableProps) {
                     required
                   </span>
                 ) : (
-                  <span className="text-gray-400">optional</span>
+                  <span className="text-gray-600">optional</span>
                 )}
               </td>
               <td className="px-4 py-3 font-mono text-xs text-gray-500">

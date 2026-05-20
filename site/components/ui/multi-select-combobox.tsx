@@ -85,7 +85,7 @@ function ChevronIcon() {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
-      className="h-4 w-4 shrink-0 text-gray-400"
+      className="h-4 w-4 shrink-0 text-gray-600"
     >
       <path
         fillRule="evenodd"
@@ -104,7 +104,7 @@ function MagnifierIcon() {
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 20 20"
       fill="currentColor"
-      className="pointer-events-none h-4 w-4 shrink-0 text-gray-400"
+      className="pointer-events-none h-4 w-4 shrink-0 text-gray-600"
     >
       <path
         fillRule="evenodd"
@@ -205,7 +205,7 @@ export function MultiSelectCombobox<T extends string>({
         <ComboboxButton
           className="
             inline-flex items-center gap-1.5
-            rounded-md border border-gray-300 bg-white
+            rounded-md border border-gray-500 bg-white
             px-3 py-2 text-sm text-ink-900
             shadow-sm
             hover:bg-gray-50
@@ -261,7 +261,7 @@ export function MultiSelectCombobox<T extends string>({
                 onChange={(e) => setQuery(e.target.value)}
                 className="
                   w-full bg-transparent text-sm text-ink-900
-                  placeholder:text-gray-400
+                  placeholder:text-gray-600
                   focus:outline-none
                 "
               />
@@ -300,7 +300,7 @@ export function MultiSelectCombobox<T extends string>({
             {/* Options list */}
             <div className="max-h-[260px] overflow-y-auto py-1">
               {filtered.length === 0 ? (
-                <p className="py-4 text-center text-sm text-gray-400">{emptyHint}</p>
+                <p className="py-4 text-center text-sm text-gray-600">{emptyHint}</p>
               ) : (
                 filtered.map((opt) => (
                   <ComboboxOption
@@ -322,7 +322,7 @@ export function MultiSelectCombobox<T extends string>({
                             rounded-[3px] border
                             ${isSelected
                               ? 'border-primary-600 bg-primary-600'
-                              : 'border-gray-300 bg-white'}
+                              : 'border-gray-500 bg-white'}
                           `}
                         >
                           {isSelected && <CheckIcon />}
@@ -341,7 +341,7 @@ export function MultiSelectCombobox<T extends string>({
 
                         {/* Count */}
                         {opt.count !== undefined && (
-                          <span className="ml-auto shrink-0 text-xs text-gray-400">
+                          <span className="ml-auto shrink-0 text-xs text-gray-600">
                             ({opt.count})
                           </span>
                         )}

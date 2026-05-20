@@ -29,7 +29,7 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
       <div
         className={`relative flex h-28 items-center justify-center bg-gradient-to-br ${atomic.gradient}`}
       >
-        <span className="text-4xl font-bold text-white/90 drop-shadow-sm">
+        <span className="text-4xl font-bold text-gray-900/80">
           {initial}
         </span>
         <span
@@ -66,7 +66,7 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
               WCAG {component.a11y}
             </span>
           )}
-          <span className="ml-auto truncate font-mono text-[10px] text-gray-400">
+          <span className="ml-auto truncate font-mono text-[10px] text-gray-600">
             {component.sourceMfe}
           </span>
         </div>
