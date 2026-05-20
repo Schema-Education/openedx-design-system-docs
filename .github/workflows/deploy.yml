@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: production
-      url: https://paragon.schema.education
+      url: https://open-edx-design-system-poc.schema.education
 
     permissions:
       contents: read
