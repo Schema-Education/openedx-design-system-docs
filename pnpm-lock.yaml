@@ -49,7 +49,7 @@ importers:
         version: 2.2.10(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       '@openedx/paragon':
         specifier: ^23.22.0
-        version: 23.22.0(@types/node@22.19.19)(@types/react@19.2.15)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@19.2.6(react@19.2.6))(react-intl@10.1.8(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)(tslib@2.8.1)
+        version: 23.22.0(@types/node@22.19.19)(@types/react@19.2.15)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@19.2.6(react@19.2.6))(react-intl@10.1.6(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)(tslib@2.8.1)
       '@sdaitzman/prototype-devbar':
         specifier: ^1.2.0
         version: 1.2.0(@base-ui/react@1.4.1(@types/react@19.2.15)(react-dom@19.2.6(react@19.2.6))(react@19.2.6))(lucide-react@1.14.0(react@19.2.6))(react-dom@19.2.6(react@19.2.6))(react@19.2.6)(tailwindcss@3.4.19(tsx@4.22.3)(yaml@2.9.0))
@@ -75,8 +75,8 @@ importers:
         specifier: ^19.1.0
         version: 19.2.6(react@19.2.6)
       react-intl:
-        specifier: ^10.1.8
-        version: 10.1.8(@types/react@19.2.15)(react@19.2.6)
+        specifier: ^10.1.6
+        version: 10.1.6(@types/react@19.2.15)(react@19.2.6)
     devDependencies:
       '@edx/browserslist-config':
         specifier: ^1.5.1
@@ -746,17 +746,17 @@ packages:
   '@formatjs/fast-memoize@3.1.5':
     resolution: {integrity: sha512-KLi3fan6WnCHmigd9pmEEN8Hid0v4wiFBW576M/d07KMWYecf1CvyMI3n34vCmHT4AoVqG2n702kiHbXjzZX2A==}
 
-  '@formatjs/icu-messageformat-parser@3.5.9':
-    resolution: {integrity: sha512-PZm6O9JI/gUPtQV9r2eaMuLb4yWqV2vz+ot03ORHWTKO343LSpZi0TqeXLB2ZZGDXLCw2SbfgsQ0GxoxXMl79g==}
+  '@formatjs/icu-messageformat-parser@3.5.8':
+    resolution: {integrity: sha512-uZLvzLFN7iV2l8cbDdROwgKGtdELeLI4bpnsuz1DnyscHDxn8TdDE0anHzcfjtWK66XYCllGLV3Mi3CYcEPg/g==}
 
-  '@formatjs/icu-skeleton-parser@2.1.9':
-    resolution: {integrity: sha512-rsxswgHMfU1zUgB2byc08fesf83wLGjFnzLCEtuf00mx2doiqc6pYrf67raI37XqdRcGUviQepk2UKGqpng74Q==}
+  '@formatjs/icu-skeleton-parser@2.1.8':
+    resolution: {integrity: sha512-iX5i0O15gPf69l1WqmLFYwn7wq53lauvytvWFnHamIfX/5Ta56gpFj6fdeHRcKTV58IhrKv8QOvWfTYZYm7f+g==}
 
   '@formatjs/intl-localematcher@0.5.10':
     resolution: {integrity: sha512-af3qATX+m4Rnd9+wHcjJ4w2ijq+rAVP3CCinJQvFv1kgSu1W6jypUmvleJxcewdxmutM8dmIRZFxO/IQBZmP2Q==}
 
-  '@formatjs/intl@4.1.11':
-    resolution: {integrity: sha512-CB0mZTbnVCgnZDpOwDUGp6tC6cRl8C8gbpqvP0aatwkcRdazgXctCppljnVU3nzG0yuOABO1+DDRekESiitNmA==}
+  '@formatjs/intl@4.1.10':
+    resolution: {integrity: sha512-Zv9FqRVdEFsHLsXGkcthyuXv4hlTLvbvTr4Fi16w+VCd7MSz2RtI18mXd4B44N7nuvF5be2+JGauU3QoJ2wELw==}
 
   '@headlessui/react@2.2.10':
     resolution: {integrity: sha512-5pVLNK9wlpxTUTy9GpgbX/SdcRh+HBnPktjM2wbiLTH4p+2EPHBO1aoSryUCuKUIItdDWO9ITlhUL8UnUN/oIA==}
@@ -2610,8 +2610,8 @@ packages:
     resolution: {integrity: sha512-UjOaSel/iddGZJ5xP/Eixh6dY1XghiBw4XK13rCCIJcJfyhhoul/7KhLLUGtebEj6GDYM6Vnx/mVsjx2L/mFIA==}
     engines: {node: '>=12.0.0'}
 
-  intl-messageformat@11.2.6:
-    resolution: {integrity: sha512-afAN2yNN7zjB77G1ZC5L8GtLrEshyBvOQXz88flxCO/ocTIQist98gu0r/O6H/SSiQhQsOOtWPxmCEvtDABXXQ==}
+  intl-messageformat@11.2.5:
+    resolution: {integrity: sha512-zaROHiUsnlSFXVypU54AsQuAm3DLmmSH8KfDhiUuG1XZ9NTQ4o3xlxIJYVNmeWAklyp3CWg0lhexNUnee8PsYQ==}
 
   invariant@2.2.4:
     resolution: {integrity: sha512-phJfQVBuaJM5raOpJjSfkiD6BpbCE4Ns//LaXl6wGYtUBY83nWS6Rf9tXm2e8VaK60JEjYldbPif/A2B1C2gNA==}
@@ -3419,8 +3419,8 @@ packages:
     peerDependencies:
       react: '>=0.14.0'
 
-  react-intl@10.1.8:
-    resolution: {integrity: sha512-+iBzzkykXkZ2/9zI8LnDmfCobgz33J+r+24QbX4dJJ4f6rO1LuFwqv39kSTloZdPm9yYcnJOrvz0MqyCa6XeXQ==}
+  react-intl@10.1.6:
+    resolution: {integrity: sha512-cXXRQ+M/uot4OYIerz2q752wfYUKnRYlm++eny9d2u1LBmRo54KZviPb+modE0WcYg8ZB4mfokIOCaFZkZlD0w==}
     peerDependencies:
       '@types/react': '19'
       react: '19'
@@ -4435,21 +4435,21 @@ snapshots:
 
   '@formatjs/fast-memoize@3.1.5': {}
 
-  '@formatjs/icu-messageformat-parser@3.5.9':
+  '@formatjs/icu-messageformat-parser@3.5.8':
     dependencies:
-      '@formatjs/icu-skeleton-parser': 2.1.9
+      '@formatjs/icu-skeleton-parser': 2.1.8
 
-  '@formatjs/icu-skeleton-parser@2.1.9': {}
+  '@formatjs/icu-skeleton-parser@2.1.8': {}
 
   '@formatjs/intl-localematcher@0.5.10':
     dependencies:
       tslib: 2.8.1
 
-  '@formatjs/intl@4.1.11':
+  '@formatjs/intl@4.1.10':
     dependencies:
       '@formatjs/fast-memoize': 3.1.5
-      '@formatjs/icu-messageformat-parser': 3.5.9
-      intl-messageformat: 11.2.6
+      '@formatjs/icu-messageformat-parser': 3.5.8
+      intl-messageformat: 11.2.5
 
   '@headlessui/react@2.2.10(react-dom@19.2.6(react@19.2.6))(react@19.2.6)':
     dependencies:
@@ -4799,7 +4799,7 @@ snapshots:
       '@nodelib/fs.scandir': 2.1.5
       fastq: 1.20.1
 
-  '@openedx/paragon@23.22.0(@types/node@22.19.19)(@types/react@19.2.15)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@19.2.6(react@19.2.6))(react-intl@10.1.8(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)(tslib@2.8.1)':
+  '@openedx/paragon@23.22.0(@types/node@22.19.19)(@types/react@19.2.15)(jquery@3.7.1)(popper.js@1.16.1)(react-dom@19.2.6(react@19.2.6))(react-intl@10.1.6(@types/react@19.2.15)(react@19.2.6))(react@19.2.6)(tslib@2.8.1)':
     dependencies:
       '@popperjs/core': 2.11.8
       '@tokens-studio/sd-transforms': 1.3.0(style-dictionary@4.4.0(tslib@2.8.1))
@@ -4836,7 +4836,7 @@ snapshots:
       react-dropzone: 14.4.1(react@19.2.6)
       react-focus-on: 3.10.2(@types/react@19.2.15)(react@19.2.6)
       react-imask: 7.6.1(react@19.2.6)
-      react-intl: 10.1.8(@types/react@19.2.15)(react@19.2.6)
+      react-intl: 10.1.6(@types/react@19.2.15)(react@19.2.6)
       react-loading-skeleton: 3.5.0(react@19.2.6)
       react-popper: 2.3.0(@popperjs/core@2.11.8)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       react-proptype-conditional-require: 1.0.4
@@ -6378,10 +6378,10 @@ snapshots:
     transitivePeerDependencies:
       - '@types/node'
 
-  intl-messageformat@11.2.6:
+  intl-messageformat@11.2.5:
     dependencies:
       '@formatjs/fast-memoize': 3.1.5
-      '@formatjs/icu-messageformat-parser': 3.5.9
+      '@formatjs/icu-messageformat-parser': 3.5.8
 
   invariant@2.2.4:
     dependencies:
@@ -7499,12 +7499,12 @@ snapshots:
       prop-types: 15.8.1
       react: 19.2.6
 
-  react-intl@10.1.8(@types/react@19.2.15)(react@19.2.6):
+  react-intl@10.1.6(@types/react@19.2.15)(react@19.2.6):
     dependencies:
-      '@formatjs/icu-messageformat-parser': 3.5.9
-      '@formatjs/intl': 4.1.11
+      '@formatjs/icu-messageformat-parser': 3.5.8
+      '@formatjs/intl': 4.1.10
       '@types/react': 19.2.15
-      intl-messageformat: 11.2.6
+      intl-messageformat: 11.2.5
       react: 19.2.6
 
   react-is@16.13.1: {}

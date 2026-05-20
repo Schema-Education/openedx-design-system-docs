@@ -27,7 +27,7 @@
     "next": "^15.3.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
-    "react-intl": "^10.1.8"
+    "react-intl": "^10.1.6"
   },
   "devDependencies": {
     "@edx/browserslist-config": "^1.5.1",
