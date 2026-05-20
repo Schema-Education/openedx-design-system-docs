@@ -43,29 +43,21 @@ export function ComponentDetail({
     return () => document.removeEventListener('keydown', handleKey);
   }, [component, onClose]);
 
-  const open = component !== null;
+  if (!component) return null;
 
   return (
-    <>
-      {/* Backdrop */}
-      <div
-        className={`fixed inset-0 z-40 bg-black/30 transition-opacity duration-200 ${
-          open ? 'opacity-100' : 'pointer-events-none opacity-0'
-        }`}
-        onClick={onClose}
-        aria-hidden="true"
+    <aside
+      className="flex flex-col bg-white"
+      aria-label={`${component.name} details`}
+    >
+      <DetailBody
+        component={component}
+        tab={tab}
+        setTab={setTab}
+        onClose={onClose}
+        onSelectConsumer={onSelectConsumer}
       />
-
-      {/* Slide-over panel */}
-      <aside
-        className={`fixed inset-y-0 right-0 z-50 flex w-full max-w-xl transform flex-col bg-white shadow-2xl transition-transform duration-200 ease-out ${
-          open ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        aria-hidden={!open}
-      >
-        {component && <DetailBody component={component} tab={tab} setTab={setTab} onClose={onClose} onSelectConsumer={onSelectConsumer} />}
-      </aside>
-    </>
+    </aside>
   );
 }
 
