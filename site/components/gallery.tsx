@@ -8,6 +8,8 @@ import {
   ListboxOptions,
   Transition,
 } from '@headlessui/react';
+import { IconButton, IconButtonToggle, Icon } from '@openedx/paragon';
+import { GridView, ViewList } from '@openedx/paragon/icons';
 import { ComponentCard } from './component-card';
 import { ComponentRow } from './component-row';
 import { ComponentDetail } from './component-detail';
@@ -362,52 +364,30 @@ function ViewModeToggle({
   value: ViewMode;
   onChange: (v: ViewMode) => void;
 }) {
-  const baseBtn =
-    'flex h-7 w-7 items-center justify-center transition focus:outline-none focus-visible:z-10 focus-visible:ring-1 focus-visible:ring-gray-500';
   return (
-    <div
-      role="group"
-      aria-label="View mode"
-      className="inline-flex overflow-hidden rounded-md border border-gray-300 bg-white"
+    <IconButtonToggle
+      activeValue={value}
+      onChange={(v: string) => onChange(v as ViewMode)}
     >
-      <button
-        type="button"
-        onClick={() => onChange('card')}
-        aria-pressed={value === 'card'}
-        aria-label="Card view"
-        title="Card view"
-        className={`${baseBtn} ${
-          value === 'card'
-            ? 'bg-gray-100 text-gray-900'
-            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-        }`}
-      >
-        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-          <rect x="3" y="3" width="7" height="7" rx="1" />
-          <rect x="14" y="3" width="7" height="7" rx="1" />
-          <rect x="3" y="14" width="7" height="7" rx="1" />
-          <rect x="14" y="14" width="7" height="7" rx="1" />
-        </svg>
-      </button>
-      <button
-        type="button"
-        onClick={() => onChange('list')}
-        aria-pressed={value === 'list'}
-        aria-label="List view"
-        title="List view"
-        className={`${baseBtn} border-l border-gray-300 ${
-          value === 'list'
-            ? 'bg-gray-100 text-gray-900'
-            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-        }`}
-      >
-        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
-          <path d="M4 6h16" />
-          <path d="M4 12h16" />
-          <path d="M4 18h16" />
-        </svg>
-      </button>
-    </div>
+      <IconButton
+        // @ts-expect-error — IconButtonToggle injects `value`, `isActive`, etc.
+        value="card"
+        src={GridView}
+        iconAs={Icon}
+        alt="Card view"
+        variant="primary"
+        size="sm"
+      />
+      <IconButton
+        // @ts-expect-error — IconButtonToggle injects `value`, `isActive`, etc.
+        value="list"
+        src={ViewList}
+        iconAs={Icon}
+        alt="List view"
+        variant="primary"
+        size="sm"
+      />
+    </IconButtonToggle>
   );
 }
 
