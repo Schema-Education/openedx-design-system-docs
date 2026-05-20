@@ -370,7 +370,6 @@ function ViewModeToggle({
       onChange={(v: string) => onChange(v as ViewMode)}
     >
       <IconButton
-        // @ts-expect-error — IconButtonToggle injects `value`, `isActive`, etc.
         value="card"
         src={GridView}
         iconAs={Icon}
@@ -379,7 +378,6 @@ function ViewModeToggle({
         size="sm"
       />
       <IconButton
-        // @ts-expect-error — IconButtonToggle injects `value`, `isActive`, etc.
         value="list"
         src={ViewList}
         iconAs={Icon}
