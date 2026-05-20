@@ -10,3 +10,7 @@ site/out/
 *.tsbuildinfo
 .turbo/
 registry/crawler/dist/
+
+# Local scratch from Firecrawl research agents — raw scrapes
+# are throwaway; the synthesized output lives in registry/.
+.firecrawl/
