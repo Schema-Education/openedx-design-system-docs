@@ -11,7 +11,7 @@
 # Pagefind handles search client-side, and Next is configured with
 # `output: 'export'`.
 
-name = "paragon-schema-education"
+name = "openedx-design-system-poc"
 compatibility_date = "2025-05-01"
 
 [assets]
