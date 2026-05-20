@@ -4,14 +4,6 @@ packages:
 
 minimumReleaseAge: 10080
 
-# Packages that are exempt from the 1-week minimum-release-age floor.
-# Add entries when an existing dependency's currently-pinned version is
-# itself <7 days old: re-resolution (triggered by `pnpm add`) would
-# otherwise fail to satisfy its own semver range, since the floor
-# excludes the only matching version.
-minimumReleaseAgeExclude:
-  - '@base-ui/react'
-
 patchedDependencies:
   react-transition-group@4.4.5: patches/react-transition-group@4.4.5.patch
 
