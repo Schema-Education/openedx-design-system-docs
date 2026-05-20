@@ -1,40 +1,16 @@
 import Link from 'next/link';
 
-const features = [
-  {
-    title: 'Atomic Taxonomy',
-    description:
-      'Components classified from atoms to pages using a strict atomic design hierarchy. Every component knows its level, source MFE, and composites.',
-    icon: '⚛',
-    href: '/docs/atomic-design',
-  },
-  {
-    title: 'Multi-MFE Coverage',
-    description:
-      'Registry spans frontend-app-learning, frontend-app-authoring, frontend-app-course-authoring, and 10+ other Open edX MFEs — one source of truth.',
-    icon: '🗂',
-    href: '/registry',
-  },
-  {
-    title: 'Figma Code Connect',
-    description:
-      'Each registered component links Figma node IDs to live code via Code Connect, closing the designer–developer gap without manual sync.',
-    icon: '🔗',
-    href: '/docs',
-  },
-] as const;
-
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-white">
       {/* Hero */}
       <section className="mx-auto max-w-4xl px-6 py-24 text-center">
         <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-primary-500">
-          Open edX · Design System
+          Open edX · Design System POC
         </p>
         <h1 className="text-5xl font-bold tracking-tight text-gray-800 sm:text-6xl">
-          One design system,<br />
-          <span className="text-primary-500">every MFE.</span>
+          A POC for a unified{' '}
+          <span className="text-primary-500">Open edX Design System Docs Site</span>
         </h1>
         <p className="mt-6 text-xl text-gray-600">
           Atoms through pages across every Open edX micro-frontend.
@@ -59,29 +35,10 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Feature cards */}
-      <section className="mx-auto max-w-5xl px-6 pb-24">
-        <div className="grid gap-8 sm:grid-cols-3">
-          {features.map((feature) => (
-            <Link
-              key={feature.title}
-              href={feature.href}
-              className="group rounded border border-gray-200 bg-white p-6 transition hover:border-primary-500 hover:shadow-md"
-            >
-              <div className="mb-4 text-3xl">{feature.icon}</div>
-              <h2 className="text-lg font-semibold text-gray-800 group-hover:text-primary-500">
-                {feature.title}
-              </h2>
-              <p className="mt-2 text-sm text-gray-500">{feature.description}</p>
-            </Link>
-          ))}
-        </div>
-      </section>
-
       {/* Ink band — echoes openedx.org's dark CTA strip */}
       <section className="bg-ink-500 text-white">
         <div className="mx-auto max-w-4xl px-6 py-16 text-center">
-          <h2 className="text-3xl font-bold tracking-tight">
+          <h2 className="text-3xl font-bold tracking-tight text-white">
             An agentic v1 vision — open to contribution.
           </h2>
           <p className="mt-4 text-lg text-ink-100">
