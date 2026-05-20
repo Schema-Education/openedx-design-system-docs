@@ -103,7 +103,12 @@ export const LAYOUT_PREVIEWS: Record<string, () => ReactNode> = {
       </Collapse>
     </PreviewSlot>
   ),
-  Fade: FadePreview,
+  // Must wrap in a () => <FadePreview /> rather than naked `FadePreview`:
+  // component-card invokes the registry entry as a plain function
+  // (`previewRender()`), so a bare component would execute its hooks in the
+  // caller's render context instead of being mounted as a child. The JSX
+  // wrapper isolates FadePreview's hooks to its own component instance.
+  Fade: () => <FadePreview />,
   TransitionReplace: () => (
     <PreviewSlot width={200}>
       <TransitionReplace>
