@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Listbox,
   ListboxButton,
@@ -36,6 +36,58 @@ export function Gallery({ components }: GalleryProps) {
   const [selectedMfes, setSelectedMfes] = useState<Set<string>>(new Set());
   const [groupBy, setGroupBy] = useState<GroupBy>('atomicLevel');
   const [selected, setSelected] = useState<GalleryComponent | null>(null);
+
+  // Details pane resize state.
+  // Default width matches the prior `max-w-md` (28rem = 448px).
+  // Min width keeps the pane readable; max width is computed dynamically so
+  // the main listing area never shrinks below one 320px card column plus
+  // its horizontal padding (px-6 = 24px each side).
+  const DEFAULT_PANE_WIDTH = 448;
+  const MIN_PANE_WIDTH = 320;
+  const MAIN_MIN_WIDTH = 320 + 48;
+  const [paneWidth, setPaneWidth] = useState<number>(DEFAULT_PANE_WIDTH);
+  const bodyRef = useRef<HTMLDivElement>(null);
+  const isResizingRef = useRef(false);
+
+  useEffect(() => {
+    function clampToBounds(width: number): number {
+      const rect = bodyRef.current?.getBoundingClientRect();
+      const containerWidth = rect?.width ?? width + MAIN_MIN_WIDTH;
+      const maxPane = Math.max(MIN_PANE_WIDTH, containerWidth - MAIN_MIN_WIDTH);
+      return Math.min(maxPane, Math.max(MIN_PANE_WIDTH, width));
+    }
+
+    function onMove(e: PointerEvent) {
+      if (!isResizingRef.current || !bodyRef.current) return;
+      const rect = bodyRef.current.getBoundingClientRect();
+      const next = rect.right - e.clientX;
+      setPaneWidth(clampToBounds(next));
+    }
+    function onUp() {
+      if (!isResizingRef.current) return;
+      isResizingRef.current = false;
+      document.body.style.cursor = '';
+      document.body.style.userSelect = '';
+    }
+    function onResize() {
+      setPaneWidth((w) => clampToBounds(w));
+    }
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('resize', onResize);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('resize', onResize);
+    };
+  }, []);
+
+  function startResize(e: React.PointerEvent) {
+    e.preventDefault();
+    isResizingRef.current = true;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+  }
 
   // Derive list of distinct source MFEs
   const allMfes = useMemo(() => {
@@ -223,8 +275,8 @@ export function Gallery({ components }: GalleryProps) {
       </div>
 
       <div className="mx-auto max-w-[1650px]">
-        {/* Two-column body: filters + cards on the left, detail sidebar flush to the right */}
-        <div className="flex items-start">
+        {/* Two-column body: filters + cards on the left, details pane flush to the right */}
+        <div ref={bodyRef} className="flex items-start">
           {/* Main column — search/filters + grouped card grid (owns the horizontal padding) */}
           <div className="min-w-0 flex-1 px-6 pb-6 pt-4">
             {/* Search + filters + group-by — group-by anchors to right edge of THIS column */}
@@ -317,17 +369,32 @@ export function Gallery({ components }: GalleryProps) {
             ))}
           </div>
 
-          {/* Right sidebar — flush to top dividing line and to the right edge of the layout */}
+          {/* Details pane — flush to top dividing line and to the right edge of the layout.
+              Width is user-resizable via the left-edge drag handle. */}
           {selected && (
-            <div className="sticky top-[102px] w-full max-w-md flex-shrink-0 self-start h-[calc(100vh-102px)] overflow-y-auto border-l border-gray-200 bg-white">
-              <ComponentDetail
-                component={selected}
-                onClose={() => setSelected(null)}
-                onSelectConsumer={(mfe) => {
-                  setSelectedMfes(new Set([mfe]));
-                  setSelected(null);
-                }}
-              />
+            <div
+              className="sticky top-[102px] flex-shrink-0 self-start h-[calc(100vh-102px)] border-l border-gray-200 bg-white relative"
+              style={{ width: paneWidth }}
+            >
+              <div
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize details pane"
+                onPointerDown={startResize}
+                className="group absolute left-0 top-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
+              >
+                <div className="mx-auto h-full w-px bg-transparent transition-colors group-hover:bg-gray-400" />
+              </div>
+              <div className="h-full overflow-y-auto">
+                <ComponentDetail
+                  component={selected}
+                  onClose={() => setSelected(null)}
+                  onSelectConsumer={(mfe) => {
+                    setSelectedMfes(new Set([mfe]));
+                    setSelected(null);
+                  }}
+                />
+              </div>
             </div>
           )}
         </div>
