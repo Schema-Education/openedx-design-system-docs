@@ -47,7 +47,7 @@ export function AppHeader() {
                   'relative inline-flex h-10 items-center rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]',
                   active
                     ? 'bg-[#0a3055]/10 text-[#0a3055]'
-                    : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900',
+                    : 'text-gray-700 hover:bg-gray-100',
                 ].join(' ')}
               >
                 {tab.label}
@@ -61,7 +61,7 @@ export function AppHeader() {
             href="https://github.com/openedx/paragon"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-8 items-center rounded-md px-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
+            className="inline-flex h-8 items-center rounded-md px-2 text-gray-600 transition-colors hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
           >
             Paragon repo ↗
           </a>
@@ -69,7 +69,7 @@ export function AppHeader() {
             href="https://github.com/Schema-Education/openedx-design-system-docs"
             target="_blank"
             rel="noreferrer"
-            className="inline-flex h-8 items-center rounded-md px-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
+            className="inline-flex h-8 items-center rounded-md px-2 text-gray-600 transition-colors hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
           >
             GitHub ↗
           </a>

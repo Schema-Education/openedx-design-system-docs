@@ -266,8 +266,8 @@ export function Gallery({ components }: GalleryProps) {
                   onClick={() => setActiveLevel(tab.key)}
                   className={`relative -mb-px flex items-baseline gap-2 rounded-t-md px-4 py-2.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055] ${
                     isActive
-                      ? 'border-b-2 border-[#0a3055] bg-[#0a3055]/10 font-semibold text-[#0a3055]'
-                      : 'border-b-2 border-transparent font-medium text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                      ? 'border-b-2 border-[#0a3055] font-semibold text-[#0a3055]'
+                      : 'border-b-2 border-transparent font-medium text-gray-700 hover:bg-[#0a3055]/10 hover:text-[#0a3055]'
                   }`}
                 >
                   <span>{tab.label}</span>
