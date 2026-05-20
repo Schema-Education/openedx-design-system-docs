@@ -9,6 +9,7 @@ import {
   Transition,
 } from '@headlessui/react';
 import { ComponentCard } from './component-card';
+import { ComponentRow } from './component-row';
 import { ComponentDetail } from './component-detail';
 import { MultiSelectCombobox } from './ui/multi-select-combobox';
 import {
@@ -23,6 +24,7 @@ import {
 import type { AtomicLevel } from '@/lib/registry';
 
 type ActiveLevel = 'all' | AtomicLevel;
+type ViewMode = 'card' | 'list';
 
 interface GalleryProps {
   components: GalleryComponent[];
@@ -35,6 +37,7 @@ export function Gallery({ components }: GalleryProps) {
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedMfes, setSelectedMfes] = useState<Set<string>>(new Set());
   const [groupBy, setGroupBy] = useState<GroupBy>('atomicLevel');
+  const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [selected, setSelected] = useState<GalleryComponent | null>(null);
 
   // Derive list of distinct source MFEs
@@ -263,7 +266,10 @@ export function Gallery({ components }: GalleryProps) {
                 onChange={setSelectedMfes}
                 placeholder="Search sources…"
               />
-              <GroupByListbox value={groupBy} onChange={setGroupBy} />
+              <div className="ml-auto flex items-center gap-2">
+                <ViewModeToggle value={viewMode} onChange={setViewMode} />
+                <GroupByListbox value={groupBy} onChange={setGroupBy} />
+              </div>
 
             </div>
 
@@ -298,21 +304,33 @@ export function Gallery({ components }: GalleryProps) {
                     : group.key}
                   <span className="font-mono text-xs font-normal text-gray-600">{group.items.length}</span>
                 </h2>
-                <div
-                  className={`grid grid-cols-1 gap-5 sm:grid-cols-2 ${
-                    selected
-                      ? 'lg:grid-cols-1 xl:grid-cols-2'
-                      : 'lg:grid-cols-2 xl:grid-cols-3'
-                  }`}
-                >
-                  {group.items.map((c) => (
-                    <ComponentCard
-                      key={`${c.sourceMfe}-${c.slug}`}
-                      component={c}
-                      onClick={() => setSelected(c)}
-                    />
-                  ))}
-                </div>
+                {viewMode === 'card' ? (
+                  <div
+                    className={`grid grid-cols-1 gap-5 sm:grid-cols-2 ${
+                      selected
+                        ? 'lg:grid-cols-1 xl:grid-cols-2'
+                        : 'lg:grid-cols-2 xl:grid-cols-3'
+                    }`}
+                  >
+                    {group.items.map((c) => (
+                      <ComponentCard
+                        key={`${c.sourceMfe}-${c.slug}`}
+                        component={c}
+                        onClick={() => setSelected(c)}
+                      />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
+                    {group.items.map((c) => (
+                      <ComponentRow
+                        key={`${c.sourceMfe}-${c.slug}`}
+                        component={c}
+                        onClick={() => setSelected(c)}
+                      />
+                    ))}
+                  </div>
+                )}
               </section>
             ))}
           </div>
@@ -336,6 +354,60 @@ export function Gallery({ components }: GalleryProps) {
   );
 }
 
+function ViewModeToggle({
+  value,
+  onChange,
+}: {
+  value: ViewMode;
+  onChange: (v: ViewMode) => void;
+}) {
+  const baseBtn =
+    'flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium transition focus:outline-none focus-visible:z-10 focus-visible:ring-1 focus-visible:ring-gray-500';
+  return (
+    <div
+      role="group"
+      aria-label="View mode"
+      className="inline-flex overflow-hidden rounded-md border border-gray-300 bg-white"
+    >
+      <button
+        type="button"
+        onClick={() => onChange('card')}
+        aria-pressed={value === 'card'}
+        className={`${baseBtn} ${
+          value === 'card'
+            ? 'bg-gray-100 text-gray-900'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+        }`}
+      >
+        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+          <rect x="3" y="3" width="7" height="7" rx="1" />
+          <rect x="14" y="3" width="7" height="7" rx="1" />
+          <rect x="3" y="14" width="7" height="7" rx="1" />
+          <rect x="14" y="14" width="7" height="7" rx="1" />
+        </svg>
+        <span>Cards</span>
+      </button>
+      <button
+        type="button"
+        onClick={() => onChange('list')}
+        aria-pressed={value === 'list'}
+        className={`${baseBtn} border-l border-gray-300 ${
+          value === 'list'
+            ? 'bg-gray-100 text-gray-900'
+            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+        }`}
+      >
+        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round">
+          <path d="M4 6h16" />
+          <path d="M4 12h16" />
+          <path d="M4 18h16" />
+        </svg>
+        <span>List</span>
+      </button>
+    </div>
+  );
+}
+
 const GROUP_BY_OPTIONS: { value: GroupBy; label: string }[] = [
   { value: 'atomicLevel', label: 'Atomic level' },
   { value: 'functionalCategory', label: 'Category' },
@@ -352,7 +424,7 @@ function GroupByListbox({
 }) {
   const current = GROUP_BY_OPTIONS.find((o) => o.value === value) ?? GROUP_BY_OPTIONS[0];
   return (
-    <div className="ml-auto">
+    <div>
       <Listbox value={value} onChange={onChange}>
         <div className="relative">
           <ListboxButton className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-700 hover:border-gray-400 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500">
