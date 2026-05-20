@@ -1,5 +1,6 @@
 'use client';
 
+import type { ReactNode } from 'react';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
@@ -24,7 +25,18 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
     component.sourceMfe === 'paragon'
       ? PARAGON_PREVIEWS[component.name]
       : undefined;
-  const previewNode = previewRender ? previewRender() : null;
+  let previewNode: ReactNode = null;
+  if (previewRender) {
+    try {
+      previewNode = previewRender();
+    } catch (err) {
+      if (typeof window === 'undefined') {
+        // eslint-disable-next-line no-console
+        console.warn(`[preview] ${component.name} threw during SSR:`, err);
+      }
+      previewNode = null;
+    }
+  }
 
   const isMfe = component.sourceMfe !== 'paragon';
   const sourceUrl =

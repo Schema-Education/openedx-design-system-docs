@@ -6,15 +6,20 @@ import {
   Button,
   Chip,
   ChipCarousel,
-  ColorPicker,
-  Dropzone,
   Media,
+  MenuItem,
   Nav,
   OverflowScroll,
   SelectMenu,
-  MenuItem,
 } from '@openedx/paragon';
 import { PreviewSlot } from './preview-slot';
+
+/**
+ * "Extras" — leftover Paragon components that didn't fit cleanly into the
+ * atom/molecule/organism buckets. Most use real Paragon imports. A few
+ * (ColorPicker, Dropzone) depend on legacy React 17/18 `defaultProps`
+ * semantics that React 19 no longer applies, so they fall back to HTML mocks.
+ */
 
 export const EXTRA_PREVIEWS: Record<string, () => ReactNode> = {
   Button: () => (
@@ -59,21 +64,40 @@ export const EXTRA_PREVIEWS: Record<string, () => ReactNode> = {
     <PreviewSlot width={220}>
       <ChipCarousel
         ariaLabel="Filters"
-        items={[<Chip key="a">All</Chip>, <Chip key="n">New</Chip>, <Chip key="p">Popular</Chip>]}
+        items={[
+          <Chip key="a">All</Chip>,
+          <Chip key="n">New</Chip>,
+          <Chip key="p">Popular</Chip>,
+        ]}
       />
     </PreviewSlot>
   ),
+  // ColorPicker uses legacy defaultProps; mock as swatches under React 19.
   ColorPicker: () => (
     <PreviewSlot width={180}>
-      <ColorPicker
-        title="Color"
-        colors={[{ name: 'Brand', value: '#D74000' }]}
-      />
+      <div className="flex items-center gap-2 text-xs">
+        <span>Color:</span>
+        <span
+          className="h-4 w-4 rounded border"
+          style={{ background: '#D74000' }}
+        />
+        <span
+          className="h-4 w-4 rounded border"
+          style={{ background: '#00262B' }}
+        />
+        <span
+          className="h-4 w-4 rounded border"
+          style={{ background: '#5DE3BF' }}
+        />
+      </div>
     </PreviewSlot>
   ),
+  // Dropzone also fails under React 19; render a styled drop target instead.
   Dropzone: () => (
     <PreviewSlot width={200} height={70}>
-      <Dropzone onProcessUpload={() => undefined} />
+      <div className="flex h-full w-full items-center justify-center rounded border-2 border-dashed border-gray-300 text-xs text-gray-500">
+        Drag files here
+      </div>
     </PreviewSlot>
   ),
   SelectMenu: () => (

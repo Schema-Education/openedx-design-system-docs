@@ -87,9 +87,9 @@ export const ATOM_PREVIEWS: Record<string, () => ReactNode> = {
   Annotation: () => <Annotation variant="success">Note</Annotation>,
   Bubble: () => <Bubble>3</Bubble>,
   CheckBox: () => (
-    <Form>
-      <Form.Checkbox defaultChecked>Option</Form.Checkbox>
-    </Form>
+    <label className="flex items-center gap-2 text-xs">
+      <input type="checkbox" defaultChecked /> Option
+    </label>
   ),
   Code: () => (
     <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-900">

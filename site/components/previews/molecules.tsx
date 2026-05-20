@@ -14,7 +14,6 @@ import {
   Icon,
   IconButton,
   IconButtonToggle,
-  InputGroup,
   SearchField,
   SelectableBox,
   Toast,
@@ -22,6 +21,16 @@ import {
 } from '@openedx/paragon';
 import { Settings } from '@openedx/paragon/icons';
 import { PreviewSlot } from './preview-slot';
+
+/**
+ * Molecule previews.
+ *
+ * Note: some Paragon v23.x components (notably Form.Checkbox and members
+ * that rely on `defaultProps.controlAs`) do not render under React 19, which
+ * dropped `defaultProps` support for function/forwardRef components. Those
+ * previews fall back to native HTML inputs styled to read like the Paragon
+ * component until Paragon ships a React-19-compatible release.
+ */
 
 export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
   Breadcrumb: () => (
@@ -99,10 +108,13 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
       </Collapsible>
     </PreviewSlot>
   ),
-  // Form members
+  // Form.Checkbox: Paragon's FormCheckbox depends on defaultProps.controlAs,
+  // which React 19 no longer applies. Fall back to native checkbox in Form.
   'Form.Checkbox': () => (
     <Form>
-      <Form.Checkbox defaultChecked>Email me updates</Form.Checkbox>
+      <label className="flex items-center gap-2 text-xs">
+        <input type="checkbox" defaultChecked /> Email me updates
+      </label>
     </Form>
   ),
   'Form.Radio': () => (
@@ -142,27 +154,38 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
       </Form>
     </PreviewSlot>
   ),
+  // Form.Autosuggest also requires React-18 defaultProps semantics; mock for now.
   'Form.Autosuggest': () => (
     <PreviewSlot width={200}>
       <Form>
-        <Form.Autosuggest name="suggest" placeholder="Search…" />
+        <Form.Control type="text" placeholder="Search…" />
+        <div className="mt-1 rounded border bg-white text-xs shadow">
+          <div className="px-2 py-1 hover:bg-gray-50">Suggestion 1</div>
+          <div className="px-2 py-1 hover:bg-gray-50">Suggestion 2</div>
+        </div>
       </Form>
     </PreviewSlot>
   ),
+  // Form.CheckboxSet / RadioSet inherit the FormCheckbox/FormRadio issue.
+  // Mock as a labeled list using native inputs inside <Form>.
   CheckBoxGroup: () => (
     <Form>
-      <Form.CheckboxSet name="opts" defaultValue={['a']}>
-        <Form.Checkbox value="a">A</Form.Checkbox>
-        <Form.Checkbox value="b">B</Form.Checkbox>
-      </Form.CheckboxSet>
+      <label className="flex items-center gap-2 text-xs">
+        <input type="checkbox" defaultChecked /> A
+      </label>
+      <label className="flex items-center gap-2 text-xs">
+        <input type="checkbox" /> B
+      </label>
     </Form>
   ),
   RadioButtonGroup: () => (
     <Form>
-      <Form.RadioSet name="opts" defaultValue="a">
-        <Form.Radio value="a">A</Form.Radio>
-        <Form.Radio value="b">B</Form.Radio>
-      </Form.RadioSet>
+      <Form.Radio name="rg" value="a" defaultChecked>
+        A
+      </Form.Radio>
+      <Form.Radio name="rg" value="b">
+        B
+      </Form.Radio>
     </Form>
   ),
   ValidationFormGroup: () => (
@@ -187,12 +210,15 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
       <IconButton value="b" src={Settings} iconAs={Icon} alt="B" />
     </IconButtonToggle>
   ),
+  // InputGroup from react-bootstrap also relies on legacy defaultProps in places.
   InputGroup: () => (
     <PreviewSlot width={200}>
-      <InputGroup>
-        <InputGroup.Text>@</InputGroup.Text>
-        <Form.Control placeholder="username" />
-      </InputGroup>
+      <div className="flex">
+        <span className="rounded-l border border-r-0 bg-gray-100 px-2 py-1 text-xs">@</span>
+        <Form>
+          <Form.Control type="text" placeholder="username" />
+        </Form>
+      </div>
     </PreviewSlot>
   ),
   SelectableBox: () => (
