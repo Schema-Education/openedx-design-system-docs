@@ -38,7 +38,10 @@ export function Gallery({ components }: GalleryProps) {
   const [selectedStatuses, setSelectedStatuses] = useState<Set<string>>(new Set(['stable', 'experimental']));
   const [selectedCategories, setSelectedCategories] = useState<Set<string>>(new Set());
   const [selectedMfes, setSelectedMfes] = useState<Set<string>>(new Set());
-  const [groupBy, setGroupBy] = useState<GroupBy>('atomicLevel');
+  // Default to functionalCategory so the first cards on the page surface the
+  // Action group (Button family) — the components with the richest variant
+  // coverage in the Usage tab. Users can switch via the Group-by listbox.
+  const [groupBy, setGroupBy] = useState<GroupBy>('functionalCategory');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
   const [selected, setSelected] = useState<GalleryComponent | null>(null);
   // Tab state lives here (rather than inside the details pane) because the

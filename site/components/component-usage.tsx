@@ -2,6 +2,7 @@
 
 import { ATOMIC_LEVEL_META, type GalleryComponent } from '@/lib/gallery';
 import { PARAGON_PREVIEWS } from './paragon-previews';
+import { COMPONENT_VARIANTS, type Variant } from './variants';
 
 /**
  * Long-form usage content rendered inside the summary pane's "Usage" tab.
@@ -20,22 +21,46 @@ export function UsageTab({ c }: { c: GalleryComponent }) {
     c.sourceMfe === 'paragon' ? PARAGON_PREVIEWS[c.name] : undefined;
   const previewNode = previewRender ? previewRender() : null;
 
-  // Default tile renders the live Paragon preview when available, then a
-  // series of variant tiles act as placeholders for the additional states
-  // that will be wired up in Phase 2. Each tile is a fixed-width column in
-  // the horizontal scroller so the row can grow as variants are added.
-  const variants: { label: string; node: React.ReactNode; isPlaceholder: boolean }[] = [
-    {
-      label: 'Default',
-      node: previewNode ?? (
-        <PreviewPlaceholder name={c.name} gradient={atomic.gradient} />
-      ),
-      isPlaceholder: !previewNode,
-    },
-    { label: 'Hover', node: null, isPlaceholder: true },
-    { label: 'Active', node: null, isPlaceholder: true },
-    { label: 'Disabled', node: null, isPlaceholder: true },
-  ];
+  // Default tile renders the live Paragon preview when available, then either:
+  //   - real per-component variants from COMPONENT_VARIANTS (Phase 2 content
+  //     authored against the Paragon docs state matrix), or
+  //   - placeholder tiles (Hover/Active/Disabled) for components without
+  //     authored variants yet. Each tile is a fixed-width column in the
+  //     horizontal scroller so the row can grow as variants are added.
+  const authoredVariants: Variant[] | undefined = COMPONENT_VARIANTS[c.name];
+  const variants: {
+    label: string;
+    description?: string;
+    node: React.ReactNode;
+    isPlaceholder: boolean;
+  }[] = authoredVariants
+    ? [
+        {
+          label: 'Default',
+          node: previewNode ?? (
+            <PreviewPlaceholder name={c.name} gradient={atomic.gradient} />
+          ),
+          isPlaceholder: !previewNode,
+        },
+        ...authoredVariants.map((v) => ({
+          label: v.label,
+          description: v.description,
+          node: v.render(),
+          isPlaceholder: false,
+        })),
+      ]
+    : [
+        {
+          label: 'Default',
+          node: previewNode ?? (
+            <PreviewPlaceholder name={c.name} gradient={atomic.gradient} />
+          ),
+          isPlaceholder: !previewNode,
+        },
+        { label: 'Hover', node: null, isPlaceholder: true },
+        { label: 'Active', node: null, isPlaceholder: true },
+        { label: 'Disabled', node: null, isPlaceholder: true },
+      ];
 
   return (
     <div className="space-y-8">
@@ -53,6 +78,7 @@ export function UsageTab({ c }: { c: GalleryComponent }) {
               <VariantTile
                 key={v.label}
                 label={v.label}
+                description={v.description}
                 isPlaceholder={v.isPlaceholder}
                 gradient={atomic.gradient}
                 name={c.name}
@@ -163,12 +189,14 @@ function CodeBlock({ label, code }: { label: string; code: string }) {
 
 function VariantTile({
   label,
+  description,
   isPlaceholder,
   gradient,
   name,
   children,
 }: {
   label: string;
+  description?: string;
   isPlaceholder: boolean;
   gradient: string;
   name: string;
@@ -176,12 +204,19 @@ function VariantTile({
 }) {
   return (
     <div className="flex w-[260px] shrink-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
-      <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
-        <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-700">
-          {label}
+      <div className="flex items-start justify-between gap-2 border-b border-gray-100 px-3 py-2">
+        <div className="min-w-0">
+          <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-700">
+            {label}
+          </div>
+          {description && (
+            <div className="truncate font-mono text-[10px] text-gray-500">
+              {description}
+            </div>
+          )}
         </div>
         {isPlaceholder && (
-          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-gray-500">
+          <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-gray-500">
             Phase 2
           </span>
         )}
