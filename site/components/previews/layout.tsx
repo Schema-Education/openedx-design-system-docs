@@ -1,11 +1,10 @@
 'use client';
 
-import type { ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import {
   Badge,
   Collapse,
   Container,
-  Fade,
   Layout,
   Scrollable,
   Stack,
@@ -13,6 +12,49 @@ import {
   TransitionReplace,
 } from '@openedx/paragon';
 import { PreviewSlot } from './preview-slot';
+
+/**
+ * Paragon's <Fade> is `react-bootstrap@1.6.8`'s `Fade`, which wraps
+ * `react-transition-group`'s `<Transition>`. On React 19 it crashes the
+ * gallery at runtime with:
+ *
+ *   TypeError: Cannot read properties of null (reading 'offsetHeight')
+ *
+ * The cause is twofold:
+ *
+ *   1. `<Transition>` reads its DOM node via `ReactDOM.findDOMNode`, which
+ *      was removed in React 19. The repo already patches
+ *      react-transition-group to use an internal ref, but pnpm only applies
+ *      the patch to one peer-resolution of the package — Paragon's own
+ *      resolution path resolves to the unpatched copy.
+ *   2. Even with `nodeRef` passed, react-bootstrap's `Fade` calls
+ *      `triggerBrowserReflow(node)` from its `onEnter` callback, which does
+ *      `node.offsetHeight` without a null check. `<Transition>` with a
+ *      `nodeRef` passes `undefined` to handlers, so the reflow trigger
+ *      throws regardless.
+ *
+ * For a static preview tile we don't need Paragon's transition machinery;
+ * a CSS-driven fade-in is semantically identical and zero runtime risk.
+ * Once Paragon ships a React 19-compatible Fade we can revert to it.
+ */
+function FadePreview() {
+  const [shown, setShown] = useState(false);
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setShown(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+  return (
+    <PreviewSlot width={200}>
+      <div
+        className={`rounded bg-gray-100 p-2 text-[11px] transition-opacity duration-300 ${
+          shown ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        Faded-in content
+      </div>
+    </PreviewSlot>
+  );
+}
 
 export const LAYOUT_PREVIEWS: Record<string, () => ReactNode> = {
   Container: () => (
@@ -61,15 +103,7 @@ export const LAYOUT_PREVIEWS: Record<string, () => ReactNode> = {
       </Collapse>
     </PreviewSlot>
   ),
-  Fade: () => (
-    <PreviewSlot width={200}>
-      <Fade in appear>
-        <div className="rounded bg-gray-100 p-2 text-[11px]">
-          Faded-in content
-        </div>
-      </Fade>
-    </PreviewSlot>
-  ),
+  Fade: FadePreview,
   TransitionReplace: () => (
     <PreviewSlot width={200}>
       <TransitionReplace>
