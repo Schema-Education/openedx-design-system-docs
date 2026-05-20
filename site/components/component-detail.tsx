@@ -100,15 +100,15 @@ function DetailBody({
                 </span>
               )}
             </div>
-            <h2 className="mt-2 font-mono text-2xl font-bold text-white drop-shadow-sm">
+            <h2 className="mt-2 font-mono text-2xl font-bold text-gray-900">
               {component.name}
             </h2>
-            <p className="mt-1 text-sm text-white/90">{component.description}</p>
+            <p className="mt-1 text-sm text-gray-900/80">{component.description}</p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full bg-white/30 p-1.5 text-white hover:bg-white/50"
+            className="rounded-full bg-white/80 p-1.5 text-gray-900 hover:bg-white"
             aria-label="Close"
           >
             <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
@@ -217,7 +217,7 @@ function SourceTab({ c }: { c: GalleryComponent }) {
       </div>
       <div className="rounded-md bg-gray-50 p-3 font-mono text-[11px] text-gray-700">
         {/* Placeholder code snippet */}
-        <div className="text-gray-400">// Usage placeholder — populated by Phase 2a crawler</div>
+        <div className="text-gray-600">// Usage placeholder — populated by Phase 2a crawler</div>
         <div className="mt-1">import &#123; {c.name} &#125; from &apos;@openedx/{c.sourceMfe === 'paragon' ? 'paragon' : c.sourceMfe}&apos;;</div>
       </div>
     </div>
@@ -281,7 +281,7 @@ function ConsumersTab({
               className="flex w-full items-center justify-between rounded-md border border-gray-200 px-3 py-2 text-left text-xs font-mono text-gray-800 hover:border-gray-400 hover:bg-gray-50"
             >
               <span>{mfe}</span>
-              <span className="text-gray-400">filter →</span>
+              <span className="text-gray-600">filter →</span>
             </button>
           </li>
         ))}

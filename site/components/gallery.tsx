@@ -244,7 +244,7 @@ export function Gallery({ components }: GalleryProps) {
                   }`}
                 >
                   <span>{tab.label}</span>
-                  <span className={`text-xs ${isActive ? 'text-[#0a3055]/70' : 'text-gray-400'}`}>{count}</span>
+                  <span className={`text-xs ${isActive ? 'text-[#0a3055]/70' : 'text-gray-600'}`}>{count}</span>
                 </button>
               );
             })}
@@ -265,9 +265,9 @@ export function Gallery({ components }: GalleryProps) {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Search components, MFEs…"
-                  className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 pl-9 text-sm focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  className="w-full rounded-md border border-gray-500 bg-white px-3 py-2 pl-9 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
                 />
-                <svg className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-gray-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                <svg className="pointer-events-none absolute left-2.5 top-2.5 h-4 w-4 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
                   <circle cx="11" cy="11" r="7" />
                   <path d="m21 21-4.3-4.3" strokeLinecap="round" />
                 </svg>
@@ -298,7 +298,7 @@ export function Gallery({ components }: GalleryProps) {
                 <select
                   value={groupBy}
                   onChange={(e) => setGroupBy(e.target.value as GroupBy)}
-                  className="rounded-md border border-gray-300 bg-white px-2 py-1.5 text-xs focus:border-gray-500 focus:outline-none"
+                  className="rounded-md border border-gray-500 bg-white px-2 py-1.5 text-xs focus:border-gray-700 focus:outline-none"
                 >
                   <option value="atomicLevel">Atomic level</option>
                   <option value="functionalCategory">Functional category</option>
@@ -337,7 +337,7 @@ export function Gallery({ components }: GalleryProps) {
                   {groupBy === 'atomicLevel'
                     ? ATOMIC_LEVEL_META[group.key as AtomicLevel].label + 's'
                     : group.key}
-                  <span className="font-mono text-xs font-normal text-gray-400">{group.items.length}</span>
+                  <span className="font-mono text-xs font-normal text-gray-600">{group.items.length}</span>
                 </h2>
                 <div
                   className={`grid grid-cols-1 gap-4 sm:grid-cols-2 ${
