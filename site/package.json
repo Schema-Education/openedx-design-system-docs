@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "preinstall": "node -e \"if(!(process.env.npm_config_user_agent||'').startsWith('pnpm/'))throw new Error('Use pnpm. See README.')\"",
     "predev": "PROTOTYPE_DEVBAR_ENABLED=true schema-capture-git-info --out ./prototype-devbar.snapshot.json",
     "dev": "next dev --turbopack",
     "prebuild": "PROTOTYPE_DEVBAR_ENABLED=true schema-capture-git-info --out ./prototype-devbar.snapshot.json",
@@ -39,5 +40,8 @@
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.3",
     "wrangler": "^4.0.0"
+  },
+  "engines": {
+    "pnpm": ">=10.16.0"
   }
 }
