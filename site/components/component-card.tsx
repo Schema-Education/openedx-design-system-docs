@@ -11,9 +11,10 @@ import { PARAGON_PREVIEWS } from './paragon-previews';
 interface ComponentCardProps {
   component: GalleryComponent;
   onClick: () => void;
+  isSelected?: boolean;
 }
 
-export function ComponentCard({ component, onClick }: ComponentCardProps) {
+export function ComponentCard({ component, onClick, isSelected = false }: ComponentCardProps) {
   const atomic = ATOMIC_LEVEL_META[component.atomicLevel];
   const status = STATUS_META[component.status];
   const initial = component.name
@@ -46,7 +47,14 @@ export function ComponentCard({ component, onClick }: ComponentCardProps) {
 
   return (
     <div
-      className={`group relative flex h-full w-full flex-col overflow-hidden rounded-xl border border-gray-200 bg-white text-left shadow-sm transition hover:border-gray-300 hover:shadow-md focus-within:ring-2 focus-within:ring-offset-2 ${atomic.ring}`}
+      aria-current={isSelected ? 'true' : undefined}
+      className={`group relative flex h-full w-full flex-col overflow-hidden rounded-xl bg-white text-left transition focus-within:ring-2 focus-within:ring-offset-2 ${
+        isSelected ? '' : atomic.ring
+      } ${
+        isSelected
+          ? 'border-2 border-gray-900 shadow-lg'
+          : 'border border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md'
+      }`}
     >
       {/* Preview slot — sits above the title-button overlay so interactive Paragon content stays clickable */}
       <div className="relative z-10 flex h-32 items-center justify-center overflow-hidden bg-gray-50 px-4">
