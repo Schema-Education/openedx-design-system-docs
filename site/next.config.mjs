@@ -14,12 +14,26 @@ const config = {
   },
   reactStrictMode: true,
   productionBrowserSourceMaps: false,
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production'
+      ? { exclude: ['error', 'warn'] }
+      : false,
+  },
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000,
+    pagesBufferLength: 8,
+  },
   experimental: {
     optimizePackageImports: [
       'fumadocs-ui',
       'fumadocs-core',
       'lucide-react',
+      '@headlessui/react',
+      'react-intl',
     ],
+    webpackMemoryOptimizations: true,
+    parallelServerBuildTraces: true,
+    parallelServerCompiles: true,
   },
   turbopack: {
     root: path.join(__dirname, '..'),
