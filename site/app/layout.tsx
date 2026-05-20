@@ -35,7 +35,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={inter.variable} suppressHydrationWarning>
-      <body className="font-sans antialiased text-gray-600 bg-white">
+      <body className="font-sans antialiased">
         <PrototypeConfigProvider
           version={pkg.version}
           owner="Schema Education"

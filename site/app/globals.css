@@ -45,3 +45,28 @@
     background: transparent;
   }
 }
+
+/*
+ * Dark mode: Paragon's light.min.css ships utility classes like `.bg-white` and `.text-gray-600`
+ * with `!important`, so any Tailwind `dark:` variant we put on <body> is silently overridden.
+ * Instead, drive the body chrome from Paragon's own CSS variables and flip them under `html.dark`.
+ * Fumadocs UI tokens (`--fd-*`) already have their own light/dark rules; this fills in the
+ * Paragon-driven layer.
+ */
+html.dark {
+  --pgn-color-body-bg: #000809; /* ink-900 */
+  --pgn-color-body-base: #f4f5f5; /* gray-100 */
+  --pgn-color-headings-base: #ffffff;
+  --pgn-color-white: #000809; /* so `.bg-white` (Paragon utility, !important) flips in dark mode */
+  /* Paragon ships `.text-gray-*` utilities with !important, so flip the underlying vars
+   * to readable light values when the dark theme is active. */
+  --pgn-color-gray-500: #cccccc;
+  --pgn-color-gray-600: #e6e7e7;
+  --pgn-color-gray-700: #f4f5f5;
+  --pgn-color-gray-800: #ffffff;
+  /* Primary navy is too low-contrast against ink-900; use the Open edX brand
+   * orange-red so headings and CTAs stay readable in dark mode. */
+  --pgn-color-primary-base: #ff7029;
+  --pgn-color-primary-500: #ff7029;
+  --pgn-color-primary-400: #ff9c61;
+}

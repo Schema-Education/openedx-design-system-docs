@@ -3,6 +3,9 @@ import paragonPreset from './paragon-tokens.preset';
 
 const config: Config = {
   presets: [paragonPreset as Config],
+  // Fumadocs toggles dark mode by adding a `dark` class to <html>; opt into
+  // class-based dark mode so our `dark:` utilities respond to the toggle.
+  darkMode: 'class',
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx}',
