@@ -1,81 +1,81 @@
 {
-  "capturedAt": "2026-05-20T06:53:08.479Z",
+  "capturedAt": "2026-05-20T19:32:27.391Z",
   "enabledMode": "on",
-  "branch": "claude/wizardly-antonelli-c44779",
-  "sha": "32c3df16f8e07bf65d22ea0a150dd6266d554a44",
-  "shortSha": "32c3df1",
-  "subject": "Merge pull request #30 from Schema-Education/chore/update-deploy-domain-references",
-  "commitIso": "2026-05-19T23:25:31-07:00",
-  "author": "Marco Morales",
+  "branch": "chore/security-enforce-pnpm-1wk-floor",
+  "sha": "efcdafae7208b4206e258563298c5db275f96771",
+  "shortSha": "efcdafa",
+  "subject": "chore: regenerate lockfile under pnpm 10 and allow vetted build scripts",
+  "commitIso": "2026-05-20T13:30:24-06:00",
+  "author": "Sam Daitzman",
   "recent": [
     {
-      "sha": "32c3df16f8e07bf65d22ea0a150dd6266d554a44",
-      "shortSha": "32c3df1",
-      "subject": "Merge pull request #30 from Schema-Education/chore/update-deploy-domain-references",
-      "isoDate": "2026-05-19T23:25:31-07:00",
+      "sha": "efcdafae7208b4206e258563298c5db275f96771",
+      "shortSha": "efcdafa",
+      "subject": "chore: regenerate lockfile under pnpm 10 and allow vetted build scripts",
+      "isoDate": "2026-05-20T13:30:24-06:00",
+      "author": "Sam Daitzman"
+    },
+    {
+      "sha": "9c1ddc69fc44b39cd4eab270fa3e145a2aa27eb2",
+      "shortSha": "9c1ddc6",
+      "subject": "chore: migrate patchedDependencies to pnpm-workspace.yaml for pnpm 10",
+      "isoDate": "2026-05-20T13:30:24-06:00",
+      "author": "Sam Daitzman"
+    },
+    {
+      "sha": "05323a9684900d4710d59cceee8bb7058621a724",
+      "shortSha": "05323a9",
+      "subject": "ci: bump Node to 22 to satisfy engine-strict",
+      "isoDate": "2026-05-20T13:30:24-06:00",
+      "author": "Sam Daitzman"
+    },
+    {
+      "sha": "4f0b1ea96bb5b8faeb2e509a59343a62b4b26637",
+      "shortSha": "4f0b1ea",
+      "subject": "ci: read pnpm version from packageManager field",
+      "isoDate": "2026-05-20T13:30:24-06:00",
+      "author": "Sam Daitzman"
+    },
+    {
+      "sha": "c9f111044876331e41524e7c09cc04c95c10e868",
+      "shortSha": "c9f1110",
+      "subject": "chore(security): enforce 1-week pnpm floor (follow-up to #59)",
+      "isoDate": "2026-05-20T13:30:24-06:00",
+      "author": "Sam Daitzman"
+    },
+    {
+      "sha": "bfa8d3023925aecfe1ea7eff695ea6415e7645b7",
+      "shortSha": "bfa8d30",
+      "subject": "Merge pull request #62 from Schema-Education/feat/command-palette-shell",
+      "isoDate": "2026-05-20T12:15:18-07:00",
       "author": "Marco Morales"
     },
     {
-      "sha": "076fddfa61932b0540fec53275c21bec1957f79f",
-      "shortSha": "076fddf",
-      "subject": "chore: point deploy references at open-edx-design-system-poc.schema.education",
-      "isoDate": "2026-05-20T00:23:40-06:00",
+      "sha": "1f8b199a24678dc4858794f917e70879869c1bc6",
+      "shortSha": "1f8b199",
+      "subject": "Merge pull request #63 from Schema-Education/fix/fade-preview-react19-null-ref",
+      "isoDate": "2026-05-20T12:13:13-07:00",
       "author": "Marco Morales"
     },
     {
-      "sha": "1e78201a2e7c1459c9bfd3915958bd80be93754a",
-      "shortSha": "1e78201",
-      "subject": "Merge pull request #28 from Schema-Education/fix/registry-loading-skeleton",
-      "isoDate": "2026-05-19T23:17:54-07:00",
+      "sha": "ed01bd9597f8f5dc13f19fd1c4a3e1a09dbdbc67",
+      "shortSha": "ed01bd9",
+      "subject": "fix(previews): stop Fade preview from crashing the gallery on React 19",
+      "isoDate": "2026-05-20T12:46:54-06:00",
       "author": "Marco Morales"
     },
     {
-      "sha": "367fb17b5651216f23f32f19378be2f7be2a28ff",
-      "shortSha": "367fb17",
-      "subject": "Merge pull request #29 from Schema-Education/chore/cloudflare-worker-deploy",
-      "isoDate": "2026-05-19T23:15:31-07:00",
+      "sha": "2f644efefc078dde2b7fcefa850d552292ff3d0e",
+      "shortSha": "2f644ef",
+      "subject": "feat: ⌘K command palette shell (PR 1 of 3)",
+      "isoDate": "2026-05-20T12:17:58-06:00",
       "author": "Marco Morales"
     },
     {
-      "sha": "d88d4ac820e9f923a9a23169df6c5187929e74e7",
-      "shortSha": "d88d4ac",
-      "subject": "fix(registry): show skeleton during dev compile / RSC stream",
-      "isoDate": "2026-05-20T00:07:47-06:00",
-      "author": "Marco Morales"
-    },
-    {
-      "sha": "3c858afa7a1c79bd43837ddc6191061ad2e660a0",
-      "shortSha": "3c858af",
-      "subject": "chore: add Cloudflare Workers deployment config for paragon.schema.education",
-      "isoDate": "2026-05-19T23:56:50-06:00",
-      "author": "Marco Morales"
-    },
-    {
-      "sha": "18143fad9a64f159cfdad1688bf97f7b84a5becc",
-      "shortSha": "18143fa",
-      "subject": "Merge pull request #27 from Schema-Education/feat/gallery-filter-redesign-paragon",
-      "isoDate": "2026-05-19T22:33:12-07:00",
-      "author": "Marco Morales"
-    },
-    {
-      "sha": "9303c4419556402c5c456de44db644ab509a0b85",
-      "shortSha": "9303c44",
-      "subject": "fix(ci): use pnpm lockfile for Paragon + Headless UI deps",
-      "isoDate": "2026-05-19T23:30:03-06:00",
-      "author": "Marco Morales"
-    },
-    {
-      "sha": "7e3b41697f27f82841eeb0bcc1fb9a331f1c6076",
-      "shortSha": "7e3b416",
-      "subject": "feat: replace gallery filter chips with multi-select dropdowns + adopt Paragon",
-      "isoDate": "2026-05-19T17:56:52-06:00",
-      "author": "Marco Morales"
-    },
-    {
-      "sha": "55e879d16df905914eb12d71583df7f281aa24e1",
-      "shortSha": "55e879d",
-      "subject": "Merge pull request #26 from Schema-Education/feat/component-gallery-prototype",
-      "isoDate": "2026-05-19T16:14:40-07:00",
+      "sha": "545d354003b274cd8d66cbfc6e0a5c3f03d327c1",
+      "shortSha": "545d354",
+      "subject": "Merge pull request #58 from Schema-Education/chore/gitignore-firecrawl-artifacts",
+      "isoDate": "2026-05-20T11:12:56-07:00",
       "author": "Marco Morales"
     }
   ]
