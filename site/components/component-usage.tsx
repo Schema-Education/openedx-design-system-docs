@@ -1,0 +1,251 @@
+'use client';
+
+import { ATOMIC_LEVEL_META, type GalleryComponent } from '@/lib/gallery';
+import { PARAGON_PREVIEWS } from './paragon-previews';
+
+/**
+ * Long-form usage content rendered inside the summary pane's "Usage" tab.
+ * Mirrors the surface found on the Paragon documentation site (variants,
+ * usage examples, props, do/don'ts). The full content lands in Phase 2 —
+ * for now this scaffolds the panel layout and re-uses the existing Paragon
+ * preview registry so live components still render where one is available.
+ *
+ * The parent summary pane widens to 75vw when this tab is active to give
+ * the long-form content room to breathe.
+ */
+export function UsageTab({ c }: { c: GalleryComponent }) {
+  const atomic = ATOMIC_LEVEL_META[c.atomicLevel];
+  const importPkg = c.sourceMfe === 'paragon' ? 'paragon' : c.sourceMfe;
+  const previewRender =
+    c.sourceMfe === 'paragon' ? PARAGON_PREVIEWS[c.name] : undefined;
+  const previewNode = previewRender ? previewRender() : null;
+
+  // Default tile renders the live Paragon preview when available, then a
+  // series of variant tiles act as placeholders for the additional states
+  // that will be wired up in Phase 2. Each tile is a fixed-width column in
+  // the horizontal scroller so the row can grow as variants are added.
+  const variants: { label: string; node: React.ReactNode; isPlaceholder: boolean }[] = [
+    {
+      label: 'Default',
+      node: previewNode ?? (
+        <PreviewPlaceholder name={c.name} gradient={atomic.gradient} />
+      ),
+      isPlaceholder: !previewNode,
+    },
+    { label: 'Hover', node: null, isPlaceholder: true },
+    { label: 'Active', node: null, isPlaceholder: true },
+    { label: 'Disabled', node: null, isPlaceholder: true },
+  ];
+
+  return (
+    <div className="space-y-8">
+      {/* Preview + variants — horizontal scroll row.
+          The first tile is the live "Default" render; the rest are
+          placeholders for the variant states the crawler will populate in
+          Phase 2 (hover, active, disabled, etc.). */}
+      <Section
+        title="Preview & Variants"
+        subtitle="Live render plus variant states — Phase 2 (ADR-0001) wires in Sandpack for the placeholders"
+      >
+        <div className="-mx-6 overflow-x-auto px-6 pb-2">
+          <div className="flex gap-3">
+            {variants.map((v) => (
+              <VariantTile
+                key={v.label}
+                label={v.label}
+                isPlaceholder={v.isPlaceholder}
+                gradient={atomic.gradient}
+                name={c.name}
+              >
+                {v.node}
+              </VariantTile>
+            ))}
+          </div>
+        </div>
+      </Section>
+
+      {/* Usage examples */}
+      <Section
+        title="Usage examples"
+        subtitle="Snippets crawled from MFE consumers (Phase 2)"
+      >
+        <div className="space-y-3">
+          <CodeBlock
+            label="Import"
+            code={`import { ${c.name} } from '@openedx/${importPkg}';`}
+          />
+          <CodeBlock label="Basic usage" code={`<${c.name} />`} />
+        </div>
+      </Section>
+
+      {/* Three-column row under usage examples — properties, guidelines,
+          and accessibility sit side-by-side at lg+ so the long-form info
+          surfaces don't stack into a single long scroll. Drops to one
+          column on narrow viewports. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+        <Section
+          title="Properties"
+          subtitle="Live prop table sourced from TypeScript / PropTypes (Phase 2b)"
+        >
+          <div className="rounded-md border border-dashed border-gray-300 p-4 text-center text-xs text-gray-500">
+            Prop tables will be ingested directly from each component&apos;s
+            source by the crawler in Phase 2b. See{' '}
+            <code className="rounded bg-gray-100 px-1">
+              /registry/schema/component.schema.json
+            </code>
+            .
+          </div>
+        </Section>
+
+        <Section
+          title="Guidelines"
+          subtitle="Editorial guidance authored alongside each component"
+        >
+          <div className="space-y-3">
+            <Guideline kind="do" />
+            <Guideline kind="dont" />
+          </div>
+        </Section>
+
+        <Section
+          title="Accessibility"
+          subtitle="WCAG conformance and screen reader notes"
+        >
+          <div className="rounded-md border border-gray-200 bg-gray-50 p-4 text-xs text-gray-700">
+            {c.a11y ? (
+              <>
+                Targets <strong>WCAG {c.a11y}</strong>. Detailed audit notes,
+                keyboard interaction maps, and screen-reader scripts land in
+                Phase 2b.
+              </>
+            ) : (
+              <>Accessibility audit pending — see Phase 2b.</>
+            )}
+          </div>
+        </Section>
+      </div>
+    </div>
+  );
+}
+
+function Section({
+  title,
+  subtitle,
+  children,
+}: {
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section>
+      <h3 className="text-sm font-semibold uppercase tracking-wide text-gray-700">
+        {title}
+      </h3>
+      {subtitle && <p className="mt-0.5 text-xs text-gray-500">{subtitle}</p>}
+      <div className="mt-3">{children}</div>
+    </section>
+  );
+}
+
+function CodeBlock({ label, code }: { label: string; code: string }) {
+  return (
+    <div>
+      <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+        {label}
+      </div>
+      <pre className="overflow-x-auto rounded-md bg-gray-900 px-3 py-2 font-mono text-[11px] text-gray-100">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+}
+
+function VariantTile({
+  label,
+  isPlaceholder,
+  gradient,
+  name,
+  children,
+}: {
+  label: string;
+  isPlaceholder: boolean;
+  gradient: string;
+  name: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="flex w-[260px] shrink-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
+      <div className="flex items-center justify-between border-b border-gray-100 px-3 py-2">
+        <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-700">
+          {label}
+        </div>
+        {isPlaceholder && (
+          <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-gray-500">
+            Phase 2
+          </span>
+        )}
+      </div>
+      <div
+        className={`flex flex-1 items-center justify-center p-4 ${
+          isPlaceholder ? 'bg-gray-50' : 'bg-white'
+        }`}
+        style={{ minHeight: 140 }}
+      >
+        {children ?? <PreviewPlaceholder name={name} gradient={gradient} compact />}
+      </div>
+    </div>
+  );
+}
+
+function PreviewPlaceholder({
+  name,
+  gradient,
+  compact,
+}: {
+  name: string;
+  gradient: string;
+  compact?: boolean;
+}) {
+  return (
+    <div className={`flex flex-col items-center text-center ${compact ? 'gap-1.5' : 'gap-3'}`}>
+      <div
+        className={`flex items-center justify-center rounded-md bg-gradient-to-br ${gradient} font-mono font-bold text-white shadow ${
+          compact ? 'h-10 w-10 text-sm' : 'h-14 w-14 text-xl'
+        }`}
+      >
+        {name.charAt(0)}
+      </div>
+      <div className={`font-mono font-medium text-gray-700 ${compact ? 'text-xs' : 'text-sm'}`}>
+        {name}
+      </div>
+      {!compact && (
+        <div className="text-[11px] text-gray-400">
+          Live preview lands in Phase 2 (ADR-0001)
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Guideline({ kind }: { kind: 'do' | 'dont' }) {
+  const isDo = kind === 'do';
+  return (
+    <div
+      className={`rounded-md border p-4 ${
+        isDo ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
+      }`}
+    >
+      <div
+        className={`text-[10px] font-semibold uppercase tracking-wide ${
+          isDo ? 'text-green-700' : 'text-red-700'
+        }`}
+      >
+        {isDo ? 'Do' : "Don't"}
+      </div>
+      <p className="mt-2 text-xs text-gray-700">
+        Guideline copy authored alongside each component in Phase 2.
+      </p>
+    </div>
+  );
+}
