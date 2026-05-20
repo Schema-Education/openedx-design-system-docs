@@ -16,6 +16,7 @@ import { ComponentDetail, type DetailTab } from './component-detail';
 import { MultiSelectCombobox } from './ui/multi-select-combobox';
 import { CommandPalette, usePaletteHotkey } from './command-palette';
 import { Kbd } from './ui/kbd';
+import { buildCommands } from '@/lib/palette-commands';
 import {
   ATOMIC_LEVELS,
   ATOMIC_LEVEL_META,
@@ -521,9 +522,30 @@ export function Gallery({ components }: GalleryProps) {
       </div>
 
       {/* Global ⌘K command palette. Fixed-positioned dialog; mounted as a
-          sibling of the main grid so it overlays everything when open. */}
+          sibling of the main grid so it overlays everything when open.
+          Commands are rebuilt every render so conditional commands (e.g.
+          "Clear all filters") reflect the current filter state. */}
       <CommandPalette
         components={components}
+        commands={buildCommands({
+          activeLevel,
+          groupBy,
+          viewMode,
+          deprecatedVisible: selectedStatuses.has('deprecated'),
+          hasActiveFilters: nonTabFilterCount > 0,
+          setActiveLevel,
+          setGroupBy,
+          setViewMode,
+          toggleDeprecated: () => {
+            setSelectedStatuses((prev) => {
+              const next = new Set(prev);
+              if (next.has('deprecated')) next.delete('deprecated');
+              else next.add('deprecated');
+              return next;
+            });
+          },
+          clearAllFilters: clearAll,
+        })}
         open={paletteOpen}
         onClose={() => setPaletteOpen(false)}
         onSelectComponent={selectComponent}
