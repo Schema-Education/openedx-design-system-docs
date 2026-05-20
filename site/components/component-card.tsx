@@ -42,7 +42,7 @@ export function ComponentCard({ component, onClick, isSelected = false }: Compon
   const isMfe = component.sourceMfe !== 'paragon';
   const sourceUrl =
     isMfe && component.sourceRepo
-      ? `https://github.com/${component.sourceRepo}/tree/main/${component.sourcePath}`
+      ? `https://github.com/${component.sourceRepo}/tree/HEAD/${component.sourcePath}`
       : null;
 
   return (
