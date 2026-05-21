@@ -4,6 +4,18 @@ packages:
 
 minimumReleaseAge: 10080
 
+# Transitive overrides — used when a transitive dep updates so frequently
+# that the 1-week minimum-release-age floor would block essentially every
+# `pnpm add`. Distinct from `minimumReleaseAgeExclude`: the floor still
+# applies; we just tell pnpm which specific (past-the-floor) version to
+# resolve to, rather than carving the package out of the policy entirely.
+overrides:
+  # caniuse-lite is browser-support data, updated daily by autoprefixer
+  # against a specific exact-pinned version. Pin to the previous published
+  # version, which is >7 days old. Routine maintenance can bump this when
+  # we want fresher data.
+  caniuse-lite: 1.0.30001792
+
 patchedDependencies:
   react-transition-group@4.4.5: patches/react-transition-group@4.4.5.patch
 
