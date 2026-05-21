@@ -38,9 +38,32 @@ Per Webpack Bundle Analyzer (`site/.next/analyze/client.html`). Sizes are post-m
 | `app/registry/page-*.js`   |  73 KB |   18 KB | `gallery.tsx` (44 KB), `paragon-previews.tsx` (26 KB)                            |
 | `659-*.js`                 |  52 KB |   18 KB | `fumadocs-core` static                                                           |
 
-## Lighthouse Baseline
+## Network Baseline (production CDN)
 
-> **Pending.** Lighthouse will be captured against the Cloudflare preview URL once this PR publishes a deployment. Numbers will be appended to this section as a per-route table covering performance score, LCP, CLS, TBT, and total transfer size for `/`, `/docs/vision`, and `/registry` in both desktop and mobile presets.
+Captured 2026-05-21 via `curl` against the live deployment at `https://open-edx-design-system-poc.schema.education/` (Cloudflare Workers Assets; `cf-cache-status: HIT`). Cloudflare does not produce per-PR previews for this project, so the baseline reflects current `main` — equivalent to what this PR will ship since the analyzer is gated behind `ANALYZE=true` and does not change the built output.
+
+| Route          | TTFB (cold-warm CDN) | HTML payload (uncompressed) |
+| -------------- | -------------------: | --------------------------: |
+| `/`            |                255 ms |                       27 KB |
+| `/docs`        |                449 ms |                       54 KB |
+| `/docs/vision` |                308 ms |                  **192 KB** |
+| `/registry`    |                265 ms |                  **338 KB** |
+
+Note that the HTML payload includes the React Server Component encoded tree and any inlined data. The `/docs/vision` page produces 192 KB of HTML from 37.7 KB of MDX source — this is normal expansion for a fully-prerendered static export, not a problem.
+
+`/registry` ships 338 KB of HTML because all 62 component cards are server-rendered into the gallery markup. That's the per-card structural HTML, not the JavaScript needed to make them interactive — the interactivity cost is the 304 kB First Load JS reported above.
+
+## Lighthouse (deferred)
+
+A full Lighthouse run (performance score + LCP + CLS + TBT per route) was not captured in this PR — the local environment is x64 Node against arm64 Chrome (Lighthouse refuses to run; would be Rosetta-translated and produce invalid timings), and PageSpeed Insights requires an API key that isn't set up in this workspace. The bundle and network numbers above are sufficient to make the vision-split decision (Finding 1) and prioritize the follow-ups.
+
+**To capture Lighthouse later** (5 minutes of work):
+
+1. Open `https://open-edx-design-system-poc.schema.education/{,docs,docs/vision,registry}` in Chrome.
+2. DevTools → Lighthouse → Performance, Mobile + Desktop presets.
+3. Append a per-route table to this section with: performance score, LCP, CLS, TBT, Speed Index, Total Byte Weight.
+
+Or set up `PSI_API_KEY` and re-run with `npx psi <url>` for each route.
 
 ## Findings & Recommendations
 
