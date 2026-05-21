@@ -63,12 +63,6 @@ export function Gallery({ components }: GalleryProps) {
   // coverage in the Usage tab. Users can switch via the Group-by listbox.
   const [groupBy, setGroupBy] = useState<GroupBy>('functionalCategory');
   const [viewMode, setViewMode] = useState<ViewMode>('card');
-  // Mobile-only: the toolbar collapses the search input into a small icon
-  // trigger; toggling this expands a full-width search bar above the
-  // filters row. Desktop keeps the inline input, so this state is unused
-  // there. The active search term is preserved across toggles so users
-  // don't lose context when closing the bar.
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
   const [selected, setSelected] = useState<GalleryComponent | null>(null);
   // Global ⌘K command palette state. The palette is a sibling of the gallery's
   // result grid and writes back through `selectComponent` — see PR 1 plan.
@@ -368,7 +362,7 @@ export function Gallery({ components }: GalleryProps) {
               so it keeps its set width; the main column fills whatever space
               remains via the `width` calc. */}
           <div
-            className="min-w-0 px-6 pb-6 pt-4"
+            className="min-w-0 pb-6 pt-4"
             style={{
               flexGrow: 0,
               flexShrink: 0,
@@ -377,122 +371,81 @@ export function Gallery({ components }: GalleryProps) {
                 : selected
                 ? `calc(100vw - ${paneWidth}px)`
                 : '100vw',
+              // Inline padding bypasses Paragon's `.px-6 !important` rule
+              // (which forces ~80px) and restores the centering behavior:
+              // 1.5rem on each side until the viewport exceeds the 1650px
+              // title frame, after which the listing centers under it.
+              paddingLeft: isUsageTab
+                ? '1.5rem'
+                : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
+              paddingRight:
+                isUsageTab || selected
+                  ? '1.5rem'
+                  : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
               transition: paneTransition,
             }}
           >
             {/* Search + filters + group-by — group-by anchors to right edge of
-                THIS column. On mobile the search input collapses to an icon
-                trigger that, when activated, renders a full-width search bar
-                above the filters/view-options row. */}
-            <div className="mb-2 flex flex-col gap-2">
-              {/* Mobile-only: expanded search bar (rendered above the controls
-                  row when the user has activated the search trigger). */}
-              {mobileSearchOpen && (
-                <div className="relative sm:hidden">
-                  <input
-                    type="search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search components"
-                    autoFocus
-                    onKeyDown={(e) => {
-                      if (e.key === 'Escape') setMobileSearchOpen(false);
-                    }}
-                    className="w-full rounded-md border border-gray-500 bg-white py-2 pl-9 pr-10 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
-                  />
-                  <svg className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-                  </svg>
-                  <button
-                    type="button"
-                    onClick={() => setMobileSearchOpen(false)}
-                    aria-label="Close search"
-                    className="absolute right-1.5 top-1/2 -translate-y-1/2 rounded p-1 text-gray-500 transition hover:bg-gray-100 hover:text-gray-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-                  >
-                    <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                    </svg>
-                  </button>
-                </div>
-              )}
-
-              <div className="flex flex-wrap items-center gap-2">
-                {/* Desktop-only inline search input (≥ sm). */}
-                <div className="relative hidden sm:block sm:w-1/4 sm:min-w-[220px] sm:flex-shrink-0">
-                  <input
-                    type="search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search components"
-                    className="w-full rounded-md border border-gray-500 bg-white py-2 pl-9 pr-12 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
-                  />
-                  <svg className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-                  </svg>
-                  {/* ⌘K hint — opens the global command palette. Lives inside
-                      the inline search so the affordance is discoverable without
-                      adding a new toolbar slot. */}
-                  <button
-                    type="button"
-                    onClick={() => setPaletteOpen(true)}
-                    className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5 rounded px-1 py-0.5 transition hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
-                    aria-label="Open command palette"
-                    title="Search all components (⌘K)"
-                  >
-                    <Kbd>⌘</Kbd>
-                    <Kbd>K</Kbd>
-                  </button>
-                </div>
-
-                {/* Mobile-only search trigger. Acts as the first item in the
-                    controls row; toggles the search bar above. A small dot
-                    indicates an active query when the bar is closed. */}
+                THIS column. On mobile the search input takes its own full-width
+                row above; filters and view controls flow on the row below. */}
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <div className="relative w-full sm:w-1/4 sm:min-w-[220px] sm:flex-shrink-0">
+                <input
+                  type="search"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  placeholder="Search components"
+                  className="w-full rounded-md border border-gray-500 bg-white py-2 pl-9 pr-12 text-sm focus:border-gray-700 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                />
+                <svg className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
+                  <circle cx="11" cy="11" r="7" />
+                  <path d="m21 21-4.3-4.3" strokeLinecap="round" />
+                </svg>
+                {/* ⌘K hint — opens the global command palette. Lives inside
+                    the inline search so the affordance is discoverable without
+                    adding a new toolbar slot. */}
                 <button
                   type="button"
-                  onClick={() => setMobileSearchOpen((v) => !v)}
-                  aria-label={mobileSearchOpen ? 'Hide search' : 'Search components'}
-                  aria-pressed={mobileSearchOpen}
-                  title="Search components"
-                  className={`inline-flex shrink-0 items-center gap-1 rounded-md border px-2.5 py-2 text-sm text-gray-700 shadow-sm transition-colors hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-1 sm:hidden ${
-                    mobileSearchOpen ? 'border-gray-700 bg-gray-50' : 'border-gray-500 bg-white'
-                  }`}
+                  onClick={() => setPaletteOpen(true)}
+                  className="absolute right-2 top-1/2 flex -translate-y-1/2 items-center gap-0.5 rounded px-1 py-0.5 transition hover:bg-gray-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-500"
+                  aria-label="Open command palette"
+                  title="Search all components (⌘K)"
                 >
-                  <svg className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                    <circle cx="11" cy="11" r="7" />
-                    <path d="m21 21-4.3-4.3" strokeLinecap="round" />
-                  </svg>
-                  {search.trim() && !mobileSearchOpen && (
-                    <span className="h-1.5 w-1.5 rounded-full bg-primary-600" aria-hidden="true" />
-                  )}
+                  <Kbd>⌘</Kbd>
+                  <Kbd>K</Kbd>
                 </button>
-                {/* Status filter hidden for now — re-enable when status lifecycle is finalized. */}
-                {/* <MultiSelectCombobox
-                  label="Status"
-                  options={statusOptions}
-                  selected={selectedStatuses}
-                  onChange={setSelectedStatuses}
-                  placeholder="Search statuses…"
-                /> */}
-                <MultiSelectCombobox
-                  label="Category"
-                  options={categoryOptions}
-                  selected={selectedCategories}
-                  onChange={setSelectedCategories}
-                  placeholder="Search categories…"
-                />
-                <MultiSelectCombobox
-                  label="Source"
-                  options={mfeOptions}
-                  selected={selectedMfes}
-                  onChange={setSelectedMfes}
-                  placeholder="Search sources…"
-                />
-                <div className="ml-auto flex items-center gap-2">
-                  <GroupByListbox value={groupBy} onChange={setGroupBy} />
-                  <ViewModeToggle value={viewMode} onChange={setViewMode} />
-                </div>
+              </div>
+              {/* Status filter hidden for now — re-enable when status lifecycle is finalized. */}
+              {/* <MultiSelectCombobox
+                label="Status"
+                options={statusOptions}
+                selected={selectedStatuses}
+                onChange={setSelectedStatuses}
+                placeholder="Search statuses…"
+              /> */}
+              <MultiSelectCombobox
+                label="Category"
+                options={categoryOptions}
+                selected={selectedCategories}
+                onChange={setSelectedCategories}
+                placeholder="Search categories…"
+              />
+              <MultiSelectCombobox
+                label="Source"
+                options={mfeOptions}
+                selected={selectedMfes}
+                onChange={setSelectedMfes}
+                placeholder="Search sources…"
+              />
+              {/* Right cluster — paired on ≥ sm (right-anchored via ml-auto).
+                  On mobile, `display: contents` removes this wrapper from
+                  layout so Group-by and the view toggle become independent
+                  flex items of the parent toolbar. That lets the parent's
+                  flex-wrap put Group-by on the same row as Category/Source
+                  when it fits, instead of wrapping both as a pair. */}
+              <div className="contents sm:ml-auto sm:flex sm:items-center sm:gap-2">
+                <GroupByListbox value={groupBy} onChange={setGroupBy} />
+                <ViewModeToggle value={viewMode} onChange={setViewMode} />
               </div>
             </div>
 
@@ -695,13 +648,11 @@ function GroupByListbox({
     <div>
       <Listbox value={value} onChange={onChange}>
         <div className="relative">
-          <ListboxButton className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2.5 py-1.5 text-xs text-gray-700 hover:border-gray-400 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500">
+          <ListboxButton className="flex items-center gap-1.5 rounded-md border border-gray-300 bg-white px-2 py-2 text-xs text-gray-700 hover:border-gray-400 focus:border-gray-500 focus:outline-none focus:ring-1 focus:ring-gray-500 sm:px-2.5 sm:py-1.5">
+            {/* Prefix "Group by" only on desktop — on mobile the chevron and
+                the visible selected value carry the meaning, and the
+                sr-only span keeps the control discoverable to AT. */}
             <span className="hidden sm:inline font-medium text-gray-600">Group by</span>
-            <span className="sm:hidden font-medium text-gray-600" aria-hidden="true">
-              <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h10M4 18h7" />
-              </svg>
-            </span>
             <span className="sr-only sm:hidden">Group by</span>
             <span>{current.label}</span>
             <svg className="h-3 w-3 text-gray-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}>
