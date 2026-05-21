@@ -27,6 +27,7 @@ import {
 } from '@openedx/paragon';
 import { Check, Settings } from '@openedx/paragon/icons';
 import { PreviewSlot } from './preview-slot';
+import { MockedWrapper } from './_shared';
 
 export const ATOM_PREVIEWS: Record<string, () => ReactNode> = {
   Badge: () => <Badge variant="success">Stable</Badge>,
@@ -86,11 +87,21 @@ export const ATOM_PREVIEWS: Record<string, () => ReactNode> = {
   ),
   Annotation: () => <Annotation variant="success">Note</Annotation>,
   Bubble: () => <Bubble>3</Bubble>,
+  // Paragon's Form.Checkbox depends on defaultProps.controlAs, which React 19
+  // no longer applies. Render a native checkbox inside <Form> until Paragon
+  // ships a React-19-compatible release. Mirrors the Form.Checkbox mock in
+  // molecules.tsx.
   CheckBox: () => (
-    <label className="flex items-center gap-2 text-xs">
-      <input type="checkbox" defaultChecked /> Option
-    </label>
+    <MockedWrapper reason="Paragon v23.x Form.Checkbox relies on defaultProps; React 19 dropped that pattern.">
+      <Form>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" defaultChecked /> Option
+        </label>
+      </Form>
+    </MockedWrapper>
   ),
+  // Paragon has no first-class Code primitive; render a native <code> styled
+  // with the design system's neutral surface tokens.
   Code: () => (
     <code className="rounded bg-gray-100 px-1.5 py-0.5 font-mono text-xs text-gray-900">
       &lt;Button /&gt;

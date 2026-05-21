@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react';
 import { Badge, Button, Card as PCard, Icon } from '@openedx/paragon';
 import { Check, FilterList, KeyboardArrowLeft, KeyboardArrowRight, Search } from '@openedx/paragon/icons';
+import { MockedBadge } from './_shared';
 
 /**
  * DataTable family previews — representative mocks that visually mirror the
@@ -153,8 +154,9 @@ function BulkActions() {
  */
 function Shell({ children }: { children: ReactNode }) {
   return (
-    <div className="w-full self-start">
-      <PCard className="overflow-hidden">{children}</PCard>
+    <div className="flex w-full flex-col items-start gap-1.5 self-start">
+      <MockedBadge reason="Paragon v23.x DataTable internals rely on defaultProps; React 19 dropped that pattern." />
+      <PCard className="w-full overflow-hidden">{children}</PCard>
     </div>
   );
 }

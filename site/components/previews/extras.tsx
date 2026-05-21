@@ -13,6 +13,7 @@ import {
   SelectMenu,
 } from '@openedx/paragon';
 import { PreviewSlot } from './preview-slot';
+import { MockedWrapper } from './_shared';
 
 /**
  * "Extras" — leftover Paragon components that didn't fit cleanly into the
@@ -74,31 +75,35 @@ export const EXTRA_PREVIEWS: Record<string, () => ReactNode> = {
   ),
   // ColorPicker uses legacy defaultProps; mock as swatches under React 19.
   ColorPicker: () => (
-    <PreviewSlot width={180}>
-      <div className="flex items-center gap-2 text-xs">
-        <span>Color:</span>
-        <span
-          className="h-4 w-4 rounded border"
-          style={{ background: '#D74000' }}
-        />
-        <span
-          className="h-4 w-4 rounded border"
-          style={{ background: '#00262B' }}
-        />
-        <span
-          className="h-4 w-4 rounded border"
-          style={{ background: '#5DE3BF' }}
-        />
-      </div>
-    </PreviewSlot>
+    <MockedWrapper reason="Paragon v23.x ColorPicker relies on defaultProps; React 19 dropped that pattern.">
+      <PreviewSlot width={180}>
+        <div className="flex items-center gap-2 text-xs">
+          <span>Color:</span>
+          <span
+            className="h-4 w-4 rounded border"
+            style={{ background: '#D74000' }}
+          />
+          <span
+            className="h-4 w-4 rounded border"
+            style={{ background: '#00262B' }}
+          />
+          <span
+            className="h-4 w-4 rounded border"
+            style={{ background: '#5DE3BF' }}
+          />
+        </div>
+      </PreviewSlot>
+    </MockedWrapper>
   ),
   // Dropzone also fails under React 19; render a styled drop target instead.
   Dropzone: () => (
-    <PreviewSlot width={200} height={70}>
-      <div className="flex h-full w-full items-center justify-center rounded border-2 border-dashed border-gray-300 text-xs text-gray-500">
-        Drag files here
-      </div>
-    </PreviewSlot>
+    <MockedWrapper reason="Paragon v23.x Dropzone relies on defaultProps; React 19 dropped that pattern.">
+      <PreviewSlot width={200} height={70}>
+        <div className="flex h-full w-full items-center justify-center rounded border-2 border-dashed border-gray-300 text-xs text-gray-500">
+          Drag files here
+        </div>
+      </PreviewSlot>
+    </MockedWrapper>
   ),
   SelectMenu: () => (
     <SelectMenu defaultMessage="Choose…">
