@@ -13,7 +13,7 @@ overrides:
 
 patchedDependencies:
   react-transition-group@4.4.5:
-    hash: 7410e7bf0816bef7a007e5e70fdce8d9c2e0b3ddb51816049bc80c6e232e577e
+    hash: 9424602693ea93d0ab412bd2715c543ff761b9f8e68765ece62ac07e1bd91dc7
     path: patches/react-transition-group@4.4.5.patch
 
 importers:
@@ -4851,7 +4851,7 @@ snapshots:
       react-proptype-conditional-require: 1.0.4
       react-responsive: 10.0.1(react@19.2.6)
       react-table: 7.8.0(react@19.2.6)
-      react-transition-group: 4.4.5(patch_hash=7410e7bf0816bef7a007e5e70fdce8d9c2e0b3ddb51816049bc80c6e232e577e)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react-transition-group: 4.4.5(patch_hash=9424602693ea93d0ab412bd2715c543ff761b9f8e68765ece62ac07e1bd91dc7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       sass: 1.99.0
       style-dictionary: 4.4.0(tslib@2.8.1)
       tabbable: 5.3.3
@@ -7448,7 +7448,7 @@ snapshots:
       react: 19.2.6
       react-dom: 19.2.6(react@19.2.6)
       react-overlays: 5.2.1(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
-      react-transition-group: 4.4.5(patch_hash=7410e7bf0816bef7a007e5e70fdce8d9c2e0b3ddb51816049bc80c6e232e577e)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
+      react-transition-group: 4.4.5(patch_hash=9424602693ea93d0ab412bd2715c543ff761b9f8e68765ece62ac07e1bd91dc7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6)
       uncontrollable: 7.2.1(react@19.2.6)
       warning: 4.0.3
 
@@ -7599,7 +7599,7 @@ snapshots:
     dependencies:
       react: 19.2.6
 
-  react-transition-group@4.4.5(patch_hash=7410e7bf0816bef7a007e5e70fdce8d9c2e0b3ddb51816049bc80c6e232e577e)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
+  react-transition-group@4.4.5(patch_hash=9424602693ea93d0ab412bd2715c543ff761b9f8e68765ece62ac07e1bd91dc7)(react-dom@19.2.6(react@19.2.6))(react@19.2.6):
     dependencies:
       '@babel/runtime': 7.29.2
       dom-helpers: 5.2.1
