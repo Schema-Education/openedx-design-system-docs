@@ -78,8 +78,22 @@ export const ComponentCard = memo(function ComponentCard({
           : 'border border-gray-200 shadow-sm hover:border-gray-300 hover:shadow-md'
       }`}
     >
-      {/* Preview slot — sits above the title-button overlay so interactive Paragon content stays clickable */}
-      <div className="relative z-10 flex h-32 items-center justify-center overflow-hidden bg-gray-50 px-4">
+      {/* Preview slot — sits above the title-button overlay so interactive Paragon content stays clickable.
+          Clicks outside interactive children still open the detail pane via the onClick below. */}
+      <div
+        className="relative z-10 flex h-32 cursor-pointer items-center justify-center overflow-hidden bg-gray-50 px-4"
+        onClick={(e) => {
+          const target = e.target as HTMLElement;
+          if (
+            target.closest(
+              'button, a, input, select, textarea, label, [role="button"], [role="link"], [role="checkbox"], [role="radio"], [role="switch"], [role="tab"], [role="menuitem"]',
+            )
+          ) {
+            return;
+          }
+          onSelect(component);
+        }}
+      >
         {previewNode ? (
           previewNode
         ) : (
