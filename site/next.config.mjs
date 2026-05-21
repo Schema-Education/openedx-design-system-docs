@@ -1,9 +1,13 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { createMDX } from 'fumadocs-mdx/next';
+import bundleAnalyzer from '@next/bundle-analyzer';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const withMDX = createMDX();
+const withBundleAnalyzer = bundleAnalyzer({
+  enabled: process.env.ANALYZE === 'true',
+});
 
 /** @type {import('next').NextConfig} */
 const config = {
@@ -38,4 +42,4 @@ const config = {
   },
 };
 
-export default withMDX(config);
+export default withBundleAnalyzer(withMDX(config));

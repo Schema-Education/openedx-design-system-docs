@@ -9,6 +9,7 @@
     "prebuild": "PROTOTYPE_DEVBAR_ENABLED=true schema-capture-git-info --out ./prototype-devbar.snapshot.json",
     "build": "next build && pagefind --site out",
     "build:turbo": "next build --turbopack && pagefind --site out",
+    "analyze": "ANALYZE=true next build",
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
@@ -31,6 +32,7 @@
   },
   "devDependencies": {
     "@edx/browserslist-config": "^1.5.1",
+    "@next/bundle-analyzer": "^16.2.6",
     "@types/node": "^22.15.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
