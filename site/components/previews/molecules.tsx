@@ -7,7 +7,6 @@ import {
   Button,
   ButtonGroup,
   Card as PCard,
-  Collapsible,
   Dropdown,
   Form,
   FormControlFeedback,
@@ -30,6 +29,43 @@ import { PreviewSlot } from './preview-slot';
  * previews fall back to native HTML inputs styled to read like the Paragon
  * component until Paragon ships a React-19-compatible release.
  */
+
+/**
+ * Paragon's <Collapsible> wraps `react-transition-group`'s <Transition>,
+ * which reaches for `node.offsetHeight` during enter/exit animation phases.
+ * Under React 19's stricter ref-callback timing the underlying DOM node can
+ * be `null` at the moment the transition handler fires (detached or not yet
+ * attached), so the read throws at runtime:
+ *
+ *   TypeError: null is not an object (evaluating 'e.offsetHeight')
+ *
+ * Clicking the Collapsible preview card on /registry triggers the toggle,
+ * which kicks off the transition, which crashes the gallery. This is the
+ * same family of bug we already worked around for <Fade> in commit 5d7a9ea
+ * (see FadePreview in ./layout.tsx) — the chosen pattern there was to
+ * replace the live Paragon component with a static mock that doesn't
+ * depend on react-transition-group at all.
+ *
+ * A preview card only needs to communicate the affordance (a toggle-able
+ * disclosure with a caret and a title bar); it doesn't need to actually
+ * animate. We render a non-interactive closed-state mock with the same
+ * visual shape as Paragon's basic Collapsible. Revisit if/when Paragon
+ * ships a React-19-compatible Collapsible (tracked in issue #77).
+ */
+function CollapsiblePreview() {
+  return (
+    <PreviewSlot width={220}>
+      <div className="w-full rounded border border-gray-200 bg-white">
+        <div className="flex items-center justify-between px-2 py-1.5 text-xs text-gray-800">
+          <span>Show details</span>
+          <span aria-hidden className="text-[10px] text-gray-500">
+            ▸
+          </span>
+        </div>
+      </div>
+    </PreviewSlot>
+  );
+}
 
 export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
   Breadcrumb: () => (
@@ -106,13 +142,11 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
       </Dropdown.Toggle>
     </Dropdown>
   ),
-  Collapsible: () => (
-    <PreviewSlot width={220}>
-      <Collapsible styling="basic" title="Show details" defaultOpen={false}>
-        <p className="mb-0 text-xs text-gray-600">Hidden content</p>
-      </Collapsible>
-    </PreviewSlot>
-  ),
+  // See CollapsiblePreview above for why this is a static mock. The
+  // () => <CollapsiblePreview /> wrapper isolates any internal hooks the
+  // mock might grow to its own component instance (component-card invokes
+  // registry entries as `previewRender()`).
+  Collapsible: () => <CollapsiblePreview />,
   // Form.Checkbox: Paragon's FormCheckbox depends on defaultProps.controlAs,
   // which React 19 no longer applies. Fall back to native checkbox in Form.
   'Form.Checkbox': () => (
