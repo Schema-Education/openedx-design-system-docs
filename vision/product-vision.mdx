@@ -67,7 +67,7 @@ But Paragon's charter stops at molecules. The `CourseTabsNavigation` organism in
 
 ### Provider Fragmentation
 
-Open edX's provider ecosystem — OpenCraft, eduNEXT, Edly, Raccoon Gang, Appsembler, IBL Education, and a dozen others — all customize MFEs for their clients. Without a shared taxonomy for organisms, templates, and pages, each provider maintains its own mental model of what a "component" is. A bug report, a design proposal, or a code review comment that references `CourseCard` means different things at different shops. The design system must establish a lingua franca that works across organizations with different toolchains and deployment philosophies.
+Open edX's provider ecosystem — spanning more than a dozen organizations — customizes MFEs for their clients. Without a shared taxonomy for organisms, templates, and pages, each provider maintains its own mental model of what a "component" is. A bug report, a design proposal, or a code review comment that references `CourseCard` means different things at different shops. The design system must establish a lingua franca that works across organizations with different toolchains and deployment philosophies.
 
 ---
 
@@ -128,7 +128,7 @@ A designer at a mid-sized Open edX provider opens `design.openedx.org` (or the e
 
 A PM at Axim Collaborative drafts a proposal for a new course enrollment state. He opens the registry search, finds the three organisms that render enrollment CTAs, notes the two providers that have extended those organisms with custom variants, and links to all of them in his RFC. The proposal has concrete technical anchors before a single engineer has been consulted.
 
-An MFE maintainer at OpenCraft ships a refactor of `CourseTabsNavigation`. The CI pipeline runs the sync check, detects that the component's prop surface changed, and opens a draft PR to the docs repo with an updated prop table and a flag for the Figma sync agent to review. The maintainer approves the docs update in the same code review that approves the refactor. Total additional effort: two minutes.
+An MFE maintainer at one of the Open edX providers ships a refactor of `CourseTabsNavigation`. The CI pipeline runs the sync check, detects that the component's prop surface changed, and opens a draft PR to the docs repo with an updated prop table and a flag for the Figma sync agent to review. The maintainer approves the docs update in the same code review that approves the refactor. Total additional effort: two minutes.
 
 ### Designer Experience
 
@@ -276,7 +276,7 @@ See the full taxonomy reference at [`../docs/atomic-design-taxonomy.md`](../docs
 
 Axim gains visibility into the full component landscape of the Open edX ecosystem for the first time. Today, assessing the design consistency of the platform requires auditing a dozen MFE repositories by hand. With the registry and docs site, Axim can identify inconsistencies, duplication, and gaps — organisms that exist in three MFEs with slightly different behavior, pages that haven't been touched since 2021, components that lack accessibility audits — and make governance decisions backed by data rather than anecdote. The RFC process at [`../proposals/`](../proposals/) creates a structured channel for Axim to propose cross-MFE component standards without requiring centralized control over individual MFE development.
 
-### Open edX Providers (OpenCraft, eduNEXT, Edly, Raccoon Gang, Appsembler, IBL Education)
+### Open edX Providers
 
 Providers are the primary implementers of the ecosystem's component surface. The registry's `consumers` field gives each provider a structured way to declare their dependency on upstream components, and provider-specific manifest entries can register custom organisms, theming overrides, and client-specific page variants. The docs site renders provider extensions alongside the canonical component entry, making it possible for one provider to learn from another's approach without ad-hoc GitHub archaeology. The provider onboarding playbook (Phase 2c deliverable) will walk a new implementation partner through registering their component inventory in an afternoon.
 
@@ -346,7 +346,7 @@ The legacy `edx-platform` Django/Mako templates represent a significant portion 
 **Success Metric:** A designer unfamiliar with `frontend-app-learning` can find any registered component, read its prop surface, and navigate to its Figma counterpart in under 3 minutes using only the docs site.
 
 **Exit Criteria:**
-- Registry schema has passed review from at least one MFE maintainer and one provider (OpenCraft or eduNEXT preferred)
+- Registry schema has passed review from at least one MFE maintainer and one Open edX provider
 - Docs site is deployed to a preview URL accessible to Axim reviewers
 - RFC 0001 has received at least three substantive comments from outside Schema Education
 
@@ -361,7 +361,7 @@ The legacy `edx-platform` Django/Mako templates represent a significant portion 
 - Figma Code Connect mappings configured for all `frontend-app-learning` components with Phase 1 Figma counterparts
 - Bidirectional sync activated in proposal-only mode (agent opens draft PRs, does not auto-merge)
 - Atomic design taxonomy document ratified and versioned at [`../docs/atomic-design-taxonomy.md`](../docs/atomic-design-taxonomy.md) — the draft already exists; this milestone confirms Axim's acceptance as the canonical cross-ecosystem reference
-- Provider extension documentation: registry entries for at least one OpenCraft or eduNEXT customization as a proof of concept
+- Provider extension documentation: registry entries for at least one provider customization as a proof of concept
 - Docs site updated with user-journey browsing mode
 
 **Success Metric:** At least one MFE maintainer outside Schema Education submits a registry entry PR without facilitation. The Figma sync agent generates at least one correct drift proposal on a real code change.
@@ -410,7 +410,7 @@ We are asking Axim to do three things in the next 30 days:
 
 ### Open edX Providers
 
-We are asking providers — OpenCraft, eduNEXT, Edly, Raccoon Gang, Appsembler, IBL Education — to participate in two ways:
+We are asking Open edX providers to participate in two ways:
 
 1. **Review RFC 0001** and comment on whether the registry schema's `providerExtensions` model reflects how you actually manage MFE customizations. Your feedback will determine whether the extension model is useful or merely aspirational.
 2. **Volunteer for the Phase 2b provider extension pilot.** One provider willing to register a single custom organism will unlock the extension documentation that benefits everyone.
