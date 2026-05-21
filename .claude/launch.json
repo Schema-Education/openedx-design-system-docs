@@ -24,6 +24,12 @@
       "runtimeExecutable": "pnpm",
       "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--turbopack"],
       "autoPort": true
+    },
+    {
+      "name": "site-dev-webpack",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev"],
+      "autoPort": true
     }
   ]
 }

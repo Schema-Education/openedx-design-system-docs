@@ -1,5 +1,6 @@
 'use client';
 
+import { Alert, Badge, Card as PCard } from '@openedx/paragon';
 import { ATOMIC_LEVEL_META, type GalleryComponent } from '@/lib/gallery';
 import { PARAGON_PREVIEWS } from './paragon-previews';
 import { PreviewErrorBoundary } from './preview-error-boundary';
@@ -273,15 +274,20 @@ function Section({
   );
 }
 
+// Paragon has no first-class code-block primitive, so the syntax surface
+// stays as a native <pre>. The outer container is a Paragon Card so the
+// chrome around the snippet still comes from the design system.
 function CodeBlock({ label, code }: { label: string; code: string }) {
   return (
     <div>
       <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
         {label}
       </div>
-      <pre className="overflow-x-auto rounded-md bg-gray-900 px-3 py-2 font-mono text-[11px] text-gray-100">
-        <code>{code}</code>
-      </pre>
+      <PCard className="overflow-hidden !border-0">
+        <pre className="m-0 overflow-x-auto rounded-md bg-gray-900 px-3 py-2 font-mono text-[11px] text-gray-100">
+          <code>{code}</code>
+        </pre>
+      </PCard>
     </div>
   );
 }
@@ -306,8 +312,8 @@ function VariantTile({
   children: React.ReactNode;
 }) {
   return (
-    <div
-      className="flex shrink-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
+    <PCard
+      className="shrink-0 overflow-hidden"
       style={{ width }}
     >
       <div className="flex items-start justify-between gap-2 border-b border-gray-100 px-3 py-2">
@@ -322,9 +328,9 @@ function VariantTile({
           )}
         </div>
         {isPlaceholder && (
-          <span className="shrink-0 rounded bg-gray-100 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-gray-500">
+          <Badge variant="light" className="shrink-0 !text-[9px] uppercase tracking-wide">
             Phase 2
-          </span>
+          </Badge>
         )}
       </div>
       <div
@@ -340,7 +346,7 @@ function VariantTile({
           {children ?? <PreviewPlaceholder name={name} gradient={gradient} compact />}
         </PreviewErrorBoundary>
       </div>
-    </div>
+    </PCard>
   );
 }
 
@@ -377,21 +383,13 @@ function PreviewPlaceholder({
 function Guideline({ kind }: { kind: 'do' | 'dont' }) {
   const isDo = kind === 'do';
   return (
-    <div
-      className={`rounded-md border p-4 ${
-        isDo ? 'border-green-200 bg-green-50' : 'border-red-200 bg-red-50'
-      }`}
-    >
-      <div
-        className={`text-[10px] font-semibold uppercase tracking-wide ${
-          isDo ? 'text-green-700' : 'text-red-700'
-        }`}
-      >
+    <Alert variant={isDo ? 'success' : 'danger'} dismissible={false}>
+      <div className="text-[10px] font-semibold uppercase tracking-wide">
         {isDo ? 'Do' : "Don't"}
       </div>
-      <p className="mt-2 text-xs text-gray-700">
+      <p className="mt-2 mb-0 text-xs">
         Guideline copy authored alongside each component in Phase 2.
       </p>
-    </div>
+    </Alert>
   );
 }

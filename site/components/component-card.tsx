@@ -1,6 +1,7 @@
 'use client';
 
 import { memo, useEffect, useState, type ReactNode } from 'react';
+import { Hyperlink } from '@openedx/paragon';
 import {
   ATOMIC_LEVEL_META,
   STATUS_META,
@@ -135,20 +136,27 @@ export const ComponentCard = memo(function ComponentCard({
           {atomic.label}
         </span>
         {sourceUrl ? (
-          <a
-            href={sourceUrl}
+          <Hyperlink
+            destination={sourceUrl}
             target="_blank"
-            rel="noopener noreferrer"
             onClick={(e) => e.stopPropagation()}
-            className="absolute bottom-2 right-2 z-20 rounded-full bg-white/90 px-2 py-0.5 text-[10px] font-medium text-gray-700 shadow-sm hover:bg-white hover:text-gray-900"
+            className="!absolute bottom-2 right-2 z-20 rounded-full bg-white/90 px-2 py-0.5 !text-[10px] !font-medium !text-gray-700 shadow-sm hover:bg-white hover:!text-gray-900 hover:!no-underline"
+            showLaunchIcon={false}
           >
             View source ↗
-          </a>
+          </Hyperlink>
         ) : null}
       </div>
 
       <div className="flex flex-1 flex-col p-4">
         <div className="flex items-start justify-between gap-2">
+          {/* Stretched-card click target: native <button> kept so the
+              after:absolute pseudo overlay spans the whole card. Paragon
+              Button would inject its own padding and color, breaking the
+              card title's plain typography and overlay positioning. The
+              previews and "View source" link inside the card use Paragon
+              primitives — this lone exception is the card-navigation
+              affordance, not a preview surface. */}
           <h3 className="font-mono text-sm font-semibold text-gray-900">
             <button
               type="button"

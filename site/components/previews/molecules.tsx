@@ -20,6 +20,7 @@ import {
 } from '@openedx/paragon';
 import { Settings } from '@openedx/paragon/icons';
 import { PreviewSlot } from './preview-slot';
+import { MockedWrapper } from './_shared';
 
 /**
  * Molecule previews.
@@ -46,16 +47,21 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
       <SearchField onSubmit={() => undefined} placeholder="Search…" />
     </PreviewSlot>
   ),
+  // Paragon's Toast portals to <body>, which would render outside this
+  // preview slot. Mock the visual surface inline using design-system neutral
+  // surface tokens; the live Toast renders correctly in any consuming MFE.
   Toast: () => (
-    <div className="absolute bottom-2 left-2 flex items-center gap-2 rounded-md bg-gray-800 px-3 py-1.5 text-xs text-white shadow-md">
-      <span>Saved</span>
-      <span
-        aria-hidden
-        className="flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none text-white/80"
-      >
-        ×
-      </span>
-    </div>
+    <MockedWrapper reason="Paragon Toast portals to document.body; in-card preview needs an inline mock.">
+      <div className="flex items-center gap-2 rounded-md bg-gray-800 px-3 py-1.5 text-xs text-white shadow-md">
+        <span>Saved</span>
+        <span
+          aria-hidden
+          className="flex h-4 w-4 items-center justify-center rounded-full text-[10px] leading-none text-white/80"
+        >
+          ×
+        </span>
+      </div>
+    </MockedWrapper>
   ),
   Card: () => (
     <PreviewSlot width={200}>
@@ -132,11 +138,13 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
   // Form.Checkbox: Paragon's FormCheckbox depends on defaultProps.controlAs,
   // which React 19 no longer applies. Fall back to native checkbox in Form.
   'Form.Checkbox': () => (
-    <Form>
-      <label className="flex items-center gap-2 text-xs">
-        <input type="checkbox" defaultChecked /> Email me updates
-      </label>
-    </Form>
+    <MockedWrapper reason="Paragon v23.x Form.Checkbox relies on defaultProps; React 19 dropped that pattern.">
+      <Form>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" defaultChecked /> Email me updates
+        </label>
+      </Form>
+    </MockedWrapper>
   ),
   'Form.Radio': () => (
     <Form>
@@ -177,27 +185,31 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
   ),
   // Form.Autosuggest also requires React-18 defaultProps semantics; mock for now.
   'Form.Autosuggest': () => (
-    <PreviewSlot width={200}>
-      <Form>
-        <Form.Control type="text" placeholder="Search…" />
-        <div className="mt-1 rounded border bg-white text-xs shadow">
-          <div className="px-2 py-1 hover:bg-gray-50">Suggestion 1</div>
-          <div className="px-2 py-1 hover:bg-gray-50">Suggestion 2</div>
-        </div>
-      </Form>
-    </PreviewSlot>
+    <MockedWrapper reason="Paragon v23.x Form.Autosuggest relies on defaultProps; React 19 dropped that pattern.">
+      <PreviewSlot width={200}>
+        <Form>
+          <Form.Control type="text" placeholder="Search…" />
+          <div className="mt-1 rounded border bg-white text-xs shadow">
+            <div className="px-2 py-1 hover:bg-gray-50">Suggestion 1</div>
+            <div className="px-2 py-1 hover:bg-gray-50">Suggestion 2</div>
+          </div>
+        </Form>
+      </PreviewSlot>
+    </MockedWrapper>
   ),
   // Form.CheckboxSet / RadioSet inherit the FormCheckbox/FormRadio issue.
   // Mock as a labeled list using native inputs inside <Form>.
   CheckBoxGroup: () => (
-    <Form>
-      <label className="flex items-center gap-2 text-xs">
-        <input type="checkbox" defaultChecked /> A
-      </label>
-      <label className="flex items-center gap-2 text-xs">
-        <input type="checkbox" /> B
-      </label>
-    </Form>
+    <MockedWrapper reason="Paragon v23.x Form.CheckboxSet relies on defaultProps; React 19 dropped that pattern.">
+      <Form>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" defaultChecked /> A
+        </label>
+        <label className="flex items-center gap-2 text-xs">
+          <input type="checkbox" /> B
+        </label>
+      </Form>
+    </MockedWrapper>
   ),
   RadioButtonGroup: () => (
     <Form>
