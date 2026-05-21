@@ -305,8 +305,16 @@ export function Gallery({ components }: GalleryProps) {
 
   return (
     <>
-      {/* Page title row — full width */}
-      <div className="px-6 pt-8">
+      {/* Page title row — full width. Inline padding mirrors the listing
+          column's calc so the title aligns with the cards beneath, and
+          dodges Paragon's `.px-6 !important` (which forces 80px). */}
+      <div
+        className="pt-8"
+        style={{
+          paddingLeft: 'max(1rem, calc((100vw - 1650px) / 2 + 1rem))',
+          paddingRight: 'max(1rem, calc((100vw - 1650px) / 2 + 1rem))',
+        }}
+      >
         <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-wide text-gray-500">Component library</p>
@@ -318,10 +326,21 @@ export function Gallery({ components }: GalleryProps) {
         </div>
       </div>
 
-      {/* Subnav — full-width, sticky below app header */}
+      {/* Subnav — full-width, sticky below app header. Tabs scroll
+          horizontally when they overflow on narrow viewports instead of
+          wrapping onto multiple rows. */}
       <div className="sticky top-16 z-20 border-b border-gray-200 bg-gray-50/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/80">
-        <div className="px-6">
-          <div role="tablist" aria-label="Atomic level" className="flex flex-wrap gap-1">
+        <div
+          style={{
+            paddingLeft: 'max(1rem, calc((100vw - 1650px) / 2 + 1rem))',
+            paddingRight: 'max(1rem, calc((100vw - 1650px) / 2 + 1rem))',
+          }}
+        >
+          <div
+            role="tablist"
+            aria-label="Atomic level"
+            className="flex gap-1 overflow-x-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          >
             {tabs.map((tab) => {
               const isActive = activeLevel === tab.key;
               const count = levelTabCounts[tab.key];
@@ -332,7 +351,7 @@ export function Gallery({ components }: GalleryProps) {
                   aria-selected={isActive}
                   type="button"
                   onClick={() => setActiveLevel(tab.key)}
-                  className={`relative -mb-px flex items-baseline gap-2 rounded-t-md px-4 py-2.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055] ${
+                  className={`relative -mb-px flex shrink-0 items-baseline gap-2 whitespace-nowrap rounded-t-md px-4 py-2.5 text-sm transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055] ${
                     isActive
                       ? 'border-b-2 border-[#0a3055] font-semibold text-[#0a3055]'
                       : 'border-b-2 border-transparent font-medium text-gray-700 hover:bg-[#0a3055]/10 hover:text-[#0a3055]'
@@ -377,11 +396,11 @@ export function Gallery({ components }: GalleryProps) {
               // title frame, after which the listing centers under it.
               paddingLeft: isUsageTab
                 ? '1.5rem'
-                : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
+                : 'max(1rem, calc((100vw - 1650px) / 2 + 1rem))',
               paddingRight:
                 isUsageTab || selected
                   ? '1.5rem'
-                  : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
+                  : 'max(1rem, calc((100vw - 1650px) / 2 + 1rem))',
               transition: paneTransition,
             }}
           >
