@@ -33,7 +33,7 @@ List every group that needs to be consulted, informed, or whose sign-off is requ
 | Paragon maintainers | consulted | Shared component library owners |
 | Designers | informed | Figma file owners |
 | PMs | informed | Roadmap and prioritization |
-| Providers (list) | informed | OpenCraft, eduNEXT, Edly, Raccoon Gang, Appsembler, IBL — downstream consumers |
+| Open edX providers | informed | Downstream consumers across the provider ecosystem |
 | Course authors | informed | End-users of components in authoring tools |
 
 Remove rows that don't apply. Add any groups specific to this proposal.

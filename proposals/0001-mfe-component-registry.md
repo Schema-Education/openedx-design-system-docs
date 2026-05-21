@@ -39,7 +39,7 @@ This RFC proposes a lightweight, lintable manifest format that resolves these ga
 | Paragon maintainers | consulted | Registry schema must not conflict with Paragon's own component catalog |
 | Schema | consulted | Owns documentation pipeline consuming the manifests |
 | Designers | informed | Figma Code Connect URLs in the manifest close the Figma ↔ code gap |
-| Providers | informed | OpenCraft, eduNEXT, Edly, Raccoon Gang, Appsembler, IBL — downstream forks must also adopt manifests or opt out explicitly |
+| Open edX providers | informed | Downstream forks must also adopt manifests or opt out explicitly |
 | PMs | informed | Phase gating depends on roadmap alignment |
 
 ## Proposal
