@@ -41,7 +41,7 @@ export function AppHeader() {
       <div className="flex h-16 items-center gap-3 px-4 sm:gap-6 sm:px-6">
         <Link
           href="/"
-          className="flex items-center gap-3 shrink-0 rounded-md px-2 py-1 -mx-2 transition-colors hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
+          className="flex items-center gap-3 shrink-0 rounded-md px-2 py-1 -mx-2 no-underline transition-colors hover:bg-gray-100 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
           aria-label="Open edX Design System home"
         >
           {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -69,7 +69,7 @@ export function AppHeader() {
                 href={tab.href}
                 aria-current={active ? 'page' : undefined}
                 className={[
-                  'relative inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]',
+                  'relative inline-flex h-10 shrink-0 items-center whitespace-nowrap rounded-md px-3 text-sm font-medium no-underline transition-colors hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]',
                   active
                     ? 'bg-[#0a3055]/10 text-[#0a3055]'
                     : 'text-gray-700 hover:bg-gray-100',
@@ -88,7 +88,7 @@ export function AppHeader() {
               href={link.href}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-md px-2 text-gray-600 transition-colors hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
+              className="inline-flex h-8 shrink-0 items-center whitespace-nowrap rounded-md px-2 text-gray-600 no-underline transition-colors hover:bg-gray-100 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
             >
               {link.label} ↗
             </a>
@@ -152,7 +152,7 @@ export function AppHeader() {
                     aria-current={active ? 'page' : undefined}
                     onClick={() => setOpen(false)}
                     className={[
-                      'inline-flex h-11 items-center rounded-md px-3 text-sm font-medium transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]',
+                      'inline-flex h-11 items-center rounded-md px-3 text-sm font-medium no-underline transition-colors hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]',
                       active
                         ? 'bg-[#0a3055]/10 text-[#0a3055]'
                         : 'text-gray-800 hover:bg-gray-100',
@@ -174,7 +174,7 @@ export function AppHeader() {
                   target="_blank"
                   rel="noreferrer"
                   onClick={() => setOpen(false)}
-                  className="inline-flex h-10 items-center rounded-md px-3 text-sm text-gray-700 transition-colors hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
+                  className="inline-flex h-10 items-center rounded-md px-3 text-sm text-gray-700 no-underline transition-colors hover:bg-gray-100 hover:no-underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
                 >
                   {link.label} ↗
                 </a>
