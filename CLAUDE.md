@@ -8,9 +8,9 @@ This repository is the canonical hub for Open edX design system governance, span
 
 Mirror the README.md structure:
 
-- **`/vision/product-vision.mdx`** — Strategic direction, governance model, Phase roadmap. Preserve the 10-section structure when updating.
-- **`/proposals/`** — Open edX Design System RFC-style proposals (ODS-RFCs). Copy `TEMPLATE.md` for new proposals; name files as `NNNN-kebab-description.md`.
-- **`/docs/`** — Reference docs: atomic-design-taxonomy.md, contributing.md, style-guide.md, adrs/ (ADRs).
+- **`/site/content/docs/vision/index.mdx`** — Strategic direction, governance model, Phase roadmap. Rendered at `/docs/vision`. Preserve the 10-section structure when updating.
+- **`/site/content/docs/proposals/`** — Open edX Design System RFC-style proposals (ODS-RFCs). Rendered under `/docs/proposals/*`. Copy `TEMPLATE.mdx` for new proposals; name files as `NNNN-kebab-description.mdx`.
+- **`/docs/`** — Reference docs: atomic-design-taxonomy.md, contributing.md, style-guide.md, adrs/ (ADRs). Not yet wired into the docs site.
 - **`/site/`** — Next.js documentation site (Fumadocs + Tailwind). Output lives here; built via `pnpm dev` or `pnpm build`.
 - **`/registry/`** — Component metadata schema (`schema/component.schema.json`) and future crawler pipeline.
 
@@ -73,7 +73,7 @@ See `/registry/schema/component.schema.json` for the canonical JSON Schema defin
 
 ## Vision Document Updates
 
-When editing `/vision/product-vision.mdx`, preserve the 10-section structure:
+When editing `/site/content/docs/vision/index.mdx`, preserve the 10-section structure:
 
 1. Executive Summary
 2. Governance Model
@@ -92,7 +92,7 @@ Update section content as needed, but do not rename or reorder sections without 
 
 New proposals must:
 
-1. Copy `/proposals/TEMPLATE.md` to `/proposals/NNNN-kebab-description.md` (increment the sequence number).
+1. Copy `/site/content/docs/proposals/TEMPLATE.mdx` to `/site/content/docs/proposals/NNNN-kebab-description.mdx` (increment the sequence number).
 2. Follow ODS-RFC format (Status, Date, Problem Statement, Proposed Solution, Alternatives, Consequences, Links).
 3. Open a PR with base branch set to `main` (or an active `initiative/` branch if coordinated).
 4. Link to related ADRs or vision sections.

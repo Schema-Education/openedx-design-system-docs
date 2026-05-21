@@ -6,16 +6,16 @@ Led by Schema Education and aligned with Axim's Open edX stewardship, this repos
 
 ## Repository Map
 
-- **/vision/** — Product vision and strategic direction for the design system (Phase 1 complete: 10-section product-vision.mdx)
-- **/proposals/** — Open edX Design System RFC-style proposals (ODS-RFCs); new proposals copy TEMPLATE.md
+- **/site/content/docs/vision/** — Product vision and strategic direction (rendered at `/docs/vision`)
+- **/site/content/docs/proposals/** — Open edX Design System RFC-style proposals (ODS-RFCs); new proposals copy `TEMPLATE.mdx`
 - **/docs/** — Reference documentation: atomic design taxonomy, contributor guide, style guide, and ADRs
 - **/site/** — Next.js documentation site (built on Fumadocs + Tailwind); source for published docs.openedx.org
 - **/registry/** — Component registry schema and future metadata crawler (Phase 2a work)
 
 ## Key Links
 
-- [Product Vision](./vision/product-vision.mdx) — Strategic direction and Phase roadmap
-- [Proposals Index](./proposals/README.md) — Open RFCs and design decisions
+- [Product Vision](./site/content/docs/vision/index.mdx) — Strategic direction and Phase roadmap
+- [Proposals Index](./site/content/docs/proposals/index.mdx) — Open RFCs and design decisions
 - [Atomic Design Taxonomy](./docs/atomic-design-taxonomy.md) — Level definitions with Open edX examples
 - [Contributing Guide](./docs/contributing.md) — How to propose changes and register components
 - [Repository Conventions](./CLAUDE.md) — Branching, session startup, and content standards

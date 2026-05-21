@@ -47,22 +47,18 @@ export default function HomePage() {
             that shape this system.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-4">
-            <a
-              href="https://github.com/Schema-Education/openedx-design-system-docs/blob/main/vision/product-vision.mdx"
-              target="_blank"
-              rel="noreferrer"
+            <Link
+              href="/docs/vision"
               className="rounded bg-accent-400 px-6 py-3 text-sm font-semibold text-ink-800 transition hover:bg-accent-300"
             >
               Read the product vision →
-            </a>
-            <a
-              href="https://github.com/Schema-Education/openedx-design-system-docs/blob/main/proposals/0001-mfe-component-registry.md"
-              target="_blank"
-              rel="noreferrer"
+            </Link>
+            <Link
+              href="/docs/proposals/0001-mfe-component-registry"
               className="rounded border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/5"
             >
               ODS-RFC-0001
-            </a>
+            </Link>
           </div>
         </div>
       </section>
