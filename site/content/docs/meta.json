@@ -1,4 +1,12 @@
 {
   "title": "Documentation",
-  "pages": ["index", "getting-started", "atomic-design"]
+  "pages": [
+    "index",
+    "getting-started",
+    "atomic-design",
+    "---Vision---",
+    "vision",
+    "---Proposals---",
+    "proposals"
+  ]
 }
