@@ -25,63 +25,131 @@ import {
 import { useRecentSelections } from './use-recent';
 
 interface CommandPaletteProps {
+  /** Full component dataset — search domain for "All" scope, source for Recent hydration. */
   components: GalleryComponent[];
+  /**
+   * Components matching the gallery's currently-applied filter chips (and the
+   * gallery's inline search input). When the palette is in "filtered" scope,
+   * this is what we search. Pass `null`/undefined to disable filter-first.
+   */
+  filteredComponents?: GalleryComponent[];
+  /**
+   * Whether the gallery currently has *any* user-applied filters. Drives the
+   * scope default on open: filters → 'filtered'; no filters → 'all'.
+   */
+  hasActiveFilters: boolean;
   /** Commands surfaced alongside components — see lib/palette-commands. */
   commands: GalleryCommand[];
   open: boolean;
   onClose: () => void;
   onSelectComponent: (c: GalleryComponent) => void;
+  /**
+   * Set the gallery's Source-MFE filter to exactly this slug. Used by the
+   * "Source MFEs" quick-jump section.
+   */
+  onFilterByMfe: (mfe: string) => void;
 }
 
 /**
- * Global ⌘K command palette — PR 2 / 3.
+ * Global ⌘K command palette — PR 3 / 3 (final).
  *
- * Scope of this PR (additions over PR 1):
- * - Renders **commands** (filter / view / navigation actions) alongside
- *   components in a single keyboard-navigable list
- * - Empty state shows Recent components + Suggested commands
- * - Component AND command results coexist when a query matches both
- *
- * Out of scope (PR 3): filter-first scope toggle + Source MFE quick-jump.
+ * Scope of this PR (additions over PR 2):
+ * - **Filter-first scope toggle** — when the gallery has active filter chips,
+ *   the palette defaults to searching within them (Storybook's documented
+ *   tags-narrow-before-search behavior). ⌘⇧A widens to all components.
+ *   Footer chip shows current scope and is clickable.
+ * - **Source-MFE quick-jump** — when the query matches a known MFE slug
+ *   (e.g. "learning", "authoring"), a "Source MFEs" section appears above
+ *   components offering to set the source filter to that MFE.
  */
 
 type PaletteItem =
   | { kind: 'component'; component: GalleryComponent }
-  | { kind: 'command'; command: GalleryCommand };
+  | { kind: 'command'; command: GalleryCommand }
+  | { kind: 'mfe-filter'; mfe: string; count: number };
 
 function itemKey(item: PaletteItem): string {
-  return item.kind === 'component'
-    ? `c:${item.component.sourceMfe}|${item.component.slug}`
-    : `k:${item.command.id}`;
+  if (item.kind === 'component') {
+    return `c:${item.component.sourceMfe}|${item.component.slug}`;
+  }
+  if (item.kind === 'command') return `k:${item.command.id}`;
+  return `m:${item.mfe}`;
 }
+
+type Scope = 'filtered' | 'all';
 
 export function CommandPalette({
   components,
+  filteredComponents,
+  hasActiveFilters,
   commands,
   open,
   onClose,
   onSelectComponent,
+  onFilterByMfe,
 }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
+  const [scope, setScope] = useState<Scope>('all');
   const { recent, pushRecent } = useRecentSelections(components);
 
-  // Reset query whenever the dialog opens so the user lands on a clean slate.
+  // Reset state every time the palette opens. Scope defaults to 'filtered'
+  // only when the gallery has active filters; otherwise 'all' is the natural
+  // start point and would otherwise produce a confusing 0-result search.
   useEffect(() => {
-    if (open) setQuery('');
+    if (open) {
+      setQuery('');
+      setScope(hasActiveFilters && filteredComponents ? 'filtered' : 'all');
+    }
+  }, [open, hasActiveFilters, filteredComponents]);
+
+  // ⌘⇧A toggles scope while the palette is open. Bound to window (rather than
+  // the dialog) so it fires even if focus drifts off the input.
+  useEffect(() => {
+    if (!open) return;
+    function onKey(e: KeyboardEvent) {
+      const isMod = e.metaKey || e.ctrlKey;
+      if (!isMod || !e.shiftKey) return;
+      if (e.key === 'A' || e.key === 'a') {
+        e.preventDefault();
+        setScope((s) => (s === 'filtered' ? 'all' : 'filtered'));
+      }
+    }
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
+  // MFE catalog with counts, computed from the FULL component list so the
+  // quick-jump count reflects total components even when scope is filtered.
+  const mfeStats = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const c of components) {
+      counts.set(c.sourceMfe, (counts.get(c.sourceMfe) ?? 0) + 1);
+    }
+    return Array.from(counts.entries())
+      .map(([mfe, count]) => ({ mfe, count }))
+      .sort((a, b) => a.mfe.localeCompare(b.mfe));
+  }, [components]);
+
+  // Source domain for component ranking — flips with scope.
+  const searchDomain =
+    scope === 'filtered' && filteredComponents ? filteredComponents : components;
+
   const rankedComponents = useMemo(
-    () => rankComponents(components, query, 8).map((r) => r.component),
-    [components, query],
+    () => rankComponents(searchDomain, query, 8).map((r) => r.component),
+    [searchDomain, query],
   );
   const rankedCommandList = useMemo(
     () => rankCommands(commands, query, 6),
     [commands, query],
   );
+  const rankedMfes = useMemo(() => rankMfes(mfeStats, query, 4), [mfeStats, query]);
   const suggested = useMemo(() => suggestedCommands(commands, 4), [commands]);
 
   const hasQuery = query.trim().length > 0;
 
+  const mfeItems: PaletteItem[] = hasQuery
+    ? rankedMfes.map((m) => ({ kind: 'mfe-filter', mfe: m.mfe, count: m.count }))
+    : [];
   const componentItems: PaletteItem[] = (hasQuery ? rankedComponents : recent).map(
     (c) => ({ kind: 'component', component: c }),
   );
@@ -92,25 +160,33 @@ export function CommandPalette({
   const componentSectionLabel = hasQuery ? 'Components' : 'Recent';
   const commandSectionLabel = hasQuery ? 'Commands' : 'Suggested';
 
-  const totalResults = componentItems.length + commandItems.length;
+  const totalResults =
+    mfeItems.length + componentItems.length + commandItems.length;
 
   function handleSelect(item: PaletteItem | null) {
     if (!item) return;
     if (item.kind === 'component') {
       pushRecent(item.component);
       onSelectComponent(item.component);
-    } else {
+    } else if (item.kind === 'command') {
       item.command.perform();
+    } else {
+      onFilterByMfe(item.mfe);
     }
     onClose();
   }
+
+  const scopeWidens = scope === 'filtered' && !!filteredComponents;
+  const scopeCount = scope === 'filtered' && filteredComponents
+    ? filteredComponents.length
+    : components.length;
 
   return (
     <Dialog
       open={open}
       onClose={onClose}
       className="relative z-50"
-      aria-label={`Search ${components.length} components and ${commands.length} commands`}
+      aria-label={`Search ${scopeCount} components and ${commands.length} commands`}
     >
       <DialogBackdrop
         transition
@@ -135,8 +211,8 @@ export function CommandPalette({
                 autoFocus
                 onChange={(e) => setQuery(e.target.value)}
                 placeholder={
-                  hasQuery
-                    ? 'Search components and commands…'
+                  scopeWidens
+                    ? `Search ${scopeCount} filtered components (⌘⇧A to widen)`
                     : 'Search components or run a command — try "Card", "deprecated", or "group by"'
                 }
                 className="flex-1 border-0 bg-transparent py-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-0"
@@ -151,9 +227,34 @@ export function CommandPalette({
               className="max-h-[60vh] divide-y divide-gray-100 overflow-y-auto"
             >
               {totalResults === 0 ? (
-                <EmptyState query={query} total={components.length} />
+                <EmptyState
+                  query={query}
+                  total={scopeCount}
+                  scope={scope}
+                  hasActiveFilters={hasActiveFilters && !!filteredComponents}
+                  onWiden={() => setScope('all')}
+                />
               ) : (
                 <>
+                  {mfeItems.length > 0 && (
+                    <Section label="Source MFEs" count={mfeItems.length}>
+                      {mfeItems.map((item) => (
+                        <ComboboxOption
+                          key={itemKey(item)}
+                          value={item}
+                          className="cursor-pointer outline-none data-[focus]:bg-gray-50"
+                        >
+                          {({ focus }) => (
+                            <MfeRow
+                              mfe={(item as { kind: 'mfe-filter'; mfe: string; count: number }).mfe}
+                              count={(item as { kind: 'mfe-filter'; mfe: string; count: number }).count}
+                              focused={focus}
+                            />
+                          )}
+                        </ComboboxOption>
+                      ))}
+                    </Section>
+                  )}
                   {componentItems.length > 0 && (
                     <Section label={componentSectionLabel} count={componentItems.length}>
                       {componentItems.map((item) => (
@@ -208,17 +309,70 @@ export function CommandPalette({
                   <Kbd>esc</Kbd> close
                 </span>
               </div>
-              <span className="text-gray-400">
-                {hasQuery
-                  ? `${totalResults} result${totalResults === 1 ? '' : 's'}`
-                  : `${components.length} components · ${commands.length} commands`}
-              </span>
+              {/* Scope chip — clickable to toggle, also shows ⌘⇧A keyboard shortcut. */}
+              {hasActiveFilters && filteredComponents ? (
+                <button
+                  type="button"
+                  onClick={() => setScope((s) => (s === 'filtered' ? 'all' : 'filtered'))}
+                  className="flex items-center gap-1 rounded px-1.5 py-0.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+                  title="Toggle filter scope"
+                >
+                  {scope === 'filtered'
+                    ? `Searching ${filteredComponents.length} of ${components.length} — search all`
+                    : `Searching all ${components.length} — restrict to ${filteredComponents.length}`}
+                  <Kbd>⌘</Kbd>
+                  <Kbd>⇧</Kbd>
+                  <Kbd>A</Kbd>
+                </button>
+              ) : (
+                <span className="text-gray-400">
+                  {hasQuery
+                    ? `${totalResults} result${totalResults === 1 ? '' : 's'}`
+                    : `${components.length} components · ${commands.length} commands`}
+                </span>
+              )}
             </div>
           </Combobox>
         </DialogPanel>
       </div>
     </Dialog>
   );
+}
+
+/* -------------------------------------------------------------------------- */
+/* MFE ranking — small enough to live alongside the palette                   */
+/* -------------------------------------------------------------------------- */
+
+interface MfeStat {
+  mfe: string;
+  count: number;
+}
+
+function rankMfes(
+  stats: MfeStat[],
+  query: string,
+  limit: number,
+): MfeStat[] {
+  if (!query.trim()) return [];
+  const q = query.toLowerCase().trim();
+  const scored: Array<{ stat: MfeStat; score: number }> = [];
+  for (const stat of stats) {
+    const slug = stat.mfe.toLowerCase();
+    let score = 0;
+    if (slug === q) score = 1000;
+    else if (slug.startsWith(q)) score = 500;
+    else if (slug.includes(q)) score = 200;
+    // Also match against the "second token" of the slug — "learning" should
+    // surface "frontend-app-learning" without needing the "frontend-app-" prefix.
+    else {
+      const tokens = slug.split(/[-_]/).filter(Boolean);
+      if (tokens.some((t) => t.startsWith(q))) score = 150;
+      else if (tokens.some((t) => t.includes(q))) score = 80;
+    }
+    if (score > 0) scored.push({ stat, score });
+  }
+  scored.sort((a, b) => b.score - a.score || a.stat.mfe.localeCompare(b.stat.mfe));
+  return scored.slice(0, limit).map((s) => s.stat);
 }
 
 /* -------------------------------------------------------------------------- */
@@ -338,7 +492,61 @@ function CommandRow({
   );
 }
 
-function EmptyState({ query, total }: { query: string; total: number }) {
+function MfeRow({
+  mfe,
+  count,
+  focused,
+}: {
+  mfe: string;
+  count: number;
+  focused: boolean;
+}) {
+  return (
+    <div className="flex items-center gap-3 px-4 py-2">
+      {/* Source-repo glyph square — distinct emoji-style icon flags this as a filter action */}
+      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-blue-200 bg-blue-50">
+        <span className="text-sm text-blue-700">📦</span>
+      </div>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-baseline gap-2">
+          <span className="truncate font-mono text-sm font-semibold text-gray-900">
+            {mfe}
+          </span>
+          <span className="shrink-0 rounded bg-blue-50 px-1 py-0.5 text-[9px] font-medium uppercase tracking-wide text-blue-700">
+            Filter source
+          </span>
+        </div>
+        <p className="truncate text-xs text-gray-500">
+          {count} component{count === 1 ? '' : 's'} from this source
+        </p>
+      </div>
+
+      <div className="flex shrink-0 items-center gap-2 text-[10px]">
+        {focused && (
+          <>
+            <span className="text-gray-400">filter</span>
+            <Kbd className="!h-4 !text-[9px]">↵</Kbd>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function EmptyState({
+  query,
+  total,
+  scope,
+  hasActiveFilters,
+  onWiden,
+}: {
+  query: string;
+  total: number;
+  scope: Scope;
+  hasActiveFilters: boolean;
+  onWiden: () => void;
+}) {
   if (!query) {
     return (
       <div className="px-4 py-8 text-center text-xs text-gray-500">
@@ -358,6 +566,18 @@ function EmptyState({ query, total }: { query: string; total: number }) {
         Try a shorter token, a category like &ldquo;form&rdquo;, or a command like
         &ldquo;deprecated&rdquo; or &ldquo;list view&rdquo;.
       </p>
+      {scope === 'filtered' && hasActiveFilters && (
+        <button
+          type="button"
+          onClick={onWiden}
+          className="mt-3 inline-flex items-center gap-1 rounded-md border border-gray-200 bg-white px-3 py-1 text-[11px] font-medium text-gray-700 hover:border-gray-400 hover:bg-gray-50"
+        >
+          Search all components
+          <Kbd>⌘</Kbd>
+          <Kbd>⇧</Kbd>
+          <Kbd>A</Kbd>
+        </button>
+      )}
     </div>
   );
 }
