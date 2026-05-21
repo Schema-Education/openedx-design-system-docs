@@ -10,9 +10,21 @@ import {
 } from '@headlessui/react';
 import { IconButton, IconButtonToggle, Icon } from '@openedx/paragon';
 import { GridView, ViewList } from '@openedx/paragon/icons';
+import dynamic from 'next/dynamic';
 import { ComponentCard } from './component-card';
 import { ComponentRow } from './component-row';
-import { ComponentDetail, type DetailTab } from './component-detail';
+import type { DetailTab } from './component-detail';
+
+// The detail pane (and everything it pulls in transitively — UsageTab, the
+// variant catalogs, etc.) is only relevant after the user clicks a card.
+// Dynamic-import keeps it out of the initial /registry bundle so the cold
+// load doesn't ship JS the user may never need. ssr:false because the pane
+// is conditionally rendered behind a click anyway; rendering it on the
+// server has no value.
+const ComponentDetail = dynamic(
+  () => import('./component-detail').then((m) => ({ default: m.ComponentDetail })),
+  { ssr: false, loading: () => null },
+);
 import { MultiSelectCombobox } from './ui/multi-select-combobox';
 import { CommandPalette, usePaletteHotkey } from './command-palette';
 import { Kbd } from './ui/kbd';
