@@ -2,7 +2,102 @@
 
 import { ATOMIC_LEVEL_META, type GalleryComponent } from '@/lib/gallery';
 import { PARAGON_PREVIEWS } from './paragon-previews';
+import { PreviewErrorBoundary } from './preview-error-boundary';
 import { COMPONENT_VARIANTS, type Variant } from './variants';
+
+/**
+ * Variant tile sizing.
+ *
+ * The default tile size (`sm`) fits compact atoms — buttons, icons, badges,
+ * inputs. Larger sizes are reserved for components whose out-of-the-box
+ * footprint is genuinely wider or taller (data tables, navbars, modals,
+ * carousels, forms, page-level layouts). Capped at ~5× the default width and
+ * ~3× the default height so the horizontal-scroll row still behaves.
+ */
+type TileSize = 'sm' | 'md' | 'lg' | 'xl' | 'xxl';
+
+const TILE_DIMENSIONS: Record<TileSize, { width: number; minHeight: number }> = {
+  sm: { width: 260, minHeight: 160 },
+  md: { width: 360, minHeight: 220 },
+  lg: { width: 520, minHeight: 300 },
+  xl: { width: 760, minHeight: 360 },
+  xxl: { width: 1200, minHeight: 420 },
+};
+
+const COMPONENT_TILE_SIZE: Record<string, TileSize> = {
+  // xxl — live <DataTable> instances; need width for control bar + columns +
+  // pagination footer to read at the same density as the Paragon docs site.
+  DataTable: 'xxl',
+  'DataTable.Table': 'xxl',
+  'DataTable.BulkActions': 'xxl',
+  'DataTable.TableControlBar': 'xxl',
+  'DataTable.TableFilters': 'xxl',
+  'DataTable.TableFooter': 'xxl',
+  'DataTable.EmptyTable': 'xxl',
+  Table: 'xl',
+  // xl — wide chrome / page-level surfaces with multi-zone layouts
+  Navbar: 'xl',
+  PageBanner: 'xl',
+  Form: 'xl',
+  Layout: 'lg',
+  FullscreenModal: 'lg',
+  MarketingModal: 'lg',
+  // lg — multi-element structures (carousels, steppers, side panels, modals
+  // with a header + body + footer)
+  Carousel: 'lg',
+  Stepper: 'lg',
+  Sheet: 'lg',
+  AlertModal: 'lg',
+  StandardModal: 'lg',
+  ModalDialog: 'lg',
+  ModalPopup: 'lg',
+  Dropzone: 'lg',
+  ColorPicker: 'lg',
+  ChipCarousel: 'lg',
+  SelectableBox: 'lg',
+  // md — moderate horizontal/vertical needs (single-row chrome, multi-line
+  // alerts, small tabbed surfaces)
+  Pagination: 'md',
+  Tabs: 'md',
+  Card: 'md',
+  Container: 'md',
+  Scrollable: 'md',
+  Toast: 'md',
+  Alert: 'md',
+  StatusAlert: 'md',
+  SearchField: 'md',
+  Breadcrumb: 'md',
+  Dropdown: 'md',
+  Collapsible: 'md',
+  Collapse: 'md',
+  ActionRow: 'md',
+  ButtonGroup: 'md',
+  InputGroup: 'md',
+  Popover: 'md',
+  Menu: 'md',
+  ProductTour: 'md',
+  ModalLayer: 'md',
+  Nav: 'md',
+  ProgressBar: 'md',
+  SelectMenu: 'md',
+  TextArea: 'md',
+  OverflowScroll: 'md',
+  Media: 'md',
+  Figure: 'md',
+  Image: 'md',
+  ResponsiveEmbed: 'md',
+  'Form.Group': 'md',
+  'Form.Autosuggest': 'md',
+  CheckBoxGroup: 'md',
+  RadioButtonGroup: 'md',
+  ValidationFormGroup: 'md',
+  // Everything else (atoms — Button, Badge, Icon, Avatar, single inputs,
+  // sticky/overlay positioning helpers) falls through to `sm`.
+};
+
+function tileSizeFor(name: string): TileSize {
+  return COMPONENT_TILE_SIZE[name] ?? 'sm';
+}
 
 /**
  * Long-form usage content rendered inside the summary pane's "Usage" tab.
@@ -27,6 +122,8 @@ export function UsageTab({ c }: { c: GalleryComponent }) {
   //   - placeholder tiles (Hover/Active/Disabled) for components without
   //     authored variants yet. Each tile is a fixed-width column in the
   //     horizontal scroller so the row can grow as variants are added.
+  const tileSize = tileSizeFor(c.name);
+  const tileDims = TILE_DIMENSIONS[tileSize];
   const authoredVariants: Variant[] | undefined = COMPONENT_VARIANTS[c.name];
   const variants: {
     label: string;
@@ -82,6 +179,8 @@ export function UsageTab({ c }: { c: GalleryComponent }) {
                 isPlaceholder={v.isPlaceholder}
                 gradient={atomic.gradient}
                 name={c.name}
+                width={tileDims.width}
+                minHeight={tileDims.minHeight}
               >
                 {v.node}
               </VariantTile>
@@ -193,6 +292,8 @@ function VariantTile({
   isPlaceholder,
   gradient,
   name,
+  width,
+  minHeight,
   children,
 }: {
   label: string;
@@ -200,10 +301,15 @@ function VariantTile({
   isPlaceholder: boolean;
   gradient: string;
   name: string;
+  width: number;
+  minHeight: number;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex w-[260px] shrink-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white">
+    <div
+      className="flex shrink-0 flex-col overflow-hidden rounded-lg border border-gray-200 bg-white"
+      style={{ width }}
+    >
       <div className="flex items-start justify-between gap-2 border-b border-gray-100 px-3 py-2">
         <div className="min-w-0">
           <div className="text-[11px] font-semibold uppercase tracking-wide text-gray-700">
@@ -222,12 +328,17 @@ function VariantTile({
         )}
       </div>
       <div
-        className={`flex flex-1 items-center justify-center p-4 ${
+        className={`flex flex-1 items-center justify-center overflow-auto p-4 ${
           isPlaceholder ? 'bg-gray-50' : 'bg-white'
         }`}
-        style={{ minHeight: 140 }}
+        style={{ minHeight }}
       >
-        {children ?? <PreviewPlaceholder name={name} gradient={gradient} compact />}
+        <PreviewErrorBoundary
+          componentName={name}
+          fallback={<PreviewPlaceholder name={name} gradient={gradient} compact />}
+        >
+          {children ?? <PreviewPlaceholder name={name} gradient={gradient} compact />}
+        </PreviewErrorBoundary>
       </div>
     </div>
   );

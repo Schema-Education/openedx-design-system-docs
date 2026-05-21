@@ -65,11 +65,27 @@ export const MOLECULE_PREVIEWS: Record<string, () => ReactNode> = {
     </PreviewSlot>
   ),
   Form: () => (
-    <PreviewSlot width={180}>
-      <Form>
+    <PreviewSlot align="stretch">
+      <Form className="d-flex flex-column gap-3">
+        <Form.Group>
+          <Form.Label>Full name</Form.Label>
+          <Form.Control type="text" placeholder="Ada Lovelace" />
+        </Form.Group>
+        <Form.Group>
+          <Form.Label>Email</Form.Label>
+          <Form.Control type="email" placeholder="you@example.com" />
+        </Form.Group>
         <Form.Switch checked onChange={() => undefined}>
-          Enabled
+          Email me product updates
         </Form.Switch>
+        <div className="d-flex justify-content-end gap-2">
+          <Button variant="tertiary" size="sm">
+            Cancel
+          </Button>
+          <Button variant="primary" size="sm">
+            Save
+          </Button>
+        </div>
       </Form>
     </PreviewSlot>
   ),

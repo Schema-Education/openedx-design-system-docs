@@ -2,12 +2,15 @@
 
 import type { ReactNode } from 'react';
 import {
+  Button,
   Card as PCard,
   Carousel,
   CarouselItem,
+  Nav,
   Navbar,
   PageBanner,
   Pagination,
+  SearchField,
   Stepper,
   Tab,
   Tabs,
@@ -83,9 +86,28 @@ export const ORGANISM_PREVIEWS: Record<string, () => ReactNode> = {
     </PreviewSlot>
   ),
   Navbar: () => (
-    <PreviewSlot width={240}>
-      <Navbar bg="light" expand={false} className="rounded border">
-        <Navbar.Brand href="#">edX</Navbar.Brand>
+    <PreviewSlot align="stretch">
+      <Navbar bg="light" expand="sm" className="rounded border">
+        <Navbar.Brand href="#" className="fw-bold">
+          edX
+        </Navbar.Brand>
+        <Nav className="me-auto">
+          <Nav.Link href="#" active>
+            Courses
+          </Nav.Link>
+          <Nav.Link href="#">Programs</Nav.Link>
+          <Nav.Link href="#">About</Nav.Link>
+        </Nav>
+        <div className="d-flex align-items-center gap-2">
+          <SearchField
+            onSubmit={() => undefined}
+            placeholder="Search"
+            inputProps={{ 'aria-label': 'Search' }}
+          />
+          <Button variant="primary" size="sm">
+            Sign in
+          </Button>
+        </div>
       </Navbar>
     </PreviewSlot>
   ),

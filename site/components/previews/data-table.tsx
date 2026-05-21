@@ -1,34 +1,95 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { Badge, Card as PCard } from '@openedx/paragon';
-import { PreviewSlot } from './preview-slot';
+import { Badge, Button, Card as PCard, Icon } from '@openedx/paragon';
+import { Check, FilterList, KeyboardArrowLeft, KeyboardArrowRight, Search } from '@openedx/paragon/icons';
 
 /**
- * DataTable family previews — Paragon's <DataTable> requires real columns/data
- * and renders at full width with controls. None of that fits in a 200×128 card
- * thumbnail. Each preview below is a static mock built with Paragon primitives
- * (Card, Badge) and minimal Bootstrap table classes so it visually represents
- * the named member without spinning up a live DataTable instance.
+ * DataTable family previews — representative mocks that visually mirror the
+ * canonical example on the Paragon docs site (`TableControlBar` + `Table` +
+ * `TableFooter` rendered against a small dataset).
  *
- * Trade-off: previews are not live components — they're representative mocks.
- * Live editing will arrive in Phase 2b (Sandpack).
+ * We can't use Paragon's live `<DataTable>` here because Paragon v23.x's
+ * DataTable relies on legacy `defaultProps` for several internal components
+ * (TableControlBar, TablePagination, DataViewToggle, ...). React 19 dropped
+ * `defaultProps` support for function/forwardRef components, so the live
+ * tree crashes with `Cannot read properties of undefined (reading
+ * 'togglePlacement')` and downstream `Element type is invalid` errors during
+ * render. Until Paragon ships a React-19-compatible release, these mocks
+ * keep the registry preview honest about Paragon's intended visual surface.
  */
 
-function MiniTable({ rows = 2 }: { rows?: number }) {
+const ROWS: { name: string; famous_for: string; color: string }[] = [
+  { name: 'Lil Bub', famous_for: 'weird tongue', color: 'brown tabby' },
+  { name: 'Grumpy Cat', famous_for: 'serving moods', color: 'siamese' },
+  { name: 'Smoothie', famous_for: 'modeling', color: 'orange tabby' },
+  { name: 'Maru', famous_for: 'lovable oaf', color: 'brown tabby' },
+  { name: 'Keyboard Cat', famous_for: 'piano virtuoso', color: 'orange tabby' },
+  { name: 'Long Cat', famous_for: 'being long', color: 'russian white' },
+  { name: 'Zeno', famous_for: 'getting halfway there', color: 'brown tabby' },
+];
+
+function ControlBar({ filtersApplied = 0 }: { filtersApplied?: number }) {
+  return (
+    <div className="flex items-center justify-between gap-2 border-b border-gray-200 px-3 py-2">
+      <div className="flex flex-1 items-center gap-2">
+        <div className="flex flex-1 items-center gap-2 rounded border bg-white px-2 py-1 text-xs text-gray-500">
+          <Icon src={Search} className="!h-3.5 !w-3.5" />
+          <span>Search name</span>
+        </div>
+        <button
+          type="button"
+          className="flex items-center gap-1 rounded border bg-white px-2 py-1 text-xs text-gray-700"
+        >
+          <Icon src={FilterList} className="!h-3.5 !w-3.5" />
+          Filters
+          {filtersApplied > 0 && (
+            <Badge variant="primary" className="ms-1">
+              {filtersApplied}
+            </Badge>
+          )}
+        </button>
+      </div>
+      <span className="whitespace-nowrap text-[11px] text-gray-500">
+        Showing {ROWS.length} of {ROWS.length + 4}.
+      </span>
+    </div>
+  );
+}
+
+function TableMarkup({
+  selectedIndexes = [],
+}: {
+  selectedIndexes?: number[];
+}) {
   return (
     <table className="table table-sm mb-0 w-full text-xs">
       <thead>
-        <tr>
-          <th>Name</th>
-          <th>Role</th>
+        <tr className="border-b border-gray-200">
+          <th className="w-8 px-2 py-1.5">
+            <input type="checkbox" />
+          </th>
+          <th className="px-2 py-1.5 font-semibold text-gray-700">Name</th>
+          <th className="px-2 py-1.5 font-semibold text-gray-700">
+            Famous For
+          </th>
+          <th className="px-2 py-1.5 font-semibold text-gray-700">
+            Coat Color
+          </th>
         </tr>
       </thead>
       <tbody>
-        {Array.from({ length: rows }).map((_, i) => (
-          <tr key={i}>
-            <td>User {i + 1}</td>
-            <td>Member</td>
+        {ROWS.map((row, i) => (
+          <tr
+            key={row.name}
+            className={selectedIndexes.includes(i) ? 'bg-blue-50' : undefined}
+          >
+            <td className="px-2 py-1.5">
+              <input type="checkbox" defaultChecked={selectedIndexes.includes(i)} />
+            </td>
+            <td className="px-2 py-1.5">{row.name}</td>
+            <td className="px-2 py-1.5">{row.famous_for}</td>
+            <td className="px-2 py-1.5">{row.color}</td>
           </tr>
         ))}
       </tbody>
@@ -36,78 +97,120 @@ function MiniTable({ rows = 2 }: { rows?: number }) {
   );
 }
 
+function Footer() {
+  return (
+    <div className="flex items-center justify-between border-t border-gray-200 px-3 py-2">
+      <span className="text-[11px] text-gray-500">
+        Showing 1 - {ROWS.length} of {ROWS.length + 4}.
+      </span>
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          className="rounded p-1 text-gray-600 hover:bg-gray-100"
+          aria-label="Previous"
+        >
+          <Icon src={KeyboardArrowLeft} className="!h-4 !w-4" />
+        </button>
+        <span className="text-[11px] text-gray-700">1 of 3</span>
+        <button
+          type="button"
+          className="rounded p-1 text-gray-600 hover:bg-gray-100"
+          aria-label="Next"
+        >
+          <Icon src={KeyboardArrowRight} className="!h-4 !w-4" />
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function BulkActions() {
+  return (
+    <div className="flex items-center justify-between gap-2 border-b border-gray-200 bg-blue-50 px-3 py-2 text-xs">
+      <div className="flex items-center gap-2">
+        <Icon src={Check} className="!h-4 !w-4 text-blue-700" />
+        <span className="font-semibold text-blue-900">2 selected</span>
+      </div>
+      <div className="flex items-center gap-2">
+        <Button variant="outline-primary" size="sm">
+          Archive
+        </Button>
+        <Button variant="outline-primary" size="sm">
+          Delete
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * Full-bleed wrapper. We bypass `PreviewSlot` here because that helper sizes
+ * its inner div to content width, which leaves the DataTable mock floating
+ * in the left half of the xxl variant tile. We claim the tile's full width
+ * but leave the height to follow content — stretching vertically would force
+ * the last row (the footer) to absorb the slack and read as artificially
+ * tall.
+ */
+function Shell({ children }: { children: ReactNode }) {
+  return (
+    <div className="w-full self-start">
+      <PCard className="overflow-hidden">{children}</PCard>
+    </div>
+  );
+}
+
 export const DATA_TABLE_PREVIEWS: Record<string, () => ReactNode> = {
   DataTable: () => (
-    <PreviewSlot width={220}>
-      <PCard>
-        <PCard.Section>
-          <MiniTable />
-        </PCard.Section>
-      </PCard>
-    </PreviewSlot>
+    <Shell>
+      <ControlBar />
+      <TableMarkup />
+      <Footer />
+    </Shell>
   ),
   'DataTable.Table': () => (
-    <PreviewSlot width={220}>
-      <MiniTable />
-    </PreviewSlot>
+    <Shell>
+      <TableMarkup />
+    </Shell>
   ),
   'DataTable.BulkActions': () => (
-    <PreviewSlot width={220}>
-      <div className="flex items-center gap-2 rounded border bg-white px-2 py-1.5 text-xs">
-        <Badge variant="primary">2 selected</Badge>
-        <button type="button" className="text-blue-700 underline">
-          Archive
-        </button>
-        <button type="button" className="text-blue-700 underline">
-          Delete
-        </button>
-      </div>
-    </PreviewSlot>
+    <Shell>
+      <BulkActions />
+      <TableMarkup selectedIndexes={[0, 1]} />
+      <Footer />
+    </Shell>
   ),
   'DataTable.EmptyTable': () => (
-    <PreviewSlot width={220}>
-      <PCard>
-        <PCard.Section>
-          <p className="m-0 text-center text-xs text-gray-500">
-            No records to show
-          </p>
-        </PCard.Section>
-      </PCard>
-    </PreviewSlot>
+    <Shell>
+      <ControlBar filtersApplied={2} />
+      <div className="px-6 py-10 text-center text-xs text-gray-500">
+        No results found.
+      </div>
+      <Footer />
+    </Shell>
   ),
   'DataTable.TableControlBar': () => (
-    <PreviewSlot width={220}>
-      <div className="flex items-center justify-between rounded border bg-white px-2 py-1.5 text-xs">
-        <span className="text-gray-700">12 records</span>
-        <div className="flex gap-1">
-          <Badge variant="light">Filters</Badge>
-          <Badge variant="light">Sort</Badge>
-        </div>
-      </div>
-    </PreviewSlot>
+    <Shell>
+      <ControlBar filtersApplied={1} />
+    </Shell>
   ),
   'DataTable.TableFilters': () => (
-    <PreviewSlot width={220}>
-      <div className="flex flex-wrap items-center gap-1 rounded border bg-white px-2 py-1.5 text-xs">
-        <span className="text-gray-700">Role:</span>
-        <Badge variant="primary">Admin</Badge>
-        <Badge variant="light">+ Add</Badge>
+    <Shell>
+      <ControlBar filtersApplied={2} />
+      <div className="flex items-center gap-2 border-b border-gray-200 px-3 py-2 text-xs">
+        <span className="text-gray-500">Coat color:</span>
+        <Badge variant="primary">brown tabby</Badge>
+        <Badge variant="primary">siamese</Badge>
+        <button type="button" className="ml-auto text-blue-700 underline">
+          Clear all
+        </button>
       </div>
-    </PreviewSlot>
+      <TableMarkup />
+    </Shell>
   ),
   'DataTable.TableFooter': () => (
-    <PreviewSlot width={220}>
-      <div className="flex items-center justify-between rounded border bg-white px-2 py-1.5 text-xs">
-        <span className="text-gray-700">Showing 1–10 of 24</span>
-        <div className="flex gap-1">
-          <button type="button" className="text-blue-700">
-            ‹
-          </button>
-          <button type="button" className="text-blue-700">
-            ›
-          </button>
-        </div>
-      </div>
-    </PreviewSlot>
+    <Shell>
+      <TableMarkup />
+      <Footer />
+    </Shell>
   ),
 };

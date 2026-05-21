@@ -8,6 +8,7 @@ import {
 } from '@/lib/gallery';
 import { PARAGON_PREVIEWS } from './paragon-previews';
 import { useInViewport } from '@/lib/use-in-viewport';
+import { PreviewErrorBoundary } from './preview-error-boundary';
 
 interface ComponentCardProps {
   component: GalleryComponent;
@@ -105,7 +106,20 @@ export const ComponentCard = memo(function ComponentCard({
         }}
       >
         {previewNode ? (
-          previewNode
+          <PreviewErrorBoundary
+            componentName={component.name}
+            fallback={
+              <div
+                className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${atomic.gradient}`}
+              >
+                <span className="text-4xl font-bold text-gray-900/80">
+                  {initial}
+                </span>
+              </div>
+            }
+          >
+            {previewNode}
+          </PreviewErrorBoundary>
         ) : (
           <div
             className={`absolute inset-0 flex items-center justify-center bg-gradient-to-br ${atomic.gradient}`}
