@@ -72,7 +72,7 @@ export function UsageTab({ c }: { c: GalleryComponent }) {
         title="Preview & Variants"
         subtitle="Live render plus variant states — Phase 2 (ADR-0001) wires in Sandpack for the placeholders"
       >
-        <div className="-mx-6 overflow-x-auto px-6 pb-2">
+        <div className="overflow-x-auto pb-2">
           <div className="flex gap-3">
             {variants.map((v) => (
               <VariantTile

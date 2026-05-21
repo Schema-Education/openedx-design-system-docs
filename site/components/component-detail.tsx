@@ -141,13 +141,8 @@ function DetailBody({
         </div>
       </div>
 
-      {/* Tab content. Padding widens when the pane has been expanded to
-          host the long-form "Usage" content so it doesn't sit edge-to-edge. */}
-      <div
-        className={`flex-1 overflow-y-auto py-4 text-sm ${
-          tab === 'usage' ? 'px-6' : 'px-4'
-        }`}
-      >
+      {/* Tab content */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 text-sm">
         {tab === 'overview' && (
           <OverviewTab
             c={component}
