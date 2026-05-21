@@ -7,6 +7,7 @@ import { usePathname } from 'next/navigation';
 const TABS = [
   { label: 'Components', href: '/registry', match: (p: string) => p === '/registry' || p.startsWith('/registry/') },
   { label: 'Docs & Vision', href: '/docs', match: (p: string) => p === '/docs' || p.startsWith('/docs/') },
+  { label: 'Collateral', href: '/collateral', match: (p: string) => p === '/collateral' || p.startsWith('/collateral/') },
 ] as const;
 
 const EXTERNAL_LINKS = [
