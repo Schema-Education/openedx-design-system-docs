@@ -189,36 +189,36 @@ export function UsageTab({ c }: { c: GalleryComponent }) {
         </div>
       </Section>
 
-      {/* Usage examples */}
-      <Section
-        title="Usage examples"
-        subtitle="Snippets crawled from MFE consumers (Phase 2)"
-      >
-        <div className="space-y-3">
-          <CodeBlock
-            label="Import"
-            code={`import { ${c.name} } from '@openedx/${importPkg}';`}
-          />
-          <CodeBlock label="Basic usage" code={`<${c.name} />`} />
-        </div>
-      </Section>
-
-      {/* Three-column row under usage examples — properties, guidelines,
-          and accessibility sit side-by-side at lg+ so the long-form info
-          surfaces don't stack into a single long scroll. Drops to one
-          column on narrow viewports. */}
+      {/* Three-column row — develop (usage snippets + prop table),
+          guidelines, and accessibility sit side-by-side at lg+. Develop
+          stacks its snippets above the prop table within its own column.
+          Drops to one column on narrow viewports. */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         <Section
-          title="Properties"
-          subtitle="Live prop table sourced from TypeScript / PropTypes (Phase 2b)"
+          title="Develop"
+          subtitle="Snippets crawled from MFE consumers (Phase 2) and the prop table sourced from TypeScript / PropTypes (Phase 2b)"
         >
-          <div className="rounded-md border border-dashed border-gray-300 p-4 text-center text-xs text-gray-500">
-            Prop tables will be ingested directly from each component&apos;s
-            source by the crawler in Phase 2b. See{' '}
-            <code className="rounded bg-gray-100 px-1">
-              /registry/schema/component.schema.json
-            </code>
-            .
+          <div className="space-y-4">
+            <div className="space-y-3">
+              <CodeBlock
+                label="Import"
+                code={`import { ${c.name} } from '@openedx/${importPkg}';`}
+              />
+              <CodeBlock label="Basic usage" code={`<${c.name} />`} />
+            </div>
+            <div>
+              <div className="mb-1 text-[10px] font-semibold uppercase tracking-wide text-gray-500">
+                Properties
+              </div>
+              <div className="rounded-md border border-dashed border-gray-300 p-4 text-center text-xs text-gray-500">
+                Prop tables will be ingested directly from each component&apos;s
+                source by the crawler in Phase 2b. See{' '}
+                <code className="rounded bg-gray-100 px-1">
+                  /registry/schema/component.schema.json
+                </code>
+                .
+              </div>
+            </div>
           </div>
         </Section>
 
