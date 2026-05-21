@@ -90,12 +90,13 @@ export function Gallery({ components }: GalleryProps) {
 
   // Details pane resize state.
   // Default width matches the prior `max-w-md` (28rem = 448px).
-  // Min width keeps the pane readable; max width is computed dynamically so
-  // the main listing area never shrinks below one 320px card column plus
-  // its horizontal padding (px-6 = 24px each side).
+  // Min width keeps the pane readable; max is capped at 80% of the viewport
+  // so the main listing area always retains at least 20vw. The card grid
+  // uses an auto-fill layout, so a narrow main column collapses to a single
+  // column rather than overflowing.
   const DEFAULT_PANE_WIDTH = 448;
   const MIN_PANE_WIDTH = 320;
-  const MAIN_MIN_WIDTH = 320 + 48;
+  const MAX_PANE_RATIO = 0.8;
   const [paneWidth, setPaneWidth] = useState<number>(DEFAULT_PANE_WIDTH);
   const bodyRef = useRef<HTMLDivElement>(null);
   const isResizingRef = useRef(false);
@@ -113,8 +114,8 @@ export function Gallery({ components }: GalleryProps) {
   useEffect(() => {
     function clampToBounds(width: number): number {
       const rect = bodyRef.current?.getBoundingClientRect();
-      const containerWidth = rect?.width ?? width + MAIN_MIN_WIDTH;
-      const maxPane = Math.max(MIN_PANE_WIDTH, containerWidth - MAIN_MIN_WIDTH);
+      const containerWidth = rect?.width ?? window.innerWidth;
+      const maxPane = Math.max(MIN_PANE_WIDTH, containerWidth * MAX_PANE_RATIO);
       return Math.min(maxPane, Math.max(MIN_PANE_WIDTH, width));
     }
 
@@ -501,13 +502,16 @@ export function Gallery({ components }: GalleryProps) {
                 </h2>
                 {viewMode === 'card' ? (
                   <div
-                    className={`grid gap-5 ${
-                      isUsageTab
-                        ? 'grid-cols-1'
-                        : selected
-                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
-                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
-                    }`}
+                    className="grid gap-5"
+                    style={{
+                      // Container-responsive: fits as many ~260px columns as
+                      // the main column has room for. When the detail pane
+                      // is at its 80% max, the main column collapses to a
+                      // single full-width card.
+                      gridTemplateColumns: isUsageTab
+                        ? '1fr'
+                        : 'repeat(auto-fill, minmax(min(100%, 260px), 1fr))',
+                    }}
                   >
                     {group.items.map((c) => (
                       <ComponentCard
