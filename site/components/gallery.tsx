@@ -293,22 +293,22 @@ export function Gallery({ components }: GalleryProps) {
 
   return (
     <>
-      {/* Page title row — inside content frame */}
-      <div className="mx-auto max-w-[1650px] px-6 pt-6">
-        <div className="mb-4 flex flex-wrap items-baseline justify-between gap-3">
+      {/* Page title row — full width */}
+      <div className="px-6 pt-8">
+        <div className="mb-6 flex flex-wrap items-baseline justify-between gap-3">
           <div>
             <p className="text-xs uppercase tracking-wide text-gray-500">Component library</p>
-            <h1 className="mt-1 text-3xl font-bold tracking-tight text-gray-900">Component Gallery</h1>
-            <p className="mt-1 text-sm text-gray-500">
+            <h1 className="mt-2 text-3xl font-bold tracking-tight text-gray-900">Component Gallery</h1>
+            <p className="mt-2 text-sm text-gray-500">
               {components.length} components across Paragon, frontend-base, and {allMfes.length - 2} MFEs · atoms through pages
             </p>
           </div>
         </div>
       </div>
 
-      {/* Subnav — full-width divider, tabs constrained to content frame, sticky below app header */}
+      {/* Subnav — full-width, sticky below app header */}
       <div className="sticky top-16 z-20 border-b border-gray-200 bg-gray-50/95 backdrop-blur supports-[backdrop-filter]:bg-gray-50/80">
-        <div className="mx-auto max-w-[1650px] px-6">
+        <div className="px-6">
           <div role="tablist" aria-label="Atomic level" className="flex flex-wrap gap-1">
             {tabs.map((tab) => {
               const isActive = activeLevel === tab.key;
@@ -339,10 +339,9 @@ export function Gallery({ components }: GalleryProps) {
         {/* Body — main listing on the left, summary pane on the right.
             The flex container is full-viewport-width so the summary pane
             sits flush against the right edge of the viewport. The main
-            column gets dynamic left padding (and right padding, when no
-            pane is open) so its content stays aligned with the title row
-            above, which is centered at max-w-[1650px]. When the Usage tab
-            is active the pane expands to 75vw and the listing shrinks to
+            column uses 1.5rem horizontal padding so its content aligns
+            with the full-width title row above. When the Usage tab is
+            active the pane expands to 75vw and the listing shrinks to
             the remaining 25vw. */}
         <div ref={bodyRef} className="flex items-start">
           {/* Main column — search/filters + grouped card grid.
@@ -351,7 +350,7 @@ export function Gallery({ components }: GalleryProps) {
               so it keeps its set width; the main column fills whatever space
               remains via the `width` calc. */}
           <div
-            className="min-w-0 pb-6 pt-4"
+            className="min-w-0 px-6 pb-6 pt-4"
             style={{
               flexGrow: 0,
               flexShrink: 0,
@@ -360,12 +359,6 @@ export function Gallery({ components }: GalleryProps) {
                 : selected
                 ? `calc(100vw - ${paneWidth}px)`
                 : '100vw',
-              paddingLeft: isUsageTab
-                ? '1.5rem'
-                : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
-              paddingRight: isUsageTab || selected
-                ? '1.5rem'
-                : 'max(1.5rem, calc((100vw - 1650px) / 2 + 1.5rem))',
               transition: paneTransition,
             }}
           >
@@ -463,8 +456,8 @@ export function Gallery({ components }: GalleryProps) {
                       isUsageTab
                         ? 'grid-cols-1'
                         : selected
-                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3'
-                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'
+                        ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4'
+                        : 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5'
                     }`}
                   >
                     {group.items.map((c) => (
