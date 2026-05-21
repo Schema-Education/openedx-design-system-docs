@@ -478,7 +478,7 @@ export function Gallery({ components }: GalleryProps) {
                   <button
                     type="button"
                     onClick={clearAll}
-                    className="font-medium text-gray-700 hover:text-gray-900 hover:underline"
+                    className="font-medium text-gray-700 hover:text-gray-900"
                   >
                     Clear All
                   </button>

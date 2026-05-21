@@ -22,13 +22,13 @@ export default function HomePage() {
         <div className="mt-10 flex flex-wrap justify-center gap-4">
           <Link
             href="/registry"
-            className="rounded bg-primary-500 px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="rounded bg-primary-500 px-6 py-3 text-sm font-semibold text-white no-underline shadow-sm transition hover:bg-primary-600 hover:no-underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
             Browse the gallery →
           </Link>
           <Link
             href="/docs"
-            className="rounded border border-gray-500 px-6 py-3 text-sm font-semibold text-gray-700 transition hover:border-primary-500 hover:text-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            className="rounded border border-gray-500 px-6 py-3 text-sm font-semibold text-gray-700 no-underline transition hover:border-primary-500 hover:text-primary-500 hover:no-underline focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
           >
             Docs &amp; Vision
           </Link>
@@ -49,13 +49,13 @@ export default function HomePage() {
           <div className="mt-8 flex flex-wrap justify-center gap-4">
             <Link
               href="/docs/vision"
-              className="rounded bg-accent-400 px-6 py-3 text-sm font-semibold text-ink-800 transition hover:bg-accent-300"
+              className="rounded bg-accent-400 px-6 py-3 text-sm font-semibold text-ink-800 no-underline transition hover:bg-accent-300 hover:no-underline"
             >
               Read the product vision →
             </Link>
             <Link
               href="/docs/proposals/0001-mfe-component-registry"
-              className="rounded border border-white/40 px-6 py-3 text-sm font-semibold text-white transition hover:border-white hover:bg-white/5"
+              className="rounded border border-white/40 px-6 py-3 text-sm font-semibold text-white no-underline transition hover:border-white hover:bg-white/5 hover:no-underline"
             >
               ODS-RFC-0001
             </Link>
