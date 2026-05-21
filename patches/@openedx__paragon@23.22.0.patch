@@ -1,0 +1,48 @@
+diff --git a/dist/TransitionReplace/index.js b/dist/TransitionReplace/index.js
+index 72f32cad93f790b6e7a18befc6a26e7f77beaaa0..4754280a4d43bb541796d14ca2d87acb368ad5ee 100644
+--- a/dist/TransitionReplace/index.js
++++ b/dist/TransitionReplace/index.js
+@@ -30,15 +30,25 @@ class TransitionReplace extends React.Component {
+   // 2. onChildEntering     (set the height to match the new content)
+   // 3. onChildExited       (reset the height to null)
+ 
++  // React 19 / react-transition-group@4.4.5 compatibility: the upstream
++  // transition patch in this repo's `patches/` can hand off a null DOM
++  // node when a child unmounts mid-transition. The original handlers
++  // read `htmlNode.offsetHeight` to drive the height-swap animation and
++  // throw `TypeError: null is not an object` when the node is gone.
++  // Guard every onChildXxx handler so a null node no-ops on the
++  // animation side but still forwards the (null) signal to consumer
++  // callbacks for compatibility with the original API contract.
+   onChildEnter(htmlNode) {
+     if (this.props.onChildEnter) {
+       this.props.onChildEnter(htmlNode);
+     }
+   }
+   onChildEntering(htmlNode) {
+-    this.setState({
+-      height: htmlNode.offsetHeight
+-    });
++    if (htmlNode != null) {
++      this.setState({
++        height: htmlNode.offsetHeight
++      });
++    }
+     if (this.props.onChildEntering) {
+       this.props.onChildEntering(htmlNode);
+     }
+@@ -52,9 +62,11 @@ class TransitionReplace extends React.Component {
+     }
+   }
+   onChildExit(htmlNode) {
+-    this.setState({
+-      height: htmlNode.offsetHeight
+-    });
++    if (htmlNode != null) {
++      this.setState({
++        height: htmlNode.offsetHeight
++      });
++    }
+     if (this.props.onChildExit) {
+       this.props.onChildExit(htmlNode);
+     }

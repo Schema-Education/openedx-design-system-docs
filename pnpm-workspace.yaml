@@ -1,35 +1,8 @@
 packages:
-  - 'site'
-  - 'registry/crawler'
+  - site
+  - registry/crawler
 
 minimumReleaseAge: 10080
-
-# Transitive overrides — used when a transitive dep updates so frequently
-# that the 1-week minimum-release-age floor would block essentially every
-# `pnpm add`. Distinct from `minimumReleaseAgeExclude`: the floor still
-# applies; we just tell pnpm which specific (past-the-floor) version to
-# resolve to, rather than carving the package out of the policy entirely.
-overrides:
-  # caniuse-lite is browser-support data, updated daily by autoprefixer
-  # against a specific exact-pinned version. Pin to a published version
-  # >7 days old. Routine maintenance can bump this for fresher data.
-  caniuse-lite: 1.0.30001792
-  # lru-cache is a high-traffic transitive (used by path-scurry, ESLint,
-  # etc.) whose recent releases land more often than the 7-day floor
-  # allows. Pin to a stable >7d version.
-  lru-cache: 11.3.6
-  # baseline-browser-mapping is browser-baseline data, pinned exactly
-  # by browserslist per release. Same daily-update pattern as caniuse-lite.
-  baseline-browser-mapping: 2.10.29
-  # electron-to-chromium also pinned exactly by browserslist; updated
-  # multiple times per week.
-  electron-to-chromium: 1.5.354
-  # qs (querystring serializer) is pinned by mid-stack consumers; recent
-  # security/release cadence falls within the 7d floor.
-  qs: 6.15.1
-
-patchedDependencies:
-  react-transition-group@4.4.5: patches/react-transition-group@4.4.5.patch
 
 onlyBuiltDependencies:
   - '@bundled-es-modules/glob'
@@ -39,3 +12,14 @@ onlyBuiltDependencies:
   - sharp
   - style-dictionary
   - workerd
+
+overrides:
+  baseline-browser-mapping: 2.10.29
+  caniuse-lite: 1.0.30001792
+  electron-to-chromium: 1.5.354
+  lru-cache: 11.3.6
+  qs: 6.15.1
+
+patchedDependencies:
+  '@openedx/paragon@23.22.0': patches/@openedx__paragon@23.22.0.patch
+  react-transition-group@4.4.5: patches/react-transition-group@4.4.5.patch
