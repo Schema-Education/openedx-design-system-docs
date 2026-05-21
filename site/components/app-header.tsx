@@ -13,7 +13,7 @@ export function AppHeader() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-gray-200 bg-white">
-      <div className="mx-auto flex h-16 max-w-[1650px] items-center gap-6 px-6">
+      <div className="flex h-16 items-center gap-6 px-6">
         <Link
           href="/"
           className="flex items-center gap-3 shrink-0 rounded-md px-2 py-1 -mx-2 transition-colors hover:bg-gray-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0a3055]"
