@@ -19,6 +19,10 @@ overrides:
   electron-to-chromium: 1.5.354
   lru-cache: 11.3.6
   qs: 6.15.1
+  # wrangler's npm metadata is missing the `time` field, which prevents
+  # pnpm from evaluating the minimumReleaseAge policy and blocks `pnpm add`.
+  # Pinned to the version already resolved in the lockfile.
+  wrangler: 4.91.0
 
 patchedDependencies:
   '@openedx/paragon@23.22.0': patches/@openedx__paragon@23.22.0.patch

@@ -4,25 +4,25 @@
     {
       "name": "site-dev",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--port", "3001"],
+      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--turbopack", "--port", "3001"],
       "port": 3001
     },
     {
       "name": "site-dev-keen",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--port", "3002"],
+      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--turbopack", "--port", "3002"],
       "port": 3002
     },
     {
       "name": "site-dev-devbar",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--port", "3003"],
+      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--turbopack", "--port", "3003"],
       "port": 3003
     },
     {
       "name": "site-dev-reverent",
       "runtimeExecutable": "pnpm",
-      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev"],
+      "runtimeArgs": ["--filter", "@openedx-design-system/site", "exec", "next", "dev", "--turbopack"],
       "autoPort": true
     }
   ]
