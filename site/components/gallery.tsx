@@ -98,8 +98,18 @@ export function Gallery({ components }: GalleryProps) {
   const MIN_PANE_WIDTH = 320;
   const MAX_PANE_RATIO = 0.8;
   const [paneWidth, setPaneWidth] = useState<number>(DEFAULT_PANE_WIDTH);
+  // Usage tab has its own pane-width state so the Overview/etc. width is
+  // preserved when the user toggles between tabs. Initialized lazily on
+  // first entry to the Usage tab (depends on window width).
+  const [usagePaneWidth, setUsagePaneWidth] = useState<number | null>(null);
   const bodyRef = useRef<HTMLDivElement>(null);
   const isResizingRef = useRef(false);
+  // Resize handlers are mounted once and read isUsageTab via a ref so the
+  // listener doesn't get torn down on every tab switch.
+  const isUsageTabRef = useRef(isUsageTab);
+  useEffect(() => {
+    isUsageTabRef.current = isUsageTab;
+  }, [isUsageTab]);
   // Mirrors isResizingRef in state form so we can swap the inline width
   // transition off during an active drag (a transition during pointer-move
   // would make the pane lag behind the cursor).
@@ -122,8 +132,12 @@ export function Gallery({ components }: GalleryProps) {
     function onMove(e: PointerEvent) {
       if (!isResizingRef.current || !bodyRef.current) return;
       const rect = bodyRef.current.getBoundingClientRect();
-      const next = rect.right - e.clientX;
-      setPaneWidth(clampToBounds(next));
+      const next = clampToBounds(rect.right - e.clientX);
+      if (isUsageTabRef.current) {
+        setUsagePaneWidth(next);
+      } else {
+        setPaneWidth(next);
+      }
     }
     function onUp() {
       if (!isResizingRef.current) return;
@@ -134,6 +148,7 @@ export function Gallery({ components }: GalleryProps) {
     }
     function onResize() {
       setPaneWidth((w) => clampToBounds(w));
+      setUsagePaneWidth((w) => (w === null ? w : clampToBounds(w)));
     }
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
@@ -152,6 +167,11 @@ export function Gallery({ components }: GalleryProps) {
     document.body.style.cursor = 'col-resize';
     document.body.style.userSelect = 'none';
   }
+  // usagePaneWidth stays null until the user drags the handle. The styles
+  // below treat null as "use 75vw" via CSS — that way the initial Usage tab
+  // open still expands the pane to ~75vw without us needing to read
+  // window.innerWidth on mount (which can race with hydration). Once the
+  // user drags, we lock in a numeric pixel width and keep it.
 
   // Derive list of distinct source MFEs
   const allMfes = useMemo(() => {
@@ -387,7 +407,9 @@ export function Gallery({ components }: GalleryProps) {
               flexGrow: 0,
               flexShrink: 0,
               width: isUsageTab
-                ? '25vw'
+                ? usagePaneWidth !== null
+                  ? `calc(100vw - ${usagePaneWidth}px)`
+                  : '25vw'
                 : selected
                 ? `calc(100vw - ${paneWidth}px)`
                 : '100vw',
@@ -546,27 +568,28 @@ export function Gallery({ components }: GalleryProps) {
 
           {/* Summary pane — sits flush against the viewport right edge.
               Width is user-resizable via the left-edge drag handle on every
-              tab except Usage; on the Usage tab the pane expands to 75vw so
-              the long-form documentation surface has room to breathe. */}
+              tab. The Usage tab keeps its own width state so it defaults to
+              ~75vw on first open (room for the long-form docs) without
+              clobbering the narrower width used by the other tabs. */}
           {selected && (
             <div
               className="sticky top-[102px] flex-shrink-0 self-start h-[calc(100vh-102px)] border-l border-gray-200 bg-white relative"
               style={{
-                width: isUsageTab ? '75vw' : paneWidth,
+                width: isUsageTab
+                  ? usagePaneWidth ?? '75vw'
+                  : paneWidth,
                 transition: paneTransition,
               }}
             >
-              {!isUsageTab && (
-                <div
-                  role="separator"
-                  aria-orientation="vertical"
-                  aria-label="Resize details pane"
-                  onPointerDown={startResize}
-                  className="group absolute left-0 top-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
-                >
-                  <div className="mx-auto h-full w-px bg-transparent transition-colors group-hover:bg-gray-400" />
-                </div>
-              )}
+              <div
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize details pane"
+                onPointerDown={startResize}
+                className="group absolute left-0 top-0 z-10 h-full w-1.5 -translate-x-1/2 cursor-col-resize"
+              >
+                <div className="mx-auto h-full w-px bg-transparent transition-colors group-hover:bg-gray-400" />
+              </div>
               <div className="h-full overflow-y-auto">
                 <ComponentDetail
                   component={selected}
